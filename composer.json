@@ -25,7 +25,7 @@
 	"extra": {
 		"display-name": "tas2580 Wiki",
 		"soft-require": {
-			"phpbb/phpbb": ">=3.2.1,<4.1@dev"
+			"phpbb/phpbb": ">=3.3.0,<4.1@dev"
 		}
 	}
 }
