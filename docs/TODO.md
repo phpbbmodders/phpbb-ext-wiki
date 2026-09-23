@@ -73,11 +73,20 @@ Browsing is flat today — Popular/Latest/All/Sticky/Pending on the overview
 page, nothing that groups articles by topic. Would need a taxonomy (even a
 simple one-tag-per-article model to start) and a browse-by-category view.
 
-## Wiki-specific search
+## Wiki search
 
-Check first whether phpBB's board-wide search already indexes the
-`wiki_article` table at all — it's a non-standard table outside phpBB's
-normal post/topic search index, so it likely doesn't, which would make this
-a bug fix (get wiki content into existing search) as much as a feature
-request. If it doesn't and can't reasonably be hooked in, a dedicated
-wiki-scoped search page would be the fallback.
+Confirmed: wiki content is **not** in phpBB's board search at all. Checked
+both ways — no search-related code anywhere in the extension, and live on
+the test board, searching for a word that only exists in a live, approved
+article's text ("trivial", from "Getting Started") returns zero matches.
+`wiki_article` is a non-standard table outside phpBB's normal post/topic
+search index, so this isn't surprising, but it does mean articles are
+currently undiscoverable except by browsing the overview page or already
+knowing the URL.
+
+Two ways to close this, not mutually exclusive:
+
+- Hook wiki content into phpBB's existing search backends, so it shows up
+  in normal board search alongside posts.
+- A dedicated wiki-scoped search page/box, simpler to build but a second,
+  separate search UI for members to learn.
