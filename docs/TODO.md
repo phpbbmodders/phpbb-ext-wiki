@@ -109,3 +109,41 @@ wiki content to visually match the rest of the forum, others will want it
 to look like an actual wiki. Scope depends heavily on the table of contents
 and internal wiki links items above landing first, since a real wiki
 layout wants both.
+
+## Recent Changes feed
+
+A chronological list of *every* edit/approval across all articles, not
+just the newest one per article. "Latest Articles" on the overview page
+only shows the most recent version per distinct article — it can't answer
+"what changed on the wiki in the last day," which is the primary
+navigation view on most real wikis. Worth pairing with an RSS/Atom feed
+the same way the board already has `feed.php` for forum activity.
+
+## User contributions page
+
+"Everything this user has edited or created," the way MediaWiki's
+Special:Contributions works. Version history already shows a `User` column
+per edit (see `article_versions.html`), but there's no page that rolls
+that up per-user across every article — today you'd have to check every
+article's version history individually to find a user's activity.
+
+## Per-article edit protection
+
+Permissions are board-wide today — `u_wiki_edit` either lets a user edit
+*any* article or none of them. No way to lock down a specific
+high-traffic/important article to a smaller group, the way MediaWiki
+protects frequently-vandalized pages. Should be **group-based**: an
+article-level setting naming which phpBB group(s) can edit it, checked in
+addition to (not instead of) the existing `u_wiki_edit` permission —
+falling back to "any group with `u_wiki_edit`" when no restriction is set
+on a given article, so this is opt-in per article rather than a behavior
+change for existing ones.
+
+## Edit-conflict detection
+
+Nothing currently warns two people editing the same article at once —
+they'd just end up with two competing pending versions and no idea the
+other happened until they check the pending-approval queue. Even a simple
+"someone else started editing this article at HH:MM" notice on the edit
+form would help; phpBB's own posting flow has similar double-submission
+awareness to look at for the pattern.
