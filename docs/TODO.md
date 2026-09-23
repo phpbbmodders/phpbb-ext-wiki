@@ -102,9 +102,10 @@ front and center instead of nested in `forumbg`/`topiclist` list rows),
 sidebar-style navigation instead of listing everything as forum rows, more
 MediaWiki-like article chrome in general.
 
-Likely a per-board style/theme choice (admin picks "Forum-style" or
-"Wiki-style" for how the extension's own templates render) rather than
-ripping out the current look — some boards will prefer wiki content to
-visually match the rest of the forum, others will want it to look like an
-actual wiki. Scope depends heavily on the table of contents and internal
-wiki links items above landing first, since a real wiki layout wants both.
+A per-board style choice, set from an ACP page for this extension (admin
+picks "Forum-style" or "Wiki-style" for how the extension's own templates
+render) rather than ripping out the current look — some boards will prefer
+wiki content to visually match the rest of the forum, others will want it
+to look like an actual wiki. Scope depends heavily on the table of contents
+and internal wiki links items above landing first, since a real wiki
+layout wants both.
