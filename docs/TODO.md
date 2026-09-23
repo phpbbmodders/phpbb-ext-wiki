@@ -13,7 +13,10 @@ when creating an article:
   `Overview`, `History`, `References` section headings) so new articles
   don't start from a truly empty box.
 
-Not scoped further yet — open questions include whether templates should be
-admin-configurable/extensible beyond these two, and whether template choice
-belongs on the overview page's quick-create box or only on the edit form
-itself.
+The template picker lives on the edit page itself (not the overview page's
+quick-create box, which still just takes you straight to a blank edit form
+and lets you pick there).
+
+Not scoped further yet — open question: should templates be
+admin-configurable/extensible beyond these two, or are "Blank" and "Generic"
+enough?
