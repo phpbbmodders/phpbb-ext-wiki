@@ -90,3 +90,21 @@ Two ways to close this, not mutually exclusive:
   in normal board search alongside posts.
 - A dedicated wiki-scoped search page/box, simpler to build but a second,
   separate search UI for members to learn.
+
+## A wiki-style UI, not just reskinned forum templates
+
+Every wiki page right now is built from phpBB's forum-listing template
+patterns — `forumbg`, `topiclist`, the same row/list markup a subforum
+index uses (see `overview.html`, `article_versions.html`). It reads as "a
+forum forced to hold wiki data," not as a wiki. Offer a genuinely
+wiki-shaped presentation as an alternative: article-first layout (content
+front and center instead of nested in `forumbg`/`topiclist` list rows),
+sidebar-style navigation instead of listing everything as forum rows, more
+MediaWiki-like article chrome in general.
+
+Likely a per-board style/theme choice (admin picks "Forum-style" or
+"Wiki-style" for how the extension's own templates render) rather than
+ripping out the current look — some boards will prefer wiki content to
+visually match the rest of the forum, others will want it to look like an
+actual wiki. Scope depends heavily on the table of contents and internal
+wiki links items above landing first, since a real wiki layout wants both.
