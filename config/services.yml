@@ -1,0 +1,121 @@
+parameters:
+    tables.wiki.article: '%core.table_prefix%wiki_article'
+
+services:
+    _defaults:
+        public: true
+
+    tas2580.wiki.overview:
+            class: tas2580\wiki\controller\overview
+            arguments:
+                - '@auth'
+                - '@controller.helper'
+                - '@dbal.conn'
+                - '@request'
+                - '@template'
+                - '@user'
+                - '@tas2580.wiki.edit'
+                - '@tas2580.wiki.compare'
+                - '@tas2580.wiki.view'
+                - '%core.root_path%'
+                - '%core.php_ext%'
+                - '%tables.wiki.article%'
+
+    tas2580.wiki.main:
+        class: tas2580\wiki\controller\main
+        arguments:
+            - '@auth'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@tas2580.wiki.delete'
+            - '@tas2580.wiki.edit'
+            - '@tas2580.wiki.compare'
+            - '@tas2580.wiki.view'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+    tas2580.wiki.listener:
+        class: tas2580\wiki\event\listener
+        arguments:
+            - '@auth'
+            - '@controller.helper'
+            - '@notification_manager'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }
+    tas2580.wiki.edit:
+        class: tas2580\wiki\wiki\edit
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@notification_manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+    tas2580.wiki.compare:
+        class: tas2580\wiki\wiki\compare
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+    tas2580.wiki.delete:
+        class: tas2580\wiki\wiki\delete
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@user'
+            - '%tables.wiki.article%'
+    tas2580.wiki.view:
+        class: tas2580\wiki\wiki\view
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+            - '@tas2580.wiki.compare'
+            - '@tas2580.wiki.edit'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    tas2580.wiki.notification.type.article_edit:
+        class: tas2580\wiki\notification\article_edit
+        shared: false
+        arguments:
+            - '@user_loader'
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '@auth'
+            - '@controller.helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.user_notifications%'
+        tags:
+            - { name: notification.type }
+    tas2580.wiki.text_reparser.article_text:
+        class: tas2580\wiki\textreparser\plugins\article_text
+        arguments:
+            - '@dbal.conn'
+            - '%tables.wiki.article%'
+        calls:
+            - [set_name, [tas2580_wiki_article]]
+        tags:
+            - { name: text_reparser.plugin}

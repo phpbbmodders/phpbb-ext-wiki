@@ -1,0 +1,5 @@
+.gitattributes		export-ignore
+.gitignore			export-ignore
+.github/			export-ignore
+README.md		export-ignore
+version-check.json	export-ignore

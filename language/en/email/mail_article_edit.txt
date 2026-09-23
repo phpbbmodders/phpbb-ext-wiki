@@ -1,0 +1,12 @@
+Subject: "{SITENAME}" — New article in the Wiki
+
+Hello,
+
+{NOTIFICATION_SUBJECT}
+
+To the article: {U_LINK}
+
+To the board:
+{U_INDEX}
+
+{EMAIL_SIG}

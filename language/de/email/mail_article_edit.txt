@@ -1,0 +1,12 @@
+Subject: „{SITENAME}“ — Neuer Artikel in der KB
+
+Hallo,
+
+{NOTIFICATION_SUBJECT}
+
+Zum Artikel: {U_LINK}
+
+Zum Board:
+{U_INDEX}
+
+{EMAIL_SIG}

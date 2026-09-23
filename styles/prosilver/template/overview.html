@@ -1,0 +1,182 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{L_OVERVIEW}</h2>
+
+<!-- IF S_AUTH_EDIT -->
+<div class="panel">
+	<div class="inner">
+		<form method="get" action="{U_WIKI}" onsubmit="if (!this.elements.article_title.value) { return false; } this.action = '{U_WIKI}' + encodeURIComponent(this.elements.article_title.value); this.elements.article_title.name = '';">
+			<fieldset class="fields1">
+				<label for="article_title">{L_NEW_ARTICLE_TITLE}{L_COLON}</label>
+				<input type="text" name="article_title" id="article_title" class="inputbox autowidth" />
+				<input type="submit" value="{L_GO_TO_ARTICLE}" class="button1" />
+			</fieldset>
+		</form>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- IF .pending_wiki_article -->
+<div class="forumbg">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="row-item">
+					<dt><div class="list-inner">{L_ARTICLES_PENDING}</div></dt>
+					<dd class="lastpost">{L_ARTICLE_LAST_EDIT}</dd>
+					<dd class="lastpost">{L_ACTION}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist forums">
+			<!-- BEGIN pending_wiki_article -->
+			<li class="row">
+				<dl>
+					<dt><div class="list-inner">
+					<a href="{pending_wiki_article.U_ARTICLE}" class="forumtitle">{pending_wiki_article.ARTICLE_NAME}</a>
+					<!-- IF pending_wiki_article.S_STALE --><br /><span class="error">{L_PENDING_OLDER_THAN_ACTIVE}</span><!-- ENDIF -->
+				</div>
+					</dt>
+					<dd class="lastpost">{pending_wiki_article.ARTICLE_LASTEDIT}</dd>
+					<dd class="lastpost">
+						<!-- IF pending_wiki_article.S_SET_ACTIVE -->
+						<a href="{pending_wiki_article.U_SET_ACTIVE}">[ {L_APPROVE} ]</a>
+						<!-- ELSEIF pending_wiki_article.S_STALE -->
+						<a href="{pending_wiki_article.U_VERSIONS}">[ {L_REVIEW} ]</a>
+						<!-- ENDIF -->
+						<!-- IF pending_wiki_article.S_DELETE -->
+						<a href="{pending_wiki_article.U_DELETE}">[ {L_REJECT} ]</a>
+						<!-- ENDIF -->
+					</dd>
+				</dl>
+			</li>
+			<!-- END pending_wiki_article -->
+		</ul>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- IF .sticky_wiki_article -->
+<div class="forumbg">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="row-item">
+					<dt><div class="list-inner">{L_ARTICLES_STICKY}</div></dt>
+					<dd class="views">{L_VIEWS}</dd>
+					<dd class="lastpost">{L_ARTICLE_LAST_EDIT}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist forums">
+			<!-- BEGIN sticky_wiki_article -->
+			<li class="row">
+				<dl>
+					<dt><div class="list-inner">
+					<a href="{sticky_wiki_article.U_ARTICLE}" class="forumtitle">{sticky_wiki_article.ARTICLE_NAME}</a>
+					<br />{sticky_wiki_article.ARTICLE_DESCRIPTION}
+				</div>
+					</dt>
+					<dd class="views">{sticky_wiki_article.ARTICLE_VIEWS}</dd>
+					<dd class="lastpost">{sticky_wiki_article.ARTICLE_LASTEDIT}</dd>
+				</dl>
+			</li>
+			<!-- END sticky_wiki_article -->
+		</ul>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- IF .hot_wiki_article -->
+<div class="forumbg">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="row-item">
+					<dt><div class="list-inner">{L_ARTICLES_HOT}</div></dt>
+					<dd class="views">{L_VIEWS}</dd>
+					<dd class="lastpost">{L_ARTICLE_LAST_EDIT}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist forums">
+			<!-- BEGIN hot_wiki_article -->
+			<li class="row">
+				<dl>
+					<dt><div class="list-inner">
+					<a href="{hot_wiki_article.U_ARTICLE}" class="forumtitle">{hot_wiki_article.ARTICLE_NAME}</a>
+					<br />{hot_wiki_article.ARTICLE_DESCRIPTION}
+				</div>
+					</dt>
+					<dd class="views">{hot_wiki_article.ARTICLE_VIEWS}</dd>
+					<dd class="lastpost">{hot_wiki_article.ARTICLE_LASTEDIT}</dd>
+				</dl>
+			</li>
+			<!-- END hot_wiki_article -->
+		</ul>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- IF .latest_wiki_article -->
+<div class="forumbg">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="row-item">
+					<dt><div class="list-inner">{L_ARTICLES_LATEST}</div></dt>
+					<dd class="views">{L_VIEWS}</dd>
+					<dd class="lastpost">{L_ARTICLE_CREATED}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist forums">
+			<!-- BEGIN latest_wiki_article -->
+			<li class="row">
+				<dl>
+					<dt><div class="list-inner">
+					<a href="{latest_wiki_article.U_ARTICLE}" class="forumtitle">{latest_wiki_article.ARTICLE_NAME}</a>
+					<br />{latest_wiki_article.ARTICLE_DESCRIPTION}
+				</div>
+					</dt>
+					<dd class="views">{latest_wiki_article.ARTICLE_VIEWS}</dd>
+					<dd class="lastpost">{latest_wiki_article.ARTICLE_TIME_CREATED}</dd>
+				</dl>
+			</li>
+			<!-- END latest_wiki_article -->
+		</ul>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- IF .all_wiki_article -->
+<div class="forumbg">
+	<div class="inner">
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="row-item">
+					<dt><div class="list-inner">{L_ARTICLES}</div></dt>
+					<dd class="views">{L_VIEWS}</dd>
+					<dd class="lastpost">{L_ARTICLE_LAST_EDIT}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist forums">
+			<!-- BEGIN all_wiki_article -->
+			<li class="row">
+				<dl>
+					<dt><div class="list-inner">
+					<a href="{all_wiki_article.U_ARTICLE}" class="forumtitle">{all_wiki_article.ARTICLE_NAME}</a>
+					<br />{all_wiki_article.ARTICLE_DESCRIPTION}
+				</div>
+					</dt>
+					<dd class="views">{all_wiki_article.ARTICLE_VIEWS}</dd>
+					<dd class="lastpost">{all_wiki_article.ARTICLE_LASTEDIT}</dd>
+				</dl>
+			</li>
+			<!-- END all_wiki_article -->
+		</ul>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

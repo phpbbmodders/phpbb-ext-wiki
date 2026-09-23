@@ -1,0 +1,53 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{HEADLINE}</h2>
+<!-- IF DIFF_DESCRIPTION -->
+<h3>{L_ARTICLE_DESCRIPTION}</h3>
+<div class="panel bg1">
+	<div class="inner wiki">
+		<div class="content">
+				{DIFF_DESCRIPTION}
+		</div>
+	</div>
+</div>
+<!-- ENDIF -->
+<div class="panel bg1">
+	<div class="inner wiki">
+		<div class="content diff">
+			<!-- IF DIFF -->
+				{DIFF}
+			<!-- ELSE -->
+				{L_NO_ARTICLE_DIFF}
+			<!-- ENDIF -->
+		</div>
+	</div>
+</div>
+<!-- IF DIFF_SOURCE -->
+<h3>{L_SOURCES}</h3>
+<div class="panel bg1">
+	<div class="inner wiki">
+		<div class="content">
+				{DIFF_SOURCE}
+		</div>
+	</div>
+</div>
+<!-- ENDIF -->
+
+<div class="action-bar bar-bottom">
+	<a href="{U_BACK}" class="button2">{L_VERSIONS_WIKI}</a>
+
+	<!-- IF S_SET_ACTIVE_FROM -->
+	<a href="{U_SET_ACTIVE_FROM}" class="button1">{APPROVE_VERSION_FROM}</a>
+	<!-- ENDIF -->
+	<!-- IF S_DELETE_FROM -->
+	<a href="{U_DELETE_FROM}" class="button2">{REJECT_VERSION_FROM}</a>
+	<!-- ENDIF -->
+
+	<!-- IF S_SET_ACTIVE_TO -->
+	<a href="{U_SET_ACTIVE_TO}" class="button1">{APPROVE_VERSION_TO}</a>
+	<!-- ENDIF -->
+	<!-- IF S_DELETE_TO -->
+	<a href="{U_DELETE_TO}" class="button2">{REJECT_VERSION_TO}</a>
+	<!-- ENDIF -->
+</div>
+
+<!-- INCLUDE overall_footer.html -->

@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - dev/*
+
+  pull_request:
+    branches:
+      - master
+      - dev/*
+
+jobs:
+  # phpBB 3.2.x / 3.3.x compatibility
+  call-tests-3-3-x:
+    name: Extension tests (phpBB 3.3.x)
+    uses: phpbb-extensions/test-framework/.github/workflows/tests.yml@3.3.x
+    with:
+      EXTNAME: tas2580/wiki
+      PHPBB_BRANCH: '3.3.x'
+      RUN_FUNCTIONAL_TESTS: 0
+
+  # phpBB 4.0 (master) compatibility
+  call-tests-master:
+    name: Extension tests (phpBB master / 4.0)
+    uses: phpbb-extensions/test-framework/.github/workflows/tests.yml@master
+    with:
+      EXTNAME: tas2580/wiki
+      PHPBB_BRANCH: 'master'
+      RUN_FUNCTIONAL_TESTS: 0
+      PRIMARY_PHP_VERSION: '8.2'
+      PHP_VERSION_MATRIX: '["8.2", "8.3", "8.4"]'

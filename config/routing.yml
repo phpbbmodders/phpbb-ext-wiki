@@ -1,0 +1,9 @@
+tas2580_wiki_index:
+    path: /wiki/
+    defaults: { _controller: tas2580.wiki.overview:base }
+
+tas2580_wiki_article:
+    path: /wiki/{article}
+    defaults: { _controller: tas2580.wiki.main:article, article: "" }
+
+
