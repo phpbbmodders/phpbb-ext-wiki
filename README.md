@@ -58,6 +58,10 @@ itself. This fork already uses the non-deprecated `$user->lang('KEY')` method
 call everywhere instead, so it isn't exposed to that removal whenever it
 happens in a later 4.0 build.
 
+## TODO
+
+Ideas not yet built, practical and speculative alike: [`docs/TODO.md`](docs/TODO.md).
+
 ## Contributing
 
 Contributions are welcome!
