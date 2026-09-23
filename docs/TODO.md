@@ -17,6 +17,16 @@ The template picker lives on the edit page itself (not the overview page's
 quick-create box, which still just takes you straight to a blank edit form
 and lets you pick there).
 
-Not scoped further yet — open question: should templates be
-admin-configurable/extensible beyond these two, or are "Blank" and "Generic"
-enough?
+Templates are admin-configurable: admins can add new templates beyond the
+built-in "Blank" and "Generic" ones, via an ACP page.
+
+Still needs deciding before implementation:
+
+- What a template is allowed to contain (plain text with placeholders?
+  BBCode? anything the message parser accepts?) and how that's authored in
+  the ACP form.
+- What sanitization that admin-authored template content needs before it's
+  inserted into the edit form's message body — it's admin-authored rather
+  than end-user input, but still ends up in content regular members see and
+  can build on, so it shouldn't get a free pass on the same checks normal
+  article content goes through.
