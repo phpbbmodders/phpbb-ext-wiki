@@ -8,6 +8,7 @@
  *
  */
 namespace tas2580\wiki\textreparser\plugins;
+
 class article_text extends \phpbb\textreparser\row_based_plugin
 {
 	/**
