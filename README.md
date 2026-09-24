@@ -26,6 +26,26 @@ permission), with direct Approve/Reject actions. Approving a pending version
 that is older than the currently live one is blocked in favor of a forced
 review, so a stale draft can't silently overwrite newer content.
 
+SCREENSHOTS
+-------
+| Overview | Article |
+|---|---|
+| [![Wiki overview page](docs/images/wiki-overview.png)](docs/images/wiki-overview.png) | [![Article view](docs/images/wiki-article-view.png)](docs/images/wiki-article-view.png) |
+
+| Editing | Pending review |
+|---|---|
+| [![Edit form](docs/images/wiki-edit.png)](docs/images/wiki-edit.png) | [![Pending articles awaiting approval](docs/images/wiki-pending-articles.png)](docs/images/wiki-pending-articles.png) |
+
+Approving or rejecting a pending edit shows a diff against the currently
+active version:
+
+[![Version diff with approve/reject actions](docs/images/wiki-compare.png)](docs/images/wiki-compare.png)
+
+The version history page also has a "Moderator controls" dropdown for taking
+an active article offline or deleting it entirely:
+
+[![Moderator controls dropdown: set article inactive, delete article](docs/images/wiki-moderator-controls.png)](docs/images/wiki-moderator-controls.png)
+
 INSTALLATION
 ----------
 To install this extension, download it and upload the files to your forum
