@@ -33,7 +33,7 @@ if (empty($lang) || !is_array($lang))
 //
 $lang = array_merge($lang, array(
 	'OVERVIEW'					=> 'Überblick',
-	
+
 	'ARTICLES'					=> 'Alle Artikel',
 	'ARTICLES_HOT'				=> 'Beliebte Artikel',
 	'ARTICLES_LATEST'			=> 'Neuste Artikel',

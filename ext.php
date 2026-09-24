@@ -9,6 +9,7 @@
 * See README.md for full acknowledgments and this fork's changes.
 */
 namespace tas2580\wiki;
+
 /**
 * @ignore
 */
