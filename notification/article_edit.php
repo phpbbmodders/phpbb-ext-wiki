@@ -1,12 +1,14 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\notification;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\notification;
 
 class article_edit extends \phpbb\notification\type\base
 {
@@ -107,7 +109,7 @@ class article_edit extends \phpbb\notification\type\base
 		return array(
 			'NOTIFICATION_SUBJECT'	=> htmlspecialchars_decode($this->get_title()),
 			'USERNAME'				=> htmlspecialchars_decode($this->user->data['username']),
-			'U_LINK'				=> generate_board_url() . $this->helper->route('tas2580_wiki_article', array('article' => $this->get_data('article_url'))),
+			'U_LINK'				=> generate_board_url() . $this->helper->route('phpbbmodders_wiki_article', array('article' => $this->get_data('article_url'))),
 		);
 	}
 	/**
@@ -124,7 +126,7 @@ class article_edit extends \phpbb\notification\type\base
 	*/
 	public function get_url()
 	{
-		return $this->helper->route('tas2580_wiki_article', array('article' => $this->get_data('article_url')));
+		return $this->helper->route('phpbbmodders_wiki_article', array('article' => $this->get_data('article_url')));
 	}
 
 	/**
@@ -139,12 +141,12 @@ class article_edit extends \phpbb\notification\type\base
 
 	public function get_type()
 	{
-		return 'tas2580.wiki.notification.type.article_edit';
+		return 'phpbbmodders.wiki.notification.type.article_edit';
 	}
 
 	public function get_email_template()
 	{
-		return '@tas2580_wiki/mail_article_edit';
+		return '@phpbbmodders_wiki/mail_article_edit';
 	}
 
 	public function create_insert_array($notification_data, $pre_create_data = array())

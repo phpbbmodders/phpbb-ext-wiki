@@ -1,12 +1,14 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\wiki;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\wiki;
 
 class compare
 {
@@ -99,8 +101,8 @@ class compare
 
 		$from_article = generate_text_for_edit($from_row['article_text'], $from_row['bbcode_uid'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);
 		$to_article = generate_text_for_edit($to_row['article_text'], $to_row['bbcode_uid'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);
-		$u_from = $this->helper->route('tas2580_wiki_index', array('id' => $from));
-		$u_to = $this->helper->route('tas2580_wiki_index', array('id' => $to));
+		$u_from = $this->helper->route('phpbbmodders_wiki_index', array('id' => $from));
+		$u_to = $this->helper->route('phpbbmodders_wiki_index', array('id' => $to));
 
 		$article_diff = new \diff($from_article['text'], $to_article['text']);
 		$article_diff_empty = $article_diff->is_empty();
@@ -126,17 +128,17 @@ class compare
 			'REJECT_VERSION_FROM'	=> sprintf($this->user->lang('REJECT_VERSION'), $from),
 			'S_SET_ACTIVE_FROM'	=> $s_set_active && !$from_row['article_approved'],
 			'S_DELETE_FROM'		=> $s_delete && !$from_row['article_approved'],
-			'U_SET_ACTIVE_FROM'	=> $this->helper->route('tas2580_wiki_article', array('action' => 'active', 'id' => $from)),
-			'U_DELETE_FROM'		=> $this->helper->route('tas2580_wiki_article', array('action' => 'delete', 'id' => $from)),
+			'U_SET_ACTIVE_FROM'	=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'active', 'id' => $from)),
+			'U_DELETE_FROM'		=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $from)),
 
 			'APPROVE_VERSION_TO'	=> sprintf($this->user->lang('APPROVE_VERSION'), $to),
 			'REJECT_VERSION_TO'	=> sprintf($this->user->lang('REJECT_VERSION'), $to),
 			'S_SET_ACTIVE_TO'	=> $s_set_active && !$to_row['article_approved'],
 			'S_DELETE_TO'		=> $s_delete && !$to_row['article_approved'],
-			'U_SET_ACTIVE_TO'	=> $this->helper->route('tas2580_wiki_article', array('action' => 'active', 'id' => $to)),
-			'U_DELETE_TO'		=> $this->helper->route('tas2580_wiki_article', array('action' => 'delete', 'id' => $to)),
+			'U_SET_ACTIVE_TO'	=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'active', 'id' => $to)),
+			'U_DELETE_TO'		=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $to)),
 
-			'U_BACK'			=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action' => 'versions')),
+			'U_BACK'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'versions')),
 		));
 
 		return $this->helper->render('article_compare.html', $this->user->lang('VERSIONS_OF_ARTICLE'));
@@ -162,16 +164,16 @@ class compare
 			'S_SET_ACTIVE'			=> $this->auth->acl_get('u_wiki_set_active'),
 			'S_DELETE'				=> $this->auth->acl_get('m_wiki_delete'),
 			'S_DELETE_ARTICLE'		=> $this->auth->acl_get('m_wiki_delete_article'),
-			'U_ACTION'				=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action' => 'compare')),
-			'U_DELETE_ARTICLE'		=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action' => 'detele_article')),
-			'U_SET_INACTIV'			=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action' => 'deactivate')),
+			'U_ACTION'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'compare')),
+			'U_DELETE_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'detele_article')),
+			'U_SET_INACTIV'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'deactivate')),
 		));
 
 		if (!empty($article))
 		{
 			$this->template->assign_block_vars('navlinks', array(
 				'FORUM_NAME'	=> $this->data['article_title'],
-				'U_VIEW_FORUM'	=> $this->helper->route('tas2580_wiki_article', array('article'	=> $article)),
+				'U_VIEW_FORUM'	=> $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article)),
 			));
 		}
 
@@ -214,9 +216,9 @@ class compare
 				'S_ACTIVE'			=> ($this->data['article_approved'] == 1) ? true : false,
 				'USER'				=> get_username_string('full', $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
 				'EDIT_TIME'			=> $this->user->format_date($this->data['article_last_edit']),
-				'U_VERSION'			=> $this->helper->route('tas2580_wiki_article', array('id' => $this->data['article_id'])),
-				'U_DELETE'			=> $this->helper->route('tas2580_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
-				'U_SET_ACTIVE'		=> $this->helper->route('tas2580_wiki_article', array('action' => 'active', 'id' => $this->data['article_id'])),
+				'U_VERSION'			=> $this->helper->route('phpbbmodders_wiki_article', array('id' => $this->data['article_id'])),
+				'U_DELETE'			=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
+				'U_SET_ACTIVE'		=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'active', 'id' => $this->data['article_id'])),
 			));
 		}
 		$this->db->sql_freeresult($result);
@@ -227,7 +229,7 @@ class compare
 			trigger_error('NOT_AUTHORISED');
 		}
 
-		$pagination_url = $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action'	=> 'versions'));
+		$pagination_url = $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'versions'));
 		$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $total_count);
 		$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_count, $this->config['topics_per_page'], $start);
 

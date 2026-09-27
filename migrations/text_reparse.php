@@ -1,20 +1,22 @@
 <?php
 /**
  *
- * @package phpBB Extension - Wiki
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2016 tas2580 (https://tas2580.net)
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace tas2580\wiki\migrations;
+namespace phpbbmodders\wiki\migrations;
 
 class text_reparse extends \phpbb\db\migration\container_aware_migration
 {
 	public static function depends_on()
 	{
 		return array(
-			'\tas2580\wiki\migrations\update_0_3_3',
+			'\phpbbmodders\wiki\migrations\update_0_3_3',
 		);
 	}
 
@@ -33,7 +35,7 @@ class text_reparse extends \phpbb\db\migration\container_aware_migration
 	 */
 	public function reparse($current = 0)
 	{
-		$reparser = new \tas2580\wiki\textreparser\plugins\article_text(
+		$reparser = new \phpbbmodders\wiki\textreparser\plugins\article_text(
 			$this->db,
 			$this->container->getParameter('core.table_prefix') . 'wiki_article'
 		);

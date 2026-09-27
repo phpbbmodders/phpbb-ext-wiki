@@ -1,14 +1,16 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\wiki;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\wiki;
 
-class edit extends \tas2580\wiki\wiki\functions
+class edit extends \phpbbmodders\wiki\wiki\functions
 {
 
 	/** @var \phpbb\auth\auth */
@@ -102,7 +104,7 @@ class edit extends \tas2580\wiki\wiki\functions
 		if (confirm_box(true))
 		{
 			$article = $this->set_active_version($id);
-			$back_url = empty($article) ? $this->helper->route('tas2580_wiki_index', array()) : $this->helper->route('tas2580_wiki_article', array('article'	=> $article));
+			$back_url = empty($article) ? $this->helper->route('phpbbmodders_wiki_index', array()) : $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article));
 			trigger_error($this->user->lang('ACTIVATE_VERSION_SUCCESS') . '<br /><br /><a href="' . $back_url . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
 		}
 		else
@@ -112,7 +114,7 @@ class edit extends \tas2580\wiki\wiki\functions
 			));
 			confirm_box(false, $this->user->lang('CONFIRM_ACTIVATE_VERSION'), $s_hidden_fields);
 		}
-		redirect($this->helper->route('tas2580_wiki_article', array('article' => $article)));
+		redirect($this->helper->route('phpbbmodders_wiki_article', array('article' => $article)));
 	}
 
 	/**
@@ -136,7 +138,7 @@ class edit extends \tas2580\wiki\wiki\functions
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
 			$this->db->sql_query($sql);
 
-			trigger_error($this->user->lang('DEACTIVATE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('tas2580_wiki_index', array()) . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
+			trigger_error($this->user->lang('DEACTIVATE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array()) . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}
 		else
 		{
@@ -145,7 +147,7 @@ class edit extends \tas2580\wiki\wiki\functions
 			));
 			confirm_box(false, $this->user->lang('CONFIRM_DEACTIVATE_ARTICLE'), $s_hidden_fields);
 		}
-		redirect($this->helper->route('tas2580_wiki_article', array('article' => $article)));
+		redirect($this->helper->route('phpbbmodders_wiki_article', array('article' => $article)));
 	}
 
 
@@ -294,10 +296,10 @@ class edit extends \tas2580\wiki\wiki\functions
 					'article_url'		=> $article,
 					'user_id'			=> $this->user->data['user_id'],
 				);
-				$this->notification_manager->add_notifications('tas2580.wiki.notification.type.article_edit', $notify_data);
+				$this->notification_manager->add_notifications('phpbbmodders.wiki.notification.type.article_edit', $notify_data);
 			}
 			$msg = ($this->data['article_approved'] <> 0) ? $this->user->lang('EDIT_ARTICLE_SUCCESS') : $this->user->lang('EDIT_ARTICLE_SUCCESS_INACTIVE');
-			$back_url = empty($article) ? $this->helper->route('tas2580_wiki_index', array()) : $this->helper->route('tas2580_wiki_article', array('article'	=> $article));
+			$back_url = empty($article) ? $this->helper->route('phpbbmodders_wiki_index', array()) : $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article));
 			trigger_error($msg . '<br /><br /><a href="' . $back_url . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
 		}
 		// Get the last version of the article to edit

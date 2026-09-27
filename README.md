@@ -49,9 +49,27 @@ an active article offline or deleting it entirely:
 INSTALLATION
 ----------
 To install this extension, download it and upload the files to your forum
-under <b>/ext/tas2580/wiki</b>. Then go to the Admin panel of your forum and
+under <b>/ext/phpbbmodders/wiki</b>. Then go to the Admin panel of your forum and
 navigate to Customise -> Extension Management -> Extensions. Find this
 extension in the list and click Enable.
+
+UPGRADING FROM tas2580/wiki
+----------
+This extension used to be installed as `tas2580/wiki`. It is now
+`phpbbmodders/wiki`. To switch an existing board without losing any
+articles, versions, permissions or notification settings:
+
+1. Disable the old **tas2580 Wiki** extension in the ACP. Do **not** delete its data.
+2. Delete the `/ext/tas2580/wiki` folder.
+3. Upload this version to `/ext/phpbbmodders/wiki` and enable it. The old
+   install's migration history, notification type and users' notification
+   settings are moved to the new name automatically; the wiki tables
+   themselves never included the old name, so they are used as they are.
+4. Purge the board cache.
+
+If you disable the old extension from the command line (`bin/phpbbcli.php`)
+instead of the ACP, run `bin/phpbbcli.php cache:purge` before enabling the
+new one; the command-line disable doesn't clear the cache.
 
 COMPATIBILITY
 -------
