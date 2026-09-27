@@ -1,13 +1,14 @@
 <?php
 /**
  *
- * @package phpBB Extension - Wiki
- * @copyright (c) 2026 tas2580 (https://tas2580.net)
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * Wiki extension for the phpBB Forum Software package
+ *
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace tas2580\wiki\tests\migrations;
+namespace phpbbmodders\wiki\tests\migrations;
 
 class add_article_description_test extends \phpbb_database_test_case
 {
@@ -19,7 +20,7 @@ class add_article_description_test extends \phpbb_database_test_case
 
 	public static function setup_extensions()
 	{
-		return array('tas2580/wiki');
+		return array('phpbbmodders/wiki');
 	}
 
 	public function getDataSet()

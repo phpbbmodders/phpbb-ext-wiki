@@ -1,12 +1,14 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\event;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\event;
 
 /**
 * @ignore
@@ -132,7 +134,7 @@ class listener implements EventSubscriberInterface
 		}
 		$notifications_data = array(
 			array(
-				'item_type'		=> 'tas2580.wiki.notification.type.article_edit',
+				'item_type'		=> 'phpbbmodders.wiki.notification.type.article_edit',
 				'method'		=> 'notification.method.email',
 			),
 		);
@@ -153,9 +155,9 @@ class listener implements EventSubscriberInterface
 	{
 		if ($this->auth->acl_get('u_wiki_view'))
 		{
-			$this->user->add_lang_ext('tas2580/wiki', 'common');
+			$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
 			$this->template->assign_vars(array(
-				'U_WIKI'	=> $this->helper->route('tas2580_wiki_index', array()),
+				'U_WIKI'	=> $this->helper->route('phpbbmodders_wiki_index', array()),
 			));
 		}
 	}
@@ -171,7 +173,7 @@ class listener implements EventSubscriberInterface
 	{
 		$lang_ary = $event['lang_set_ext'];
 		$lang_ary[] = array(
-			'ext_name'		=> 'tas2580/wiki',
+			'ext_name'		=> 'phpbbmodders/wiki',
 			'lang_set'		=> 'link',
 		);
 		$event['lang_set_ext'] = $lang_ary;

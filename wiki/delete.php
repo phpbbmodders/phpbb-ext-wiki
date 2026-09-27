@@ -1,14 +1,16 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\wiki;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\wiki;
 
-class delete extends \tas2580\wiki\wiki\functions
+class delete extends \phpbbmodders\wiki\wiki\functions
 {
 
 	/** @var \phpbb\auth\auth */
@@ -69,7 +71,7 @@ class delete extends \tas2580\wiki\wiki\functions
 		$this->db->sql_freeresult($result);
 		if ($row['article_approved'] <> 0)
 		{
-			trigger_error($this->user->lang('NO_DELETE_ACTIVE_VERSION') . '<br /><br /><a href="' . $this->helper->route('tas2580_wiki_article', array('article' => $row['article_url']))  . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
+			trigger_error($this->user->lang('NO_DELETE_ACTIVE_VERSION') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url']))  . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
 		}
 
 		if (confirm_box(true))
@@ -78,7 +80,7 @@ class delete extends \tas2580\wiki\wiki\functions
 				WHERE article_id = ' . (int) $id;
 			$this->db->sql_query($sql);
 			//return $helper->message('DELETE_VERSION_SUCCESS', array());
-			trigger_error($this->user->lang('DELETE_VERSION_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('tas2580_wiki_article', array('article' => $row['article_url']))  . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
+			trigger_error($this->user->lang('DELETE_VERSION_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url']))  . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
 		}
 		else
 		{
@@ -87,7 +89,7 @@ class delete extends \tas2580\wiki\wiki\functions
 			));
 			confirm_box(false, $this->user->lang('CONFIRM_DELETE_VERSION'), $s_hidden_fields);
 		}
-		redirect($this->helper->route('tas2580_wiki_index', array('id' => $id)));
+		redirect($this->helper->route('phpbbmodders_wiki_index', array('id' => $id)));
 	}
 
 	/**
@@ -108,7 +110,7 @@ class delete extends \tas2580\wiki\wiki\functions
 			$sql = 'DELETE FROM ' . $this->article_table . "
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
 			$this->db->sql_query($sql);
-			trigger_error($this->user->lang('DELETE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('tas2580_wiki_index', array())  . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
+			trigger_error($this->user->lang('DELETE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array())  . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}
 		else
 		{
@@ -117,6 +119,6 @@ class delete extends \tas2580\wiki\wiki\functions
 			));
 			confirm_box(false, $this->user->lang('CONFIRM_DELETE_ARTICLE'), $s_hidden_fields);
 		}
-		redirect($this->helper->route('tas2580_wiki_index', array('article' => $article)));
+		redirect($this->helper->route('phpbbmodders_wiki_index', array('article' => $article)));
 	}
 }

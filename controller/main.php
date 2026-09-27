@@ -1,12 +1,14 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\controller;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\controller;
 
 class main
 {
@@ -25,16 +27,16 @@ class main
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \tas2580\wiki\wiki\delete */
+	/** @var \phpbbmodders\wiki\wiki\delete */
 	protected $delete;
 
-	/** @var \tas2580\wiki\wiki\edit */
+	/** @var \phpbbmodders\wiki\wiki\edit */
 	protected $edit;
 
-	/** @var \tas2580\wiki\wiki\compare */
+	/** @var \phpbbmodders\wiki\wiki\compare */
 	protected $compare;
 
-	/** @var \tas2580\wiki\wiki\view */
+	/** @var \phpbbmodders\wiki\wiki\view */
 	protected $view;
 
 	/** @var string phpbb_root_path */
@@ -51,14 +53,14 @@ class main
 	* @param \phpbb\request\request			$request				Request object
 	* @param \phpbb\template\template		$template				Template object
 	* @param \phpbb\user					$user					User object
-	* @param \tas2580\wiki\wiki\delete		$delete					Delete Wiki object
-	* @param \tas2580\wiki\wiki\edit		$edit					Edit Wiki object
-	* @param \tas2580\wiki\wiki\compare		$compare				Diff Wiki object
-	* @param \tas2580\wiki\wiki\view		$view					View Wiki object
+	* @param \phpbbmodders\wiki\wiki\delete		$delete					Delete Wiki object
+	* @param \phpbbmodders\wiki\wiki\edit		$edit					Edit Wiki object
+	* @param \phpbbmodders\wiki\wiki\compare		$compare				Diff Wiki object
+	* @param \phpbbmodders\wiki\wiki\view		$view					View Wiki object
 	* @param string							$phpbb_root_path
 	* @param string							$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \tas2580\wiki\wiki\delete $delete, \tas2580\wiki\wiki\edit $edit, \tas2580\wiki\wiki\compare $compare, \tas2580\wiki\wiki\view $view, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->helper = $helper;
@@ -92,7 +94,7 @@ class main
 	 */
 	public function article($article)
 	{
-		$this->user->add_lang_ext('tas2580/wiki', 'common');
+		$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
 
 		if (!$this->auth->acl_get('u_wiki_view'))
 		{
@@ -101,7 +103,7 @@ class main
 
 		$this->template->assign_block_vars('navlinks', array(
 			'FORUM_NAME'		=> $this->user->lang('WIKI'),
-			'U_VIEW_FORUM'		=> $this->helper->route('tas2580_wiki_index', array()),
+			'U_VIEW_FORUM'		=> $this->helper->route('phpbbmodders_wiki_index', array()),
 		));
 
 		$this->template->assign_vars(array(

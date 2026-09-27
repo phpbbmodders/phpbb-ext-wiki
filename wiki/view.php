@@ -1,14 +1,16 @@
 <?php
 /**
-*
-* @package phpBB Extension - Wiki
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
-namespace tas2580\wiki\wiki;
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+namespace phpbbmodders\wiki\wiki;
 
-class view extends \tas2580\wiki\wiki\functions
+class view extends \phpbbmodders\wiki\wiki\functions
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
@@ -28,10 +30,10 @@ class view extends \tas2580\wiki\wiki\functions
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \tas2580\wiki\wiki\compare */
+	/** @var \phpbbmodders\wiki\wiki\compare */
 	protected $compare;
 
-	/** @var \tas2580\wiki\wiki\edit */
+	/** @var \phpbbmodders\wiki\wiki\edit */
 	protected $edit;
 
 	/** @var string phpbb_root_path */
@@ -51,13 +53,13 @@ class view extends \tas2580\wiki\wiki\functions
 	* @param \phpbb\controller\helper				$helper				Controller helper object
 	* @param \phpbb\template\template				$template			Template object
 	* @param \phpbb\user							$user				User object
-	* @param \tas2580\wiki\wiki\compare				$compare			Wiki compare object
-	* @param \tas2580\wiki\wiki\edit				$edit				Wiki edit object
+	* @param \phpbbmodders\wiki\wiki\compare				$compare			Wiki compare object
+	* @param \phpbbmodders\wiki\wiki\edit				$edit				Wiki edit object
 	* @param string									$article_table
 	* @param string									$phpbb_root_path
 	* @param string									$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \tas2580\wiki\wiki\compare $compare, \tas2580\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
@@ -117,14 +119,14 @@ class view extends \tas2580\wiki\wiki\functions
 			{
 				$this->template->assign_vars(array(
 					'S_NEW_VERSION'		=> true,
-					'U_NEW_VERSION'		=> $this->helper->route('tas2580_wiki_article', array('article'	=> $article, 'id' => $row['article_id'])),
+					'U_NEW_VERSION'		=> $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article, 'id' => $row['article_id'])),
 				));
 			}
 		}
 		if (($id <> 0) && ($this->data['article_approved'] <> 1) && $this->auth->acl_get('u_wiki_set_active'))
 		{
 			$this->template->assign_vars(array(
-				'U_SET_ACTIVE'		=> $this->helper->route('tas2580_wiki_article', array('article'	=> $article, 'action' => 'active', 'id' => $id)),
+				'U_SET_ACTIVE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article, 'action' => 'active', 'id' => $id)),
 			));
 		}
 
@@ -132,7 +134,7 @@ class view extends \tas2580\wiki\wiki\functions
 		{
 			$this->template->assign_block_vars('navlinks', array(
 				'FORUM_NAME'		=> $this->data['article_title'],
-				'U_VIEW_FORUM'		=> $this->helper->route('tas2580_wiki_article', array('article'	=> $article)),
+				'U_VIEW_FORUM'		=> $this->helper->route('phpbbmodders_wiki_article', array('article'	=> $article)),
 			));
 		}
 
@@ -176,7 +178,7 @@ class view extends \tas2580\wiki\wiki\functions
 
 			if (!empty($this->data['article_redirect']))
 			{
-				$redirect_note = $this->user->lang('NO_ARTICLE_REDIRECT', $this->helper->route('tas2580_wiki_article', array('article' => $this->data['article_redirect'])), $this->data['article_redirect']);
+				$redirect_note = $this->user->lang('NO_ARTICLE_REDIRECT', $this->helper->route('phpbbmodders_wiki_article', array('article' => $this->data['article_redirect'])), $this->data['article_redirect']);
 
 				if ($this->auth->acl_get('u_wiki_set_redirect'))
 				{
@@ -202,11 +204,11 @@ class view extends \tas2580\wiki\wiki\functions
 				'LAST_EDIT_ISO'			=> date('Y-m-d', $this->data['article_last_edit']),
 				'ARTICLE_USER'			=> get_username_string('full', $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
 				'S_EDIT'				=> ($this->auth->acl_get('u_wiki_edit') && $s_edit_redirect),
-				'U_EDIT'				=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action'	=> 'edit')),
+				'U_EDIT'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'edit')),
 				'S_VERSIONS'			=> $this->auth->acl_get('u_wiki_versions'),
-				'U_VERSIONS'			=> $this->helper->route('tas2580_wiki_article', array('article' => $article, 'action'	=> 'versions')),
+				'U_VERSIONS'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'versions')),
 				'S_DELETE'				=> ($this->auth->acl_get('m_wiki_delete') && !$this->data['article_approved']),
-				'U_DELETE'				=> $this->helper->route('tas2580_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
+				'U_DELETE'				=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
 				'ARTICLE_VERSION'		=> $id,
 				'ARTICLE_VIEWS_TEXT'	=> $this->user->lang('ARTICLE_VIEWS_TEXT', $this->data['article_views']),
 				'EDIT_REASON'			=> ($id <> 0) ? $this->data['article_edit_reason'] : '',

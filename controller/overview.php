@@ -1,12 +1,14 @@
 <?php
 /**
  *
- * @package phpBB Extension - Wiki
+ * Wiki extension for the phpBB Forum Software package
+ *
  * @copyright (c) 2015 tas2580 (https://tas2580.net)
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
-namespace tas2580\wiki\controller;
+namespace phpbbmodders\wiki\controller;
 
 class overview
 {
@@ -28,13 +30,13 @@ class overview
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \tas2580\wiki\wiki\edit */
+	/** @var \phpbbmodders\wiki\wiki\edit */
 	protected $edit;
 
-	/** @var \tas2580\wiki\wiki\compare */
+	/** @var \phpbbmodders\wiki\wiki\compare */
 	protected $compare;
 
-	/** @var \tas2580\wiki\wiki\view */
+	/** @var \phpbbmodders\wiki\wiki\view */
 	protected $view;
 
 	/** @var string phpbb_root_path */
@@ -55,14 +57,14 @@ class overview
 	 * @param \phpbb\request\request			$request			Request object
 	 * @param \phpbb\template\template		$template				Template object
 	 * @param \phpbb\user					$user					User object
-	 * @param \tas2580\wiki\wiki\edit		$edit					Edit Wiki object
-	 * @param \tas2580\wiki\wiki\compare		$compare					Diff Wiki object
-	 * @param \tas2580\wiki\wiki\view		$view					View Wiki object
+	 * @param \phpbbmodders\wiki\wiki\edit		$edit					Edit Wiki object
+	 * @param \phpbbmodders\wiki\wiki\compare		$compare					Diff Wiki object
+	 * @param \phpbbmodders\wiki\wiki\view		$view					View Wiki object
 	 * @param string							$phpbb_root_path
 	 * @param string							$php_ext
 	 * @param string							$article_table
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \tas2580\wiki\wiki\edit $edit, \tas2580\wiki\wiki\compare $compare, \tas2580\wiki\wiki\view $view, $phpbb_root_path, $php_ext, $article_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, $phpbb_root_path, $php_ext, $article_table)
 	{
 		$this->auth = $auth;
 		$this->helper = $helper;
@@ -81,8 +83,8 @@ class overview
 	public function base()
 	{
 
-		$this->user->add_lang_ext('tas2580/wiki', 'common');
-		$this->user->add_lang_ext('tas2580/wiki', 'overview');
+		$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
+		$this->user->add_lang_ext('phpbbmodders/wiki', 'overview');
 
 		// get all article
 
@@ -95,7 +97,7 @@ class overview
 		while ($all_wiki_article = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('all_wiki_article', array(
-					'U_ARTICLE'				=> $this->helper->route('tas2580_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -116,7 +118,7 @@ class overview
 		while ($all_wiki_article = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('latest_wiki_article', array(
-					'U_ARTICLE'				=> $this->helper->route('tas2580_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -137,7 +139,7 @@ class overview
 		while ($all_wiki_article = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('hot_wiki_article', array(
-					'U_ARTICLE'				=> $this->helper->route('tas2580_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -159,7 +161,7 @@ class overview
 		while ($all_wiki_article = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('sticky_wiki_article', array(
-					'U_ARTICLE'				=> $this->helper->route('tas2580_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -206,15 +208,15 @@ class overview
 				$is_stale = ($active_last_edit !== false && $active_last_edit >= $pending_wiki_article['article_last_edit']);
 
 				$this->template->assign_block_vars('pending_wiki_article', array(
-						'U_ARTICLE'				=> $this->helper->route('tas2580_wiki_article', array('article' => $pending_wiki_article['article_url'])),
+						'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $pending_wiki_article['article_url'])),
 						'ARTICLE_NAME'			=> $pending_wiki_article['article_title'],
 						'ARTICLE_LASTEDIT'		=> $this->user->format_date($pending_wiki_article['article_last_edit']),
 						'S_STALE'				=> $is_stale,
 						'S_SET_ACTIVE'			=> $s_set_active && !$is_stale,
 						'S_DELETE'				=> $s_delete,
-						'U_SET_ACTIVE'			=> $this->helper->route('tas2580_wiki_article', array('action' => 'active', 'id' => $pending_wiki_article['article_id'])),
-						'U_DELETE'				=> $this->helper->route('tas2580_wiki_article', array('action' => 'delete', 'id' => $pending_wiki_article['article_id'])),
-						'U_VERSIONS'			=> $this->helper->route('tas2580_wiki_article', array('article' => $pending_wiki_article['article_url'], 'action' => 'versions')),
+						'U_SET_ACTIVE'			=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'active', 'id' => $pending_wiki_article['article_id'])),
+						'U_DELETE'				=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $pending_wiki_article['article_id'])),
+						'U_VERSIONS'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $pending_wiki_article['article_url'], 'action' => 'versions')),
 					)
 				);
 			}

@@ -17,7 +17,7 @@ jobs:
     name: Extension tests (phpBB 3.3.x)
     uses: phpbb-extensions/test-framework/.github/workflows/tests.yml@3.3.x
     with:
-      EXTNAME: tas2580/wiki
+      EXTNAME: phpbbmodders/wiki
       PHPBB_BRANCH: '3.3.x'
       RUN_FUNCTIONAL_TESTS: 0
 
@@ -26,7 +26,7 @@ jobs:
     name: Extension tests (phpBB master / 4.0)
     uses: phpbb-extensions/test-framework/.github/workflows/tests.yml@master
     with:
-      EXTNAME: tas2580/wiki
+      EXTNAME: phpbbmodders/wiki
       PHPBB_BRANCH: 'master'
       RUN_FUNCTIONAL_TESTS: 0
       PRIMARY_PHP_VERSION: '8.2'
