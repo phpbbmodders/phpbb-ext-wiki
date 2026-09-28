@@ -1,7 +1,7 @@
 {
 	"name": "phpbbmodders/wiki",
 	"type": "phpbb-extension",
-	"description": "A simple wiki",
+	"description": "A wiki for phpBB with version history, side-by-side compare, and a moderation queue for edits.",
 	"homepage": "https://www.phpbbmodders.com/",
 	"version": "1.1.0",
 	"keywords": [
