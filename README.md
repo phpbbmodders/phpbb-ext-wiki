@@ -105,7 +105,7 @@ Ideas not yet built, practical and speculative alike: [`docs/TODO.md`](docs/TODO
 Contributions are welcome!
 
 - **Bug reports**: [Open an issue](https://github.com/phpbbmodders/phpbb-ext-wiki/issues).
-- **Everything else** (questions, feature requests, ideas, general discussion): [Use Discussions](https://github.com/phpbbmodders/phpbb-ext-wiki/discussions).
+- **Everything else** (questions, feature requests, ideas, general discussion): [Use Discussions](https://github.com/orgs/phpbbmodders/discussions), or the [community forum](https://www.phpbbmodders.com/community/).
 - Pull requests are welcome for bug fixes or discussed features.
 
 ACKNOWLEDGMENTS
