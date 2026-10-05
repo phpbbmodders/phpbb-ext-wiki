@@ -51,19 +51,49 @@ class ext extends \phpbb\extension\base
 	const NEW_REPARSER_NAME = 'phpbbmodders.wiki.text_reparser.article_text';
 
 	/**
+	 * Refuse to enable below the minimum phpBB and PHP versions.
+	 *
 	 * Refuse to enable while the old copy is still enabled; both would run
 	 * at once and the old one's data can't be moved while it's in use.
 	 *
-	 * @return bool|array True if enableable, otherwise an array of reasons
+	 * @return bool|string|array True if enableable, otherwise a reason string or array of reasons
 	 */
 	public function is_enableable()
 	{
+		if (!$this->check_phpbb_version() || !$this->check_php_version())
+		{
+			$language = $this->container->get('language');
+			$language->add_lang('install_wiki', 'phpbbmodders/wiki');
+
+			return $language->lang('WIKI_NOT_ENABLEABLE');
+		}
+
 		if ($this->container->get('ext.manager')->is_enabled(self::OLD_EXT_NAME))
 		{
 			return ['Disable the old "' . self::OLD_EXT_NAME . '" extension first (keep its data, do not delete it).'];
 		}
 
 		return true;
+	}
+
+	/**
+	 * Require phpBB 3.3.19
+	 *
+	 * @return bool
+	 */
+	public function check_phpbb_version()
+	{
+		return phpbb_version_compare(PHPBB_VERSION, '3.3.19', '>=');
+	}
+
+	/**
+	 * Require PHP 7.4
+	 *
+	 * @return bool
+	 */
+	public function check_php_version()
+	{
+		return PHP_VERSION_ID >= 70400;
 	}
 
 	/**

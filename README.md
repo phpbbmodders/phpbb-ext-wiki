@@ -36,7 +36,7 @@ an active article offline or deleting it entirely:
 
 ## Requirements
 
-- phpBB 3.3.0 or later (also tested on phpBB 4.0)
+- phpBB 3.3.19 or later (also tested on phpBB 4.0)
 - PHP 7.4 or later
 
 Tested versions and compatibility notes: [docs/compatibility.md](docs/compatibility.md).
