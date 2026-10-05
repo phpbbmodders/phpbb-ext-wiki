@@ -1,5 +1,10 @@
 .icon-wiki	{ background-image: url("./images/icon_wiki.gif"); }
 div.wiki	{font-size:1.2em;}
+.wiki img.postimage {
+	max-width: 100%;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
 .ins{background-color:#66FF66;}
 .del{background-color:#FF6666;}
 div.diff pre {white-space: normal;}
