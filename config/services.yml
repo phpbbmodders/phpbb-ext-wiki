@@ -94,6 +94,20 @@ services:
             - '%tables.wiki.article%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.links'
+    phpbbmodders.wiki.links:
+        class: phpbbmodders\wiki\wiki\links
+        arguments:
+            - '@dbal.conn'
+            - '%tables.wiki.article%'
+    phpbbmodders.wiki.wikilink_listener:
+        class: phpbbmodders\wiki\event\wikilink_listener
+        arguments:
+            - '@controller.helper'
+            - '@language'
+            - '@phpbbmodders.wiki.links'
+        tags:
+            - { name: event.listener }
 
     phpbbmodders.wiki.notification.type.article_edit:
         class: phpbbmodders\wiki\notification\article_edit

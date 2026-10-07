@@ -52,6 +52,17 @@
 		</div>
 	<!-- ENDIF -->
 
+	<!-- IF .what_links_here -->
+		<h3>{L_WIKI_WHAT_LINKS_HERE}</h3>
+		<div class="content">
+			<ul>
+				<!-- BEGIN what_links_here -->
+				<li><a href="{what_links_here.U_ARTICLE}">{what_links_here.TITLE}</a></li>
+				<!-- END what_links_here -->
+			</ul>
+		</div>
+	<!-- ENDIF -->
+
 	<!-- IF EDIT_REASON -->
 	<div class="panel bg2">
 		<div class="inner wiki">
