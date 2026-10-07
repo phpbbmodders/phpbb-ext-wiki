@@ -12,9 +12,34 @@ line starting with `#REDIRECT` in a normal forum post would surprise
 people.
 
 s9e TextFormatter plugins are configured once for the whole board, so the
-wiki has to switch the new markup off for normal parsing and back on only
-when it saves an article. phpBB's parser events should allow this, but it
-needs checking on the test board before anything relies on it.
+wiki switches the new markup off for normal parsing and back on only when
+it saves an article. Checked against phpBB 3.3's parser code:
+
+- In `core.text_formatter_s9e_parser_setup`, call
+  `$parser->disable_bbcode('name')` for each wiki-only BBCode, and
+  `disablePlugin('HTMLElements')` on the underlying s9e parser for tables.
+  That covers posts, private messages, signatures and previews.
+- When the wiki saves an article, call `enable_bbcode()` (and
+  `enablePlugin('HTMLElements')`) just for that save, then switch them off
+  again.
+- phpBB's posting code can't re-enable these by accident. Its "BBCode on"
+  switch only re-enables the BBCodes plugin, not single tags, and its
+  per-tag switches only touch `img`, `flash`, `quote` and `url`.
+- In a forum post, a wiki-only BBCode shows as plain text, like an unknown
+  BBCode does today.
+
+Admins could also make their own ACP-created BBCodes wiki-only, matched by
+name, through an ACP setting listing them. The editor buttons for wiki-only
+BBCodes appear only on the wiki edit page.
+
+Limits:
+
+- This stops new use only. Text saved before a BBCode was made wiki-only
+  keeps its formatting.
+- Quoting an article into a forum post turns wiki-only tags into plain
+  text there.
+
+Still to confirm on the test board before building on it.
 
 ## Syntax to add
 
