@@ -40,15 +40,6 @@ from the article's heading structure and render it at the top of the
 article (likely only worth showing past some minimum heading count, so
 short articles don't get a token one-entry TOC).
 
-## Internal wiki links
-
-A lightweight `[[Article Title]]`-style shortcut (MediaWiki's signature
-syntax) instead of requiring a full `[url=...]` BBCode every time you want
-to link one article to another. Would need a custom BBCode or a message-parse
-step that resolves `[[...]]` to the right article URL, including handling
-the "target article doesn't exist yet" case (MediaWiki renders those as a
-distinct "red link" style).
-
 ## Move/rename an article
 
 The URL slug is fixed forever once an article is created — only the title
