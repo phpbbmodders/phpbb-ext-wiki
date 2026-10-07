@@ -40,6 +40,9 @@ from the article's heading structure and render it at the top of the
 article (likely only worth showing past some minimum heading count, so
 short articles don't get a token one-entry TOC).
 
+Needs headings first, since phpBB has no heading tag; see
+[Wiki markup](TODO/todo-wiki-markup.md).
+
 ## Move/rename an article
 
 The URL slug is fixed forever once an article is created — only the title
@@ -129,7 +132,7 @@ falling back to "any group with `u_wiki_edit`" when no restriction is set
 on a given article, so this is opt-in per article rather than a behavior
 change for existing ones.
 
-## Edit-conflict detection
+## Edit-conflict detection and page locking
 
 Nothing currently warns two people editing the same article at once —
 they'd just end up with two competing pending versions and no idea the
@@ -137,3 +140,51 @@ other happened until they check the pending-approval queue. Even a simple
 "someone else started editing this article at HH:MM" notice on the edit
 form would help; phpBB's own posting flow has similar double-submission
 awareness to look at for the pattern.
+
+A stronger option is page locking: opening the edit form locks the
+article for that user for a limited time (for example 30 minutes, renewed
+while they keep editing). Others see who holds the lock and until when,
+and can't save until it's released or expires. Moderators can break a
+lock. Expiry matters, since people often close the browser without
+saving. This is separate from per-article edit protection above, which
+limits *who* may edit, not *when*.
+
+## Wiki markup: headings, section links, tables and templates
+
+Add `== Section ==` headings, `[[Article#Section]]` links, HTML tables and
+reusable templates and infoboxes, in wiki articles only, using s9e's
+allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
+[`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
+
+## Readable version compare
+
+The compare page shows raw BBCode with changes marked in red and green.
+Comparing the rendered text would be easier for editors who don't read
+BBCode comfortably.
+
+## Restore an old version
+
+A one-click "Restore this version" in the version history. Today the only
+way is to approve the old version again.
+
+## Start discussion button
+
+Articles can link a discussion topic, but only by typing its topic ID by
+hand in the edit form. A "Start discussion" button would create the topic
+and link it.
+
+## File uploads
+
+Let editors upload images and files to an article, the way posts take
+attachments. phpBB's attachment system is built around posts and private
+messages, so the wiki either needs its own upload handling or a careful
+reuse of phpBB's file upload classes with its own table.
+
+- Uploads belong to an article and survive across its versions; deleting
+  an article deletes them.
+- Reuse the board's allowed file types, size limits and quota where
+  possible, with a separate permission to upload.
+- Serve files through the extension's own controller, which checks the
+  reader's wiki permissions, never straight from a public folder.
+- An uploaded image can be placed in the article text, for example with
+  `[[File:Diagram.png]]`.
