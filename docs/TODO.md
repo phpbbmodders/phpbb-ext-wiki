@@ -98,8 +98,7 @@ picks "Forum-style" or "Wiki-style" for how the extension's own templates
 render) rather than ripping out the current look — some boards will prefer
 wiki content to visually match the rest of the forum, others will want it
 to look like an actual wiki. Scope depends heavily on the table of contents
-and internal wiki links items above landing first, since a real wiki
-layout wants both.
+item above landing first, since a real wiki layout wants one.
 
 ## Recent Changes feed
 
