@@ -43,4 +43,5 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, [
 	'WIKI_NOT_ENABLEABLE'	=> 'phpBB Modders Wiki could not be enabled. The minimum requirements of phpBB 3.3.19 and/or PHP 7.4.0 were not satisfied.',
+	'WIKI_DISABLE_OLD'	=> 'Disable the old “%s” extension first. Keep its data; do not delete it.',
 ]);
