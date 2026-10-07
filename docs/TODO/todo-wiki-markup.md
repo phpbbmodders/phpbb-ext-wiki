@@ -1,4 +1,4 @@
-# Wiki markup: headings, section links and tables
+# Wiki markup: headings, section links, tables and templates
 
 phpBB already has BBCode, so every extra syntax is a second way to write
 something. This plan adds only what BBCode can't do, and only inside wiki
@@ -62,7 +62,6 @@ Still to confirm on the test board before building on it.
 |---|---|
 | `'''bold'''`, `''italic''`, `*` lists, `[http://… text]` | BBCode and the editor buttons already do these. |
 | MediaWiki tables, `{| … |}` | Fiddly and needs a custom parser; HTML tables are simpler. |
-| Templates, `{{Name}}` | A big feature, not worth it for a forum wiki. |
 
 ## HTML tables
 
@@ -104,8 +103,42 @@ Other table options considered:
 | `[table]` BBCodes | Fits phpBB's style; could get editor buttons | Four BBCodes (`table`, `tr`, `th`, `td`); verbose to type |
 | MediaWiki `{| … |}` | Familiar to Wikipedia editors | Custom parser; easy to get wrong |
 
+## Templates and infoboxes
+
+Reusable blocks written once and included in many articles, such as a
+"This article is out of date" notice, or an infobox: a side box of facts
+like *Version*, *Author* and *Requires* that each article fills in.
+
+```text
+{{Out of date}}
+
+{{Extension infobox
+| name     = Wiki
+| version  = 1.1.0
+| requires = phpBB 3.3.19
+}}
+```
+
+- A template is itself a wiki page, for example `Template:Extension
+  infobox`, so it gets versions, approval and permissions for free.
+- Parameters (`| name = …`) fill named placeholders in the template.
+- The template is inserted when the article is shown, not when it's saved,
+  so editing a template updates every article using it. This needs a cache
+  of rendered articles that's cleared when a template changes.
+- Templates must not include themselves, directly or through another
+  template; stop after a small fixed depth.
+- Template text goes through the same parser and allow-list as article
+  text, so a template can't bring in HTML or BBCode an article couldn't.
+- **What links here** should also list the articles using each template.
+
+This is the biggest item in this plan; build it after headings and tables.
+
 ## Still to decide
 
+- Template syntax: MediaWiki's `{{Name | key = value}}`, or a BBCode such as
+  `[template=Name]`, which fits phpBB's editor buttons better.
+- Whether infoboxes get a default floating-box style in prosilver, or each
+  template brings its own HTML table.
 - Heading levels: only `==` and `===`, or the full MediaWiki range.
 - Anchor names for headings, so `[[Article#Section]]` matches reliably
   (spaces, case, non-ASCII titles).
