@@ -43,15 +43,6 @@ short articles don't get a token one-entry TOC).
 Needs headings first, since phpBB has no heading tag; see
 [Wiki markup](TODO/todo-wiki-markup.md).
 
-## Internal wiki links
-
-A lightweight `[[Article Title]]`-style shortcut (MediaWiki's signature
-syntax) instead of requiring a full `[url=...]` BBCode every time you want
-to link one article to another. Would need a custom BBCode or a message-parse
-step that resolves `[[...]]` to the right article URL, including handling
-the "target article doesn't exist yet" case (MediaWiki renders those as a
-distinct "red link" style).
-
 ## Move/rename an article
 
 The URL slug is fixed forever once an article is created — only the title
@@ -110,8 +101,7 @@ picks "Forum-style" or "Wiki-style" for how the extension's own templates
 render) rather than ripping out the current look — some boards will prefer
 wiki content to visually match the rest of the forum, others will want it
 to look like an actual wiki. Scope depends heavily on the table of contents
-and internal wiki links items above landing first, since a real wiki
-layout wants both.
+item above landing first, since a real wiki layout wants one.
 
 ## Recent Changes feed
 

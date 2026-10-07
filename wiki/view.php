@@ -24,6 +24,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	/** @var \parse_message */
 	protected $message_parser;
 
+	/** @var \phpbbmodders\wiki\wiki\links */
+	protected $links;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -59,8 +62,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$phpbb_root_path
 	* @param string									$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links)
 	{
+		$this->links = $links;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->helper = $helper;
@@ -214,6 +218,15 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				'EDIT_REASON'			=> ($id <> 0) ? $this->data['article_edit_reason'] : '',
 				'U_TOPIC'				=> ($this->data['article_topic_id'] <> 0) ? append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, 't=' . $this->data['article_topic_id']) : '',
 			));
+
+			// Other articles whose live version links here with [[ ]].
+			foreach ($this->links->what_links_here($this->data['article_url']) as $linking)
+			{
+				$this->template->assign_block_vars('what_links_here', array(
+					'TITLE'	=> $linking['article_title'],
+					'U_ARTICLE'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $linking['article_url'])),
+				));
+			}
 		}
 		return $this->helper->render('article_body.html', $this->data['article_title']);
 	}

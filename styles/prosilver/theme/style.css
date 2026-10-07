@@ -18,3 +18,8 @@ th.big{width:300px;}
 body[class~="section-app/kb/"] ul.topiclist dd {
 	padding-left: 1em !important; 
 }
+
+/* [[ ]] links to wiki articles that don't exist yet */
+a.wikilink-new {
+	color: #bc2a4d;
+}
