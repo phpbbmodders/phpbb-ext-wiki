@@ -40,6 +40,9 @@ from the article's heading structure and render it at the top of the
 article (likely only worth showing past some minimum heading count, so
 short articles don't get a token one-entry TOC).
 
+Needs headings first, since phpBB has no heading tag; see
+[Wiki markup](TODO/todo-wiki-markup.md).
+
 ## Internal wiki links
 
 A lightweight `[[Article Title]]`-style shortcut (MediaWiki's signature
@@ -147,3 +150,27 @@ other happened until they check the pending-approval queue. Even a simple
 "someone else started editing this article at HH:MM" notice on the edit
 form would help; phpBB's own posting flow has similar double-submission
 awareness to look at for the pattern.
+
+## Wiki markup: headings, section links and tables
+
+Add `== Section ==` headings, `[[Article#Section]]` links and HTML tables,
+in wiki articles only, using s9e's allow-list so no unsafe HTML gets
+through. Full plan, including the syntax not to add:
+[`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
+
+## Readable version compare
+
+The compare page shows raw BBCode with changes marked in red and green.
+Comparing the rendered text would be easier for editors who don't read
+BBCode comfortably.
+
+## Restore an old version
+
+A one-click "Restore this version" in the version history. Today the only
+way is to approve the old version again.
+
+## Start discussion button
+
+Articles can link a discussion topic, but only by typing its topic ID by
+hand in the edit form. A "Start discussion" button would create the topic
+and link it.
