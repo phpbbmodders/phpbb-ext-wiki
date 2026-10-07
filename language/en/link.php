@@ -36,5 +36,8 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'WIKI'					=> 'Wiki',
 	'WIKI_NEW_ARTICLE_UPDATE'	=> 'A new version of the article <strong>%1$s</strong> in the Wiki is awaiting approval.',
+	'WIKI_LINK_BUTTON'			=> 'Wiki link: [[Article name]] or [[Article name|link text]]',
+	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',
+	'WIKI_WHAT_LINKS_HERE'		=> 'What links here',
 
 ));
