@@ -42,6 +42,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\discussion */
 	protected $discussion;
 
+	/** @var \phpbbmodders\wiki\wiki\files */
+	protected $files;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -66,10 +69,12 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$php_ext
 	* @param \phpbbmodders\wiki\wiki\links				$links				Wiki links object
 	* @param \phpbbmodders\wiki\wiki\discussion			$discussion			Start discussion object
+	* @param \phpbbmodders\wiki\wiki\files				$files				Uploaded files object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files)
 	{
 		$this->discussion = $discussion;
+		$this->files = $files;
 		$this->links = $links;
 		$this->auth = $auth;
 		$this->db = $db;
@@ -184,7 +189,10 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			$this->message_parser->bbcode_bitfield = $this->data['bbcode_bitfield'];
 			$this->message_parser->bbcode_uid = $this->data['bbcode_uid'];
 			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
+			// [[File:name]] in the text refers to this article's files
+			\phpbbmodders\wiki\wiki\files::set_context($this->data['article_url']);
 			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+			\phpbbmodders\wiki\wiki\files::set_context(null);
 
 			if (!empty($this->data['article_redirect']))
 			{
@@ -225,6 +233,8 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				'U_START_DISCUSSION'	=> $this->discussion->can_start($this->data) ? $this->discussion->get_url($this->data['article_url']) : '',
 				'U_TOPIC'				=> ($this->data['article_topic_id'] <> 0) ? append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, 't=' . $this->data['article_topic_id']) : '',
 			));
+
+			$this->files->assign_to_template($this->data['article_url']);
 
 			// Other articles whose live version links here with [[ ]].
 			foreach ($this->links->what_links_here($this->data['article_url']) as $linking)

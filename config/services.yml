@@ -1,5 +1,6 @@
 parameters:
     tables.wiki.article: '%core.table_prefix%wiki_article'
+    tables.wiki.file: '%core.table_prefix%wiki_file'
 
 services:
     _defaults:
@@ -36,6 +37,23 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    phpbbmodders.wiki.files:
+        class: phpbbmodders\wiki\wiki\files
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@files.factory'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.wiki.file%'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     phpbbmodders.wiki.main:
         class: phpbbmodders\wiki\controller\main
         arguments:
@@ -49,6 +67,7 @@ services:
             - '@phpbbmodders.wiki.compare'
             - '@phpbbmodders.wiki.view'
             - '@phpbbmodders.wiki.discussion'
+            - '@phpbbmodders.wiki.files'
             - '%core.root_path%'
             - '%core.php_ext%'
     phpbbmodders.wiki.listener:
@@ -98,6 +117,7 @@ services:
             - '@controller.helper'
             - '@user'
             - '%tables.wiki.article%'
+            - '@phpbbmodders.wiki.files'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:
@@ -113,6 +133,7 @@ services:
             - '%core.php_ext%'
             - '@phpbbmodders.wiki.links'
             - '@phpbbmodders.wiki.discussion'
+            - '@phpbbmodders.wiki.files'
     phpbbmodders.wiki.discussion:
         class: phpbbmodders\wiki\wiki\discussion
         arguments:
@@ -136,6 +157,7 @@ services:
             - '@controller.helper'
             - '@language'
             - '@phpbbmodders.wiki.links'
+            - '@phpbbmodders.wiki.files'
         tags:
             - { name: event.listener }
 

@@ -57,6 +57,35 @@
 		</div>
 	<!-- ENDIF -->
 
+	<!-- IF .files or S_WIKI_CAN_UPLOAD -->
+		<h3>{L_WIKI_FILES}</h3>
+		<div class="content">
+			<!-- IF .files -->
+			<ul class="wiki-files">
+				<!-- BEGIN files -->
+				<li>
+					<a href="{files.U_FILE}"<!-- IF not files.S_IMAGE --> download<!-- ENDIF -->>{files.NAME}</a>
+					({files.SIZE}, {files.UPLOADER}, {files.TIME})
+					<!-- IF S_WIKI_CAN_UPLOAD --> &ndash; <code>[[File:{files.NAME}]]</code><!-- ENDIF -->
+					<!-- IF files.S_CAN_DELETE --> &ndash; <a href="{files.U_DELETE}">[ {L_WIKI_DELETE_FILE} ]</a><!-- ENDIF -->
+				</li>
+				<!-- END files -->
+			</ul>
+			<!-- ELSE -->
+			<p>{L_WIKI_NO_FILES}</p>
+			<!-- ENDIF -->
+			<!-- IF S_WIKI_CAN_UPLOAD -->
+			<form method="post" enctype="multipart/form-data" action="{U_WIKI_UPLOAD}">
+				<fieldset>
+					<input type="file" name="wiki_file" id="wiki_file" aria-label="{L_WIKI_UPLOAD_FILE}">
+					<input type="submit" name="upload" value="{L_WIKI_UPLOAD_FILE}" class="button1">
+					{S_FORM_TOKEN}
+				</fieldset>
+			</form>
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+
 	<!-- IF .what_links_here -->
 		<h3>{L_WIKI_WHAT_LINKS_HERE}</h3>
 		<div class="content">

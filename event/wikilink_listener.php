@@ -35,13 +35,17 @@ class wikilink_listener implements EventSubscriberInterface
 	/** @var \phpbbmodders\wiki\wiki\links */
 	protected $links;
 
+	/** @var \phpbbmodders\wiki\wiki\files */
+	protected $files;
+
 	/**
 	 * @param \phpbb\controller\helper			$helper		Controller helper object
 	 * @param \phpbb\language\language			$language	Language object
 	 * @param \phpbbmodders\wiki\wiki\links		$links		Wiki links service
 	 */
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\files $files)
 	{
+		$this->files = $files;
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->links = $links;
@@ -72,6 +76,18 @@ class wikilink_listener implements EventSubscriberInterface
 			return;
 		}
 
+		// [[File:name]] and [[File:name|alt text]] embed one of the article's uploaded files.
+		// It is added first, and WIKILINK leaves "File:" names to it.
+		$file_tag = $configurator->tags->add('WIKIFILE');
+		$file_tag->attributes->add('name');
+		$file_tag->attributes->add('alt')->required = false;
+		$file_tag->template = '<span class="wikifile" data-wiki-file="{@name}" data-wiki-alt="{@alt}"></span>';
+
+		$configurator->Preg->match(
+			'/\[\[\s*File:\s*(?<name>' . self::NAME_PATTERN . '?)\s*(?:\|\s*(?<alt>[^\[\]\n]{1,255}?)\s*)?\]\]/',
+			'WIKIFILE'
+		);
+
 		$tag = $configurator->tags->add('WIKILINK');
 		$tag->attributes->add('name');
 		$tag->attributes->add('text')->required = false;
@@ -80,7 +96,7 @@ class wikilink_listener implements EventSubscriberInterface
 			. '<xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise></xsl:choose></a>';
 
 		$configurator->Preg->match(
-			'/\[\[\s*(?<name>' . self::NAME_PATTERN . '?)\s*(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
+			'/\[\[\s*(?!File:)(?<name>' . self::NAME_PATTERN . '?)\s*(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
 			'WIKILINK'
 		);
 	}
@@ -95,6 +111,13 @@ class wikilink_listener implements EventSubscriberInterface
 	public function link_wikilinks($event)
 	{
 		$html = $event['html'];
+
+		if (strpos($html, 'class="wikifile"') !== false)
+		{
+			$html = $this->embed_files($html);
+			$event['html'] = $html;
+		}
+
 		if (strpos($html, 'class="wikilink"') === false)
 		{
 			return;
@@ -121,6 +144,50 @@ class wikilink_listener implements EventSubscriberInterface
 
 			return '<a class="wikilink wikilink-new" href="' . $url . '" data-wiki-article="' . $match[1] . '" title="'
 				. htmlspecialchars($this->language->lang('WIKI_LINK_NEW_ARTICLE'), ENT_COMPAT, 'UTF-8') . '">';
+		}, $html);
+	}
+
+	/**
+	 * Replace each [[File:name]] placeholder with the file's image or link.
+	 *
+	 * Files are looked up among those of the article being rendered. Anywhere else
+	 * (a forum post, a preview with no article) and for names that were never
+	 * uploaded, the text stays as plain text.
+	 *
+	 * @param string $html
+	 * @return string
+	 */
+	protected function embed_files($html)
+	{
+		$pattern = '/<span class="wikifile" data-wiki-file="([^"]*)" data-wiki-alt="([^"]*)"><\/span>/';
+		if (!preg_match_all($pattern, $html, $matches))
+		{
+			return $html;
+		}
+
+		$article = $this->files->get_context();
+		$names = array_map(function ($name) {
+			return htmlspecialchars_decode($name, ENT_QUOTES);
+		}, $matches[1]);
+		$found = ($article !== null) ? $this->files->get_files_by_name($article, $names) : array();
+
+		return preg_replace_callback($pattern, function ($match) use ($article, $found) {
+			$name = htmlspecialchars_decode($match[1], ENT_QUOTES);
+			$alt = ($match[2] !== '') ? $match[2] : $match[1];
+
+			if (!isset($found[$name]))
+			{
+				return '<span class="wikifile wikifile-missing" title="' . htmlspecialchars($this->language->lang('WIKI_FILE_MISSING', $name), ENT_COMPAT, 'UTF-8') . '">' . $alt . '</span>';
+			}
+
+			$url = $this->files->get_url($article, $found[$name]['file_id']);
+
+			if ($found[$name]['is_image'])
+			{
+				return '<img class="postimage wikifile-image" src="' . $url . '" alt="' . $alt . '">';
+			}
+
+			return '<a class="wikifile-link" href="' . $url . '" download>' . $alt . '</a>';
 		}, $html);
 	}
 }
