@@ -31,18 +31,6 @@ Still needs deciding before implementation:
   can build on, so it shouldn't get a free pass on the same checks normal
   article content goes through.
 
-## Table of contents
-
-The `article_toc` column has existed in the schema since early on, but
-`wiki/edit.php` always inserts an empty string into it and nothing anywhere
-reads it — it's scaffolded and abandoned. Finish it: auto-generate a TOC
-from the article's heading structure and render it at the top of the
-article (likely only worth showing past some minimum heading count, so
-short articles don't get a token one-entry TOC).
-
-Needs headings first, since phpBB has no heading tag; see
-[Wiki markup](TODO/todo-wiki-markup.md).
-
 ## Move/rename an article
 
 The URL slug is fixed forever once an article is created — only the title
