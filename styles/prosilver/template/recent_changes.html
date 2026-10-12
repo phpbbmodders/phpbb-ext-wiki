@@ -1,0 +1,49 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{L_WIKI_RECENT_CHANGES}</h2>
+<p>{L_WIKI_RECENT_CHANGES_EXPLAIN}
+	<!-- IF U_WIKI_FEED_RSS --> &bull; <a href="{U_WIKI_FEED_RSS}">{L_WIKI_FEED_RSS_LINK}</a><!-- ENDIF -->
+	<!-- IF U_WIKI_FEED_ATOM --> &bull; <a href="{U_WIKI_FEED_ATOM}">{L_WIKI_FEED_ATOM_LINK}</a><!-- ENDIF -->
+</p>
+<!-- IF .changes -->
+<div class="forumbg forumbg-table">
+	<div class="inner">
+		<table class="table1">
+			<thead>
+				<tr>
+					<th class="middle">{L_CONTRIBUTIONS_SAVED}</th>
+					<th>{L_CONTRIBUTIONS_ARTICLE}</th>
+					<th class="middle">{L_USER}</th>
+					<th class="big">{L_REASON_EDIT}</th>
+					<th class="big">{L_CONTRIBUTIONS_STATUS}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN changes -->
+				<tr class="<!-- IF changes.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td>{changes.EDIT_TIME}</td>
+					<td><a href="<!-- IF changes.S_LIVE -->{changes.U_ARTICLE}<!-- ELSE -->{changes.U_VERSION}<!-- ENDIF -->"><strong>{changes.ARTICLE_TITLE}</strong></a></td>
+					<td>{changes.USER}</td>
+					<td>{changes.EDIT_REASON}</td>
+					<td>{changes.STATUS}</td>
+				</tr>
+				<!-- END changes -->
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- ELSE -->
+<p>{L_CONTRIBUTIONS_NONE}</p>
+<!-- ENDIF -->
+
+<div class="action-bar bottom">
+	<div class="pagination">
+		{TOTAL_ITEMS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			 &bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

@@ -2,6 +2,16 @@ phpbbmodders_wiki_index:
     path: /wiki/
     defaults: { _controller: phpbbmodders.wiki.overview:base }
 
+phpbbmodders_wiki_recent_changes_feed:
+    path: /wiki/recent-changes.{_format}
+    defaults: { _controller: phpbbmodders.wiki.recent_changes:feed }
+    requirements:
+        _format: rss|atom
+
+phpbbmodders_wiki_recent_changes:
+    path: /wiki/recent-changes
+    defaults: { _controller: phpbbmodders.wiki.recent_changes:page }
+
 phpbbmodders_wiki_contributions:
     path: /wiki/contributions/{username}
     defaults: { _controller: phpbbmodders.wiki.contributions:view }
