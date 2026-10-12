@@ -55,7 +55,7 @@ Still to confirm on the test board before building on it.
 
 | Syntax | What it does | Notes |
 |---|---|---|
-| `== Section ==` | Headings | phpBB has no heading tag. Also needed for the table of contents. |
+| `== Section ==` | Headings | Built; see "Built so far". |
 | `[[Article#Section]]` | Link to a heading in an article | `#` isn't allowed inside `[[ ]]` today, so this shows as plain text. |
 | HTML tables | Tables | See below. |
 

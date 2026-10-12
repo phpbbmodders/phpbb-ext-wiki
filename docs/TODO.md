@@ -80,8 +80,8 @@ A per-board style choice, set from an ACP page for this extension (admin
 picks "Forum-style" or "Wiki-style" for how the extension's own templates
 render) rather than ripping out the current look — some boards will prefer
 wiki content to visually match the rest of the forum, others will want it
-to look like an actual wiki. Scope depends heavily on the table of contents
-item above landing first, since a real wiki layout wants one.
+to look like an actual wiki. A real wiki layout wants the table of contents, which now exists, as a sidebar
+or floating box, so the contents box would move too.
 
 ## Per-article edit protection
 
