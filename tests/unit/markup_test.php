@@ -229,6 +229,8 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		);
 
 		$configurator = new \s9e\TextFormatter\Configurator;
+		// The PHP renderer, like phpBB's own: the default XSLT one needs ext-xsl, which some CI runners lack
+		$configurator->rendering->setEngine('PHP');
 		$listener->configure_wikilink(array('configurator' => $configurator));
 		extract($configurator->finalize());
 
