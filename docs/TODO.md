@@ -120,8 +120,9 @@ limits *who* may edit, not *when*.
 
 ## Wiki markup: headings, section links, tables and templates
 
-Headings, `[[Article#Section]]` links, HTML tables and the first form of templates
-(`{{Name|parameter}}`) are built. Parser functions are next, in wiki articles only, using s9e's
+Headings, `[[Article#Section]]` links, HTML tables, templates (`{{Name|parameter}}`) and the
+core parser functions (`#if`, `#switch`, `#expr` and others) are built. More parser functions
+and the starter-templates repository are next, in wiki articles only, using s9e's
 allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
 [`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
 

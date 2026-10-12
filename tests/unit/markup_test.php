@@ -238,10 +238,21 @@ class markup_test extends \PHPUnit\Framework\TestCase
 
 	public function test_things_that_are_not_template_calls_stay_text()
 	{
-		foreach (array('{{{1}}}', '{{ }}', '{{|x}}', '{{#if:a|b}}', '{{A|x}}}', 'a {b} c', '{{', '{{A') as $text)
+		foreach (array('{{{1}}}', '{{ }}', '{{|x}}', '{{A|x}}}', 'a {b} c', '{{', '{{A') as $text)
 		{
 			$this->assertStringNotContainsString('<WIKITEMPLATE', $this->parse($text), $text);
 		}
+	}
+
+	public function test_parser_functions_and_magic_words_are_calls_too()
+	{
+		$xml = $this->parse('{{#if: {{Foo}} | a | b}} {{#expr: 2 + 3}} {{lc:Hello}} {{ucfirst:{{Foo}}}} {{PAGENAME}} {{Foo:bar|x}}');
+
+		$this->assertSame(6, substr_count($xml, '<WIKITEMPLATE'), $xml);
+		$this->assertStringContainsString('name="#if"', $xml);
+		$this->assertStringContainsString('call="#expr: 2 + 3"', $xml);
+		$this->assertStringContainsString('name="lc"', $xml);
+		$this->assertStringContainsString('name="PAGENAME"', $xml);
 	}
 
 	public function test_a_parameter_inside_a_call_does_not_end_it()

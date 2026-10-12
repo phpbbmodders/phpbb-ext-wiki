@@ -146,10 +146,15 @@ like *Version*, *Author* and *Requires* that each article fills in.
 - **What links here** should also list the articles using each template.
 
 Built so far: the syntax and parameters described above, the `Template:` pages, expansion on
-display, the loop and depth limits, and **What links here** for templates. Still to do:
+display, the loop and depth limits, **What links here** for templates, and the parser functions
+`#if`, `#ifeq`, `#switch`, `#ifexist`, `#expr`, `#ifexpr`, `lc`, `uc`, `lcfirst`, `ucfirst` and the
+magic words `PAGENAME`, `FULLPAGENAME` and `NAMESPACE` (see `wiki/templates.php` and
+`wiki/expression.php`). Calls are worked out as text, before the article is parsed, so a parameter
+can be another call and only the chosen branch of a function is worked out. Still to do:
 
-- Parser functions (`{{#if:}}`, `{{#ifeq:}}`, `{{#switch:}}`, `{{#expr:}}`) and magic words
-  (`{{PAGENAME}}`), which most Wikipedia templates need.
+- More parser functions and magic words that Wikipedia's templates use: `#iferror`, `#time`,
+  `#titleparts`, `#rel2abs`, string functions (`#len`, `#pos`, `#sub`, `#replace`), `padleft`,
+  `urlencode`, `anchorencode`, `CURRENTYEAR` and the other date words, `SITENAME`.
 - A cache of rendered articles, cleared when a template changes. Expansion runs on every view
   today; add the cache only if a real board shows it is slow.
 - Template pages show `<noinclude>` and `<includeonly>` as text; a tidier template page view.

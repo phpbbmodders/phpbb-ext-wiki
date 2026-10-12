@@ -62,10 +62,23 @@ An article
 - Parameters are `{{Name|value}}` by position (the first bare value is `{{{1}}}`) or `{{Name|key=value}}`; a bar inside a `[[link|text]]` or another template belongs to that.
 - What is inside `<noinclude>` is left out when the template is included, and `<includeonly>` text is included without the tags, so a template page can carry its own documentation.
 - The template is looked up when the article is shown, so editing it changes every article that uses it. Only a template's approved version is used.
-- A template can include other templates, ten levels deep at most; a template that includes itself shows an error where the loop is. A call to a template that does not exist is a red link to `Template:Name`.
+- A template can include other templates, ten levels deep at most; a template that includes itself, directly or through another template, shows an error where the loop is (it cannot stop its own recursion with `{{#if:}}`, as on Wikipedia). A call to a template that does not exist is a red link to `Template:Name`.
 - The text of a template is parsed like article text, so it can use BBCode, `[[links]]`, headings and tables, and nothing an article could not.
 - **What links here** on a template page lists the articles that use it.
 - Like headings and tables, this works in wiki articles only; in a forum post `{{Name}}` stays plain text. The first letter of a template name is not case-sensitive (`{{out of date}}` finds `Template:Out of date`).
+- **Parser functions** decide what a template shows. Only the part that is chosen is worked out, so the branch that is not taken can hold anything.
+
+  | Call | Result |
+  |---|---|
+  | `{{#if: test \| then \| else}}` | `then` when `test` is not empty, otherwise `else` |
+  | `{{#ifeq: a \| b \| same \| different}}` | compares as numbers when both are numbers, otherwise as text |
+  | `{{#switch: value \| a = one \| b = two \| #default = other}}` | the result of the matching case; a case without `=` falls through to the next, and a last bare value is the default |
+  | `{{#ifexist: Article \| yes \| no}}` | whether the article has an approved version |
+  | `{{#expr: (2 + 3) * 4}}` and `{{#ifexpr: 3 > 2 \| yes \| no}}` | arithmetic: `+ - * / div mod ^ round`, comparisons, `and or not`, brackets, and `abs ceil floor trunc sqrt exp ln sin cos tan`, `e` and `pi` |
+  | `{{lc:Text}}`, `{{uc:Text}}`, `{{lcfirst:Text}}`, `{{ucfirst:Text}}` | lower and upper case |
+  | `{{PAGENAME}}`, `{{FULLPAGENAME}}`, `{{NAMESPACE}}` | the article being shown (`Template:Name` has the namespace `Template`) |
+
+  A call that cannot be worked out, such as `{{#expr: 1/0}}`, shows a red message where it stands. An unknown `{{#function:}}` does too.
 - After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier hold `{{...}}` as plain text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
 
 ## Linking between articles
