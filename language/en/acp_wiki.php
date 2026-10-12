@@ -23,6 +23,8 @@ $lang = array_merge($lang, array(
 	'WIKI_ICON'							=> 'Header link icon',
 	'WIKI_ICON_EXPLAIN'					=> 'Enter the name of a <a href="https://fontawesome.com/v4.7.0/icons/" target="_blank"><strong>Font Awesome</strong></a> icon to use for the Wiki link in the board header. The default is <code>wikipedia-w</code>.<br> Leave this field blank for no icon.',
 	'WIKI_ICON_INVALID'					=> 'The Wiki link icon contains invalid characters.',
+	'WIKI_AUTO_WATCH'					=> 'Watch edited articles',
+	'WIKI_AUTO_WATCH_EXPLAIN'			=> 'When on, a member who saves an edit also starts watching that article and is notified when a new version goes live. They can stop watching from the article.',
 	'WIKI_FEED_FORMAT'					=> 'Recent changes feed',
 	'WIKI_FEED_FORMAT_EXPLAIN'			=> 'Which feed formats the Recent changes page offers, and the header advertises to feed readers.',
 	'WIKI_FEED_FORMAT_BOTH'				=> 'RSS and Atom',

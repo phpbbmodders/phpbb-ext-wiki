@@ -34,6 +34,9 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\files */
 	protected $files;
 
+	/** @var \phpbbmodders\wiki\wiki\watch */
+	protected $watch;
+
 	/** @var string article_table */
 	protected $article_table;
 
@@ -48,11 +51,13 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$article_table
 	* @param \phpbbmodders\wiki\wiki\files				$files					Uploaded files
 	* @param \phpbb\request\request				$request				Request object
+	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch)
 	{
 		$this->files = $files;
 		$this->request = $request;
+		$this->watch = $watch;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->helper = $helper;
@@ -123,6 +128,7 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
 			$this->db->sql_query($sql);
 			$this->files->delete_all($article);
+			$this->watch->delete_for_article($article);
 			trigger_error($this->user->lang('DELETE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array())  . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}
 		else

@@ -23,6 +23,8 @@ $lang = array_merge($lang, array(
 	'WIKI_ICON'							=> 'Symbol des Kopfzeilen-Links',
 	'WIKI_ICON_EXPLAIN'					=> 'Gib den Namen eines <a href="https://fontawesome.com/v4.7.0/icons/" target="_blank"><strong>Font-Awesome</strong></a>-Symbols für den Wiki-Link in der Kopfzeile des Forums ein. Standard ist <code>wikipedia-w</code>.<br> Lass das Feld leer, um kein Symbol anzuzeigen.',
 	'WIKI_ICON_INVALID'					=> 'Das Symbol des Wiki-Links enthält ungültige Zeichen.',
+	'WIKI_AUTO_WATCH'					=> 'Bearbeitete Artikel beobachten',
+	'WIKI_AUTO_WATCH_EXPLAIN'			=> 'Wenn aktiv, beobachtet ein Mitglied einen Artikel automatisch, sobald es eine Bearbeitung speichert, und wird benachrichtigt, wenn eine neue Version aktiv wird. Das Beobachten kann im Artikel beendet werden.',
 	'WIKI_FEED_FORMAT'					=> 'Feed der letzten Änderungen',
 	'WIKI_FEED_FORMAT_EXPLAIN'			=> 'Welche Feed-Formate die Seite „Letzte Änderungen“ anbietet und die Kopfzeile Feed-Readern mitteilt.',
 	'WIKI_FEED_FORMAT_BOTH'				=> 'RSS und Atom',

@@ -53,14 +53,6 @@ new URL and losing the connection to its history. Needs a "move" action
 permission) that renames `article_url` across all of an article's versions
 and optionally leaves a redirect stub at the old URL.
 
-## Watch/subscribe to an article
-
-The existing notification type only fires for "pending approval" (aimed at
-moderators). Regular readers have no way to ask "notify me when this
-specific article changes" the way forum topic-watching works. Would need a
-second notification type plus a subscribe/unsubscribe action on the article
-view page.
-
 ## Categories/tags
 
 Browsing is flat today — Popular/Latest/All/Sticky/Pending on the overview

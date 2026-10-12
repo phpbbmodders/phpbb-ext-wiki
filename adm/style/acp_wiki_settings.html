@@ -13,6 +13,13 @@
 			<dd><input id="wiki_icon" type="text" name="wiki_icon" size="30" maxlength="50" value="{WIKI_ICON}"></dd>
 		</dl>
 		<dl>
+			<dt><label for="wiki_auto_watch_yes">{L_WIKI_AUTO_WATCH}{L_COLON}</label><br><span>{L_WIKI_AUTO_WATCH_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="wiki_auto_watch_yes" name="wiki_auto_watch" value="1"<!-- IF S_WIKI_AUTO_WATCH --> checked="checked"<!-- ENDIF -->> {L_YES}</label>
+				<label><input type="radio" class="radio" name="wiki_auto_watch" value="0"<!-- IF not S_WIKI_AUTO_WATCH --> checked="checked"<!-- ENDIF -->> {L_NO}</label>
+			</dd>
+		</dl>
+		<dl>
 			<dt><label for="wiki_feed_format">{L_WIKI_FEED_FORMAT}{L_COLON}</label><br><span>{L_WIKI_FEED_FORMAT_EXPLAIN}</span></dt>
 			<dd><select id="wiki_feed_format" name="wiki_feed_format">{S_WIKI_FEED_OPTIONS}</select></dd>
 		</dl>

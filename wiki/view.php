@@ -45,6 +45,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\files */
 	protected $files;
 
+	/** @var \phpbbmodders\wiki\wiki\watch */
+	protected $watch;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -70,11 +73,13 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\links				$links				Wiki links object
 	* @param \phpbbmodders\wiki\wiki\discussion			$discussion			Start discussion object
 	* @param \phpbbmodders\wiki\wiki\files				$files				Uploaded files object
+	* @param \phpbbmodders\wiki\wiki\watch				$watch				Watched articles object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch)
 	{
 		$this->discussion = $discussion;
 		$this->files = $files;
+		$this->watch = $watch;
 		$this->links = $links;
 		$this->auth = $auth;
 		$this->db = $db;
@@ -235,6 +240,7 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			));
 
 			$this->files->assign_to_template($this->data['article_url']);
+			$this->watch->assign_to_template($this->data['article_url']);
 
 			// Other articles whose live version links here with [[ ]].
 			foreach ($this->links->what_links_here($this->data['article_url']) as $linking)

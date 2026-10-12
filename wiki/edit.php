@@ -40,6 +40,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbbmodders\wiki\wiki\watch */
+	protected $watch;
+
 	/** @var string article_table */
 	protected $article_table;
 
@@ -72,8 +75,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$php_ext
 
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch)
 	{
+		$this->watch = $watch;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
@@ -288,6 +292,12 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$this->db->sql_query($sql);
 			$article_id = $this->db->sql_nextid();
 
+			// Saving an edit also watches the article, when the board does that
+			if (!empty($this->config['wiki_auto_watch']))
+			{
+				$this->watch->add($this->user->data['user_id'], $article);
+			}
+
 			if ($this->auth->acl_get('u_wiki_set_active') && ($this->data['article_approved'] <> 0))
 			{
 				$this->set_active_version($article_id);
@@ -315,5 +325,47 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$this->display_edit_form(false);
 		}
 		return $this->helper->render('article_edit.html', $this->user->lang('EDIT_WIKI'));
+	}
+	/**
+	 * Make a version live, then tell the members watching the article.
+	 *
+	 * @param	int		$id		Version ID
+	 * @return	string			URL of the article
+	 */
+	protected function set_active_version($id)
+	{
+		$article = parent::set_active_version($id);
+		$this->notify_watchers((int) $id);
+
+		return $article;
+	}
+
+	/**
+	 * Tell the article's watchers that a version went live. The member who saved
+	 * that version is left out by the notification type.
+	 *
+	 * @param int $id Version ID
+	 * @return void
+	 */
+	protected function notify_watchers($id)
+	{
+		$sql = 'SELECT article_id, article_title, article_url, article_user_id
+			FROM ' . $this->article_table . '
+			WHERE article_id = ' . (int) $id;
+		$result = $this->db->sql_query($sql);
+		$version = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$version)
+		{
+			return;
+		}
+
+		$this->notification_manager->add_notifications('phpbbmodders.wiki.notification.type.article_watch', array(
+			'article_id'	=> (int) $version['article_id'],
+			'article_title'	=> $version['article_title'],
+			'article_url'	=> $version['article_url'],
+			'user_id'		=> (int) $version['article_user_id'],
+		));
 	}
 }
