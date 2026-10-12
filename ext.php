@@ -90,13 +90,13 @@ class ext extends \phpbb\extension\base
 	}
 
 	/**
-	 * Require PHP 7.4
+	 * Require PHP 8.2
 	 *
 	 * @return bool
 	 */
 	public function check_php_version()
 	{
-		return PHP_VERSION_ID >= 70400;
+		return PHP_VERSION_ID >= 80200;
 	}
 
 	/**
