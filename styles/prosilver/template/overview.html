@@ -22,8 +22,8 @@
 			<li class="header">
 				<dl class="row-item">
 					<dt><div class="list-inner">{L_ARTICLES_PENDING}</div></dt>
-					<dd class="lastpost">{L_ARTICLE_LAST_EDIT}</dd>
-					<dd class="lastpost">{L_ACTION}</dd>
+					<dd class="lastpost wiki-pending-date">{L_ARTICLE_LAST_EDIT}</dd>
+					<dd class="lastpost wiki-pending-action">{L_ACTION}</dd>
 				</dl>
 			</li>
 		</ul>
@@ -36,8 +36,8 @@
 					<!-- IF pending_wiki_article.S_STALE --><br /><span class="error">{L_PENDING_OLDER_THAN_ACTIVE}</span><!-- ENDIF -->
 				</div>
 					</dt>
-					<dd class="lastpost">{pending_wiki_article.ARTICLE_LASTEDIT}</dd>
-					<dd class="lastpost">
+					<dd class="lastpost wiki-pending-date">{pending_wiki_article.ARTICLE_LASTEDIT}</dd>
+					<dd class="lastpost wiki-pending-action">
 						<!-- IF pending_wiki_article.S_SET_ACTIVE -->
 						<a href="{pending_wiki_article.U_SET_ACTIVE}">[ {L_APPROVE} ]</a>
 						<!-- ELSEIF pending_wiki_article.S_STALE -->
