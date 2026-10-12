@@ -248,7 +248,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		}
 		else if ($preview) // Display the preview
 		{
+			\phpbbmodders\wiki\wiki\markup::set_active(true);
 			$this->message_parser->parse($this->option['bbcode'], $this->option['url'], $this->option['smilies'], $this->option['img'], $this->option['flash'], $this->option['quote']);
+			\phpbbmodders\wiki\wiki\markup::set_active(false);
 			\phpbbmodders\wiki\wiki\files::set_context($article);
 			$this->message_parser->format_display($this->option['bbcode'], $this->option['url'], $this->option['smilies']);
 			\phpbbmodders\wiki\wiki\files::set_context(null);
@@ -267,7 +269,16 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		}
 		else if ($submit) // Submit the article to database
 		{
+			// A "#REDIRECT [[Article]]" first line is a shortcut for the redirect field
+			$redirect_target = \phpbbmodders\wiki\wiki\markup::redirect_target(htmlspecialchars_decode($this->data['article_text'], ENT_COMPAT));
+			if ($redirect_target !== '' && $this->auth->acl_get('u_wiki_set_redirect') && empty($this->data['article_redirect']))
+			{
+				$this->data['article_redirect'] = htmlspecialchars($redirect_target, ENT_COMPAT, 'UTF-8');
+			}
+
+			\phpbbmodders\wiki\wiki\markup::set_active(true);
 			$this->message_parser->parse($this->option['bbcode'], $this->option['url'], $this->option['smilies'], $this->option['img'], $this->option['flash'], $this->option['quote']);
+			\phpbbmodders\wiki\wiki\markup::set_active(false);
 			$sql_data = array(
 				'article_title'			=> $this->data['article_title'],
 				'article_url'			=> $article,

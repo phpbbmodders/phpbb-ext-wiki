@@ -38,5 +38,6 @@ $lang = array_merge($lang, array(
 	'WIKI_NEW_ARTICLE_UPDATE'	=> 'Ein neue Version zum Artikel <strong>%1$s</strong> in der KB wartet auf Freischaltung.',
 	'WIKI_WATCHED_ARTICLE'			=> 'Ein Wiki-Artikel, den du beobachtest, hat eine neue Version',
 	'WIKI_WATCHED_ARTICLE_LIVE'		=> 'Eine neue Version des Wiki-Artikels <strong>%1$s</strong> ist jetzt aktiv.',
+	'WIKI_TOC'					=> 'Inhaltsverzeichnis',
 
 ));

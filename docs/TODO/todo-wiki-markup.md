@@ -4,6 +4,16 @@ phpBB already has BBCode, so every extra syntax is a second way to write
 something. This plan adds only what BBCode can't do, and only inside wiki
 articles.
 
+## Built so far
+
+Headings (`==` to `======`), `[[Article#Section]]` and `[[#Section]]` links, the
+table of contents (`__TOC__`, `__FORCETOC__`, `__NOTOC__`, automatic from four
+headings) and the `#REDIRECT [[Article]]` first line are done. They are read only
+while a wiki article is saved or previewed, by switching the `WIKIHEADING` and
+`WIKIMAGIC` tags on in `core.text_formatter_s9e_parse_before` (see `wiki/markup.php`),
+and a migration reparses saved articles. What is left below is tables, the text
+styles and references (not wanted yet), `[[Category:Name]]`, and templates.
+
 ## Scope: wiki articles only
 
 `[[Article name]]` links are safe everywhere and stay enabled in forum
@@ -45,7 +55,7 @@ Still to confirm on the test board before building on it.
 
 | Syntax | What it does | Notes |
 |---|---|---|
-| `== Section ==` | Headings | phpBB has no heading tag. Also needed for the table of contents. |
+| `== Section ==` | Headings | Built; see "Built so far". |
 | `[[Article#Section]]` | Link to a heading in an article | `#` isn't allowed inside `[[ ]]` today, so this shows as plain text. |
 | HTML tables | Tables | See below. |
 

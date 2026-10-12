@@ -36,3 +36,46 @@ a.wikilink-new {
 .forumbg ul.topiclist dd.lastpost.wiki-pending-action {
 	width: 230px;
 }
+
+/* Headings and the table of contents written with == Heading == */
+.wiki h2.wikiheading,
+.content h2.wikiheading {
+	margin: 1.2em 0 0.5em;
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 0.2em;
+}
+
+.wiki h3.wikiheading,
+.wiki h4.wikiheading,
+.wiki h5.wikiheading,
+.wiki h6.wikiheading,
+.content h3.wikiheading,
+.content h4.wikiheading,
+.content h5.wikiheading,
+.content h6.wikiheading {
+	margin: 1em 0 0.4em;
+}
+
+.wikitoc {
+	display: table;
+	margin: 0.8em 0;
+	padding: 0.6em 1em;
+	border: 1px solid #ccc;
+	background-color: rgba(128, 128, 128, 0.08);
+}
+
+.wikitoc ul {
+	margin: 0.3em 0 0 1.2em;
+	padding: 0;
+	list-style: none;
+}
+
+.wikitoc .wikitoc-title {
+	margin: 0;
+	text-align: center;
+}
+
+.wikitoc .wikitoc-number {
+	margin-right: 0.3em;
+	opacity: 0.7;
+}
