@@ -210,4 +210,3 @@ class listener implements EventSubscriberInterface
 		$this->watch->delete_for_users(array_map('intval', (array) $event['user_ids']));
 	}
 }
-
