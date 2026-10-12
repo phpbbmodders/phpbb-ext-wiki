@@ -11,7 +11,7 @@
 namespace phpbbmodders\wiki\acp;
 
 /**
- * The Wiki settings page: which forum "Start discussion" creates topics in.
+ * The Wiki settings page: the header link's icon, and which forum "Start discussion" creates topics in.
  */
 class main_module
 {
@@ -52,6 +52,12 @@ class main_module
 			}
 
 			$forum_id = $request->variable('wiki_discussion_forum_id', 0);
+			$icon = trim($request->variable('wiki_icon', ''));
+
+			if (!\phpbbmodders\wiki\wiki\icon::is_valid($icon))
+			{
+				trigger_error($language->lang('WIKI_ICON_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 
 			// Only a forum that exists and takes posts can hold the topics
 			if ($forum_id)
@@ -71,11 +77,13 @@ class main_module
 			}
 
 			$config->set('wiki_discussion_forum_id', $forum_id);
+			$config->set('wiki_icon', $icon);
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
 
 		$template->assign_vars(array(
+			'WIKI_ICON'					=> isset($config['wiki_icon']) ? $config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON,
 			'U_ACTION'					=> $this->u_action,
 			'S_WIKI_FORUM_OPTIONS'		=> '<option value="0"' . (empty($config['wiki_discussion_forum_id']) ? ' selected="selected"' : '') . '>' . $language->lang('WIKI_DISCUSSION_FORUM_NONE') . '</option>'
 				. make_forum_select((int) $config['wiki_discussion_forum_id'], false, true, true),

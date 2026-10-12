@@ -23,6 +23,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -39,14 +42,16 @@ class listener implements EventSubscriberInterface
 	* Constructor
 	*
 	* @param \phpbb\auth\auth				$auth					Auth object
+	* @param \phpbb\config\config			$config					Config object
 	* @param \phpbb\controller\helper		$helper					Controller helper object
 	* @param \phpbb\notification\manager	$notification_manager	Notification Manager
 	* @param \phpbb\template				$template				Template object
 	* @param \phpbb\user					$user					User object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->auth = $auth;
+		$this->config = $config;
 		$this->helper = $helper;
 		$this->notification_manager = $notification_manager;
 		$this->template = $template;
@@ -158,6 +163,7 @@ class listener implements EventSubscriberInterface
 			$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
 			$this->template->assign_vars(array(
 				'U_WIKI'	=> $this->helper->route('phpbbmodders_wiki_index', array()),
+				'WIKI_ICON_CLASSES'	=> \phpbbmodders\wiki\wiki\icon::classes(isset($this->config['wiki_icon']) ? $this->config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON),
 			));
 		}
 	}

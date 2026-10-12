@@ -40,6 +40,7 @@ services:
         class: phpbbmodders\wiki\event\listener
         arguments:
             - '@auth'
+            - '@config'
             - '@controller.helper'
             - '@notification_manager'
             - '@template'
