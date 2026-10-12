@@ -22,6 +22,9 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	/** @var \parse_message */
 	protected $message_parser;
 
@@ -44,10 +47,12 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbb\user							$user					User object
 	* @param string									$article_table
 	* @param \phpbbmodders\wiki\wiki\files				$files					Uploaded files
+	* @param \phpbb\request\request				$request				Request object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request)
 	{
 		$this->files = $files;
+		$this->request = $request;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->helper = $helper;
@@ -112,6 +117,8 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 
 		if (confirm_box(true))
 		{
+			$article = self::confirmed_article($this->request, $article);
+
 			$sql = 'DELETE FROM ' . $this->article_table . "
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
 			$this->db->sql_query($sql);

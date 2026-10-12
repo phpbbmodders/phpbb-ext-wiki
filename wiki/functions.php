@@ -61,6 +61,24 @@ class functions
 	}
 
 	/**
+	 * The article name to act on once a confirm box has been answered.
+	 *
+	 * confirm_box() posts back to a page address whose path is encoded a second
+	 * time, so "Some Article" comes back from the route as "Some%20Article" and
+	 * matches nothing. The name the box carried in a hidden field is the real one;
+	 * on the first request, before the box, there is no such field and the route's
+	 * name is used.
+	 *
+	 * @param \phpbb\request\request_interface $request
+	 * @param string                             $article Name from the route
+	 * @return string
+	 */
+	public static function confirmed_article(\phpbb\request\request_interface $request, $article)
+	{
+		return htmlspecialchars_decode($request->variable('article', $article, true), ENT_COMPAT);
+	}
+
+	/**
 	 *
 	 * @param	int		$id		Version ID
 	 * @return	string			URL of the article
