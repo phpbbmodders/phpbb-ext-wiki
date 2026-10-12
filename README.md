@@ -13,6 +13,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Edits can wait for approval: moderators get a **Pending articles** list with Approve and Disapprove. Approving a version older than the live one is blocked, so a stale draft can't overwrite newer content.
 - Moderators can take an article offline or delete it, and articles can be made sticky or set to redirect.
 - Notifications when an edit is waiting for approval.
+- A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
 
 ## Screenshots

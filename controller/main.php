@@ -39,6 +39,9 @@ class main
 	/** @var \phpbbmodders\wiki\wiki\view */
 	protected $view;
 
+	/** @var \phpbbmodders\wiki\wiki\discussion */
+	protected $discussion;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -57,10 +60,11 @@ class main
 	* @param \phpbbmodders\wiki\wiki\edit		$edit					Edit Wiki object
 	* @param \phpbbmodders\wiki\wiki\compare		$compare				Diff Wiki object
 	* @param \phpbbmodders\wiki\wiki\view		$view					View Wiki object
+	* @param \phpbbmodders\wiki\wiki\discussion	$discussion				Start discussion object
 	* @param string							$phpbb_root_path
 	* @param string							$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->helper = $helper;
@@ -71,6 +75,7 @@ class main
 		$this->edit = $edit;
 		$this->compare = $compare;
 		$this->view = $view;
+		$this->discussion = $discussion;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -140,6 +145,9 @@ class main
 
 			case 'deactivate':
 				return $this->edit->deactivate($article);
+
+			case 'start_discussion':
+				return $this->discussion->start($article);
 
 			default:
 				return $this->view->view_article($article, $id);

@@ -39,6 +39,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\edit */
 	protected $edit;
 
+	/** @var \phpbbmodders\wiki\wiki\discussion */
+	protected $discussion;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -61,9 +64,12 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$article_table
 	* @param string									$phpbb_root_path
 	* @param string									$php_ext
+	* @param \phpbbmodders\wiki\wiki\links				$links				Wiki links object
+	* @param \phpbbmodders\wiki\wiki\discussion			$discussion			Start discussion object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion)
 	{
+		$this->discussion = $discussion;
 		$this->links = $links;
 		$this->auth = $auth;
 		$this->db = $db;
@@ -216,6 +222,7 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				'ARTICLE_VERSION'		=> $id,
 				'ARTICLE_VIEWS_TEXT'	=> $this->user->lang('ARTICLE_VIEWS_TEXT', $this->data['article_views']),
 				'EDIT_REASON'			=> ($id <> 0) ? $this->data['article_edit_reason'] : '',
+				'U_START_DISCUSSION'	=> $this->discussion->can_start($this->data) ? $this->discussion->get_url($this->data['article_url']) : '',
 				'U_TOPIC'				=> ($this->data['article_topic_id'] <> 0) ? append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, 't=' . $this->data['article_topic_id']) : '',
 			));
 
