@@ -77,8 +77,21 @@ An article
   | `{{#expr: (2 + 3) * 4}}` and `{{#ifexpr: 3 > 2 \| yes \| no}}` | arithmetic: `+ - * / div mod ^ round`, comparisons, `and or not`, brackets, and `abs ceil floor trunc sqrt exp ln sin cos tan`, `e` and `pi` |
   | `{{lc:Text}}`, `{{uc:Text}}`, `{{lcfirst:Text}}`, `{{ucfirst:Text}}` | lower and upper case |
   | `{{PAGENAME}}`, `{{FULLPAGENAME}}`, `{{NAMESPACE}}` | the article being shown (`Template:Name` has the namespace `Template`) |
+  | `{{SITENAME}}` | the board's name |
+  | `{{#iferror: test \| error \| ok}}` | `error` when `test` is one of the red messages below (a failed `#expr`, a template loop, an unknown function), otherwise `ok`, or `test` itself when `ok` is left out |
+  | `{{#time: j F Y, H:i \| date}}` | a date in a format, in UTC: `Y y n m M F d j D l N w z W t L H G h g i s a A U c r e` as in PHP's `date()`, `"quoted text"` and `\c` as written; `date` is anything PHP reads (`2026-10-12`, `@1791500000`, `yesterday`, `+1 week`), and the time now when left out |
+  | `{{CURRENTYEAR}}`, `{{CURRENTMONTH}}`, `{{CURRENTMONTHNAME}}`, `{{CURRENTMONTHABBREV}}`, `{{CURRENTDAY}}`, `{{CURRENTDAY2}}`, `{{CURRENTDAYNAME}}`, `{{CURRENTDOW}}`, `{{CURRENTWEEK}}`, `{{CURRENTHOUR}}`, `{{CURRENTTIME}}`, `{{CURRENTTIMESTAMP}}` | the date and time now, in UTC, with English month and day names |
+  | `{{#len: text}}` | the number of characters |
+  | `{{#pos: text \| find \| from}}`, `{{#rpos: text \| find}}` | where `find` first or last occurs, counted from 0; `#pos` gives nothing and `#rpos` gives `-1` when it is not there |
+  | `{{#sub: text \| start \| length}}` | part of `text`; a negative `start` counts from the end and a negative `length` leaves that many off the end |
+  | `{{#replace: text \| find \| with}}` | every `find` swapped for `with` |
+  | `{{#explode: text \| separator \| position \| limit}}` | one piece of `text` cut at `separator`, counted from 0 (negative from the end) |
+  | `{{padleft: text \| length \| fill}}`, `{{padright: text \| length \| fill}}` | `text` filled up to `length` with `fill` (default `0`) |
+  | `{{urlencode: text}}`, `{{anchorencode: text}}` | `text` as a web address part, and as a heading anchor |
 
   A call that cannot be worked out, such as `{{#expr: 1/0}}`, shows a red message where it stands. An unknown `{{#function:}}` does too.
+
+  The arguments of a function are trimmed of spaces and line breaks before it works on them.
 - After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier hold `{{...}}` as plain text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
 
 ## Linking between articles

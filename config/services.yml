@@ -188,6 +188,7 @@ services:
     phpbbmodders.wiki.templates:
         class: phpbbmodders\wiki\wiki\templates
         arguments:
+            - '@config'
             - '@dbal.conn'
             - '@language'
             - '%tables.wiki.article%'

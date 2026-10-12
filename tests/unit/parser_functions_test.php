@@ -26,7 +26,9 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 			return $key . ($args ? '(' . implode(',', $args) . ')' : '');
 		});
 
-		$this->templates = new class($this->createMock(\phpbb\db\driver\driver_interface::class), $language, 'phpbb_wiki_article') extends \phpbbmodders\wiki\wiki\templates {
+		$config = new \phpbb\config\config(array('sitename' => 'Test Board'));
+
+		$this->templates = new class($config, $this->createMock(\phpbb\db\driver\driver_interface::class), $language, 'phpbb_wiki_article') extends \phpbbmodders\wiki\wiki\templates {
 			/** @var array Template page text by article name */
 			public $pages = array(
 				'Template:Hello'	=> 'Hi {{{1|you}}}',
@@ -55,6 +57,12 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 			protected function current_article()
 			{
 				return $this->article;
+			}
+
+			/** Saturday 7 March 2026, 14:05:09 UTC */
+			protected function now()
+			{
+				return gmmktime(14, 5, 9, 3, 7, 2026);
 			}
 		};
 	}
@@ -184,6 +192,86 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 	{
 		$this->assertSame('end', $this->run_text('{{Deep}}'));
 		$this->assertStringContainsString('WIKI_TEMPLATE_', $this->run_text('{{Deep|1}}'));
+	}
+
+	public function test_iferror_tells_a_working_call_from_a_failed_one()
+	{
+		$this->assertSame('bad', $this->run_text('{{#iferror: {{#expr: 1/0}} | bad | good}}'));
+		$this->assertSame('good', $this->run_text('{{#iferror: {{#expr: 1+1}} | bad | good}}'));
+		$this->assertSame('2', $this->run_text('{{#iferror: {{#expr: 1+1}} | bad}}'), 'without a third part the test itself comes back');
+		$this->assertSame('', $this->run_text('{{#iferror: {{#expr: 1/0}}}}'));
+		$this->assertSame('bad', $this->run_text('{{#iferror: {{#nosuch: x}} | bad | good}}'));
+		$this->assertSame('bad', $this->run_text('{{#iferror: {{Loop}} | bad | good}}'));
+		$this->assertSame('good', $this->run_text('{{#iferror: fine | bad | good}}'));
+	}
+
+	public function test_time_formats_a_date()
+	{
+		$this->assertSame('2026-03-07', $this->run_text('{{#time: Y-m-d}}'));
+		$this->assertSame('7 March 2026, 14:05', $this->run_text('{{#time: j F Y, H:i}}'));
+		$this->assertSame('1 May 2024', $this->run_text('{{#time: j F Y | 2024-05-01}}'));
+		$this->assertSame('Wednesday', $this->run_text('{{#time: l | 2026-03-04}}'));
+		$this->assertSame('2026', $this->run_text('{{#time: Y | @1772903109}}'));
+		$this->assertSame('on 7  at Y', $this->run_text('{{#time: "on" j " at Y"}}'), 'quoted text and a backslash come out as written');
+		$this->assertSame('7 d', $this->run_text('{{#time: j \\d}}'));
+		$this->assertSame('Saturday', $this->run_text('{{#time: l | now}}'));
+		$this->assertStringContainsString('WIKI_TIME_INVALID', $this->run_text('{{#time: Y | not a date at all}}'));
+	}
+
+	public function test_string_functions()
+	{
+		$this->assertSame('5', $this->run_text('{{#len: hello}}'));
+		$this->assertSame('3', $this->run_text('{{#len: héé}}'));
+		$this->assertSame('2', $this->run_text('{{#pos: hello | l}}'));
+		$this->assertSame('', $this->run_text('{{#pos: hello | z}}'));
+		$this->assertSame('3', $this->run_text('{{#pos: hello | l | 3}}'));
+		$this->assertSame('3', $this->run_text('{{#rpos: hello | l}}'));
+		$this->assertSame('-1', $this->run_text('{{#rpos: hello | z}}'));
+		$this->assertSame('ell', $this->run_text('{{#sub: hello | 1 | 3}}'));
+		$this->assertSame('llo', $this->run_text('{{#sub: hello | 2}}'));
+		$this->assertSame('lo', $this->run_text('{{#sub: hello | -2}}'));
+		$this->assertSame('he', $this->run_text('{{#sub: hello | 0 | -3}}'));
+		$this->assertSame('heLLo', $this->run_text('{{#replace: hello | l | L}}'));
+		$this->assertSame('heo', $this->run_text('{{#replace: hello | l}}'));
+		$this->assertSame('hello', $this->run_text('{{#replace: hello | | x}}'));
+		$this->assertSame('b', $this->run_text('{{#explode: a,b,c | , | 1}}'));
+		$this->assertSame('c', $this->run_text('{{#explode: a,b,c | , | -1}}'));
+		$this->assertSame('', $this->run_text('{{#explode: a,b,c | , | 9}}'));
+		$this->assertSame('b,c', $this->run_text('{{#explode: a,b,c | , | 1 | 2}}'));
+	}
+
+	public function test_padding_and_encoding()
+	{
+		$this->assertSame('00042', $this->run_text('{{padleft: 42 | 5}}'));
+		$this->assertSame('__xyz', $this->run_text('{{padleft: xyz | 5 | _}}'));
+		$this->assertSame('xyz-=', $this->run_text('{{padright: xyz | 5 | -=}}'));
+		$this->assertSame('longer', $this->run_text('{{padleft: longer | 3}}'));
+		$this->assertSame('a+b%26c', $this->run_text('{{urlencode: a b&c}}'));
+		$this->assertSame('Some_Heading', $this->run_text('{{anchorencode: Some Heading}}'));
+	}
+
+	public function test_date_words_and_the_site_name()
+	{
+		$this->assertSame('2026', $this->run_text('{{CURRENTYEAR}}'));
+		$this->assertSame('03', $this->run_text('{{CURRENTMONTH}}'));
+		$this->assertSame('March', $this->run_text('{{CURRENTMONTHNAME}}'));
+		$this->assertSame('Mar', $this->run_text('{{CURRENTMONTHABBREV}}'));
+		$this->assertSame('7', $this->run_text('{{CURRENTDAY}}'));
+		$this->assertSame('07', $this->run_text('{{CURRENTDAY2}}'));
+		$this->assertSame('Saturday', $this->run_text('{{CURRENTDAYNAME}}'));
+		$this->assertSame('6', $this->run_text('{{CURRENTDOW}}'));
+		$this->assertSame('14:05', $this->run_text('{{CURRENTTIME}}'));
+		$this->assertSame('14', $this->run_text('{{CURRENTHOUR}}'));
+		$this->assertSame('20260307140509', $this->run_text('{{CURRENTTIMESTAMP}}'));
+		$this->assertSame('Test Board', $this->run_text('{{SITENAME}}'));
+	}
+
+	public function test_an_upper_case_name_that_is_not_a_magic_word_is_still_a_template()
+	{
+		$this->templates->pages['Template:INFOBOX'] = 'box {{{1}}}';
+
+		$this->assertSame('box x', $this->run_text('{{INFOBOX|x}}'));
+		$this->assertSame('[[Template:NOTHING]]', $this->run_text('{{NOTHING}}'));
 	}
 
 	public function test_a_flood_of_calls_is_cut_off()

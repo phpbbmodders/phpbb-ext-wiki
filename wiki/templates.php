@@ -34,11 +34,17 @@ class templates
 	/** Longest text a template call may come to, in characters. */
 	const MAX_LENGTH = 200000;
 
+	/** What an error message starts with, which {{#iferror:}} looks for. */
+	const ERROR_OPEN = '[color=red][b]';
+
 	/** Article names of templates start with this. */
 	const PREFIX = 'Template:';
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\config\config */
+	protected $config;
 
 	/** @var \phpbb\language\language */
 	protected $language;
@@ -65,12 +71,14 @@ class templates
 	protected $sources = array();
 
 	/**
+	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\language\language			$language		Language object
 	 * @param string								$article_table	Wiki article table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
 		$this->article_table = $article_table;
@@ -252,13 +260,17 @@ class templates
 		{
 			return $this->parser_function(strtolower($match[1]), self::split_pieces($match[2]));
 		}
-		if (preg_match('/^(lc|uc|lcfirst|ucfirst)\s*:(.*)$/is', $trimmed, $match))
+		if (preg_match('/^(lc|uc|lcfirst|ucfirst|urlencode|anchorencode)\s*:(.*)$/is', $trimmed, $match))
 		{
 			return $this->text_function(strtolower($match[1]), trim($this->expand_text($match[2])));
 		}
-		if (preg_match('/^(PAGENAME|FULLPAGENAME|NAMESPACE)\s*$/', $trimmed, $match))
+		if (preg_match('/^(padleft|padright)\s*:(.*)$/is', $trimmed, $match))
 		{
-			return $this->magic_word($match[1]);
+			return $this->pad_function(strtolower($match[1]) === 'padleft', self::split_pieces($match[2]));
+		}
+		if (preg_match('/^([A-Z][A-Z0-9]*)\s*$/', $trimmed, $match) && ($word = $this->magic_word($match[1])) !== null)
+		{
+			return $word;
 		}
 
 		return $this->include_template($inner);
@@ -321,8 +333,15 @@ class templates
 	 */
 	protected function parser_function($function, array $args)
 	{
-		$arg = function ($index) use ($args) {
-			return isset($args[$index]) ? trim($this->expand_text($args[$index])) : '';
+		// Each argument is worked out when it is first wanted, and once
+		$worked = array();
+		$arg = function ($index) use ($args, &$worked) {
+			if (!isset($worked[$index]))
+			{
+				$worked[$index] = isset($args[$index]) ? trim($this->expand_text($args[$index])) : '';
+			}
+
+			return $worked[$index];
 		};
 
 		switch ($function)
@@ -353,6 +372,37 @@ class templates
 
 			case 'switch':
 				return $this->switch_value($arg(0), array_slice($args, 1));
+
+			case 'iferror':
+				if (strpos($arg(0), self::ERROR_OPEN) !== false)
+				{
+					return $arg(1);
+				}
+
+				return isset($args[2]) ? $arg(2) : $arg(0);
+
+			case 'time':
+				$time = text_tools::time($arg(0), $arg(1), $this->now());
+
+				return ($time === null) ? $this->error($this->language->lang('WIKI_TIME_INVALID')) : $time;
+
+			case 'len':
+				return (string) mb_strlen($arg(0));
+
+			case 'pos':
+				return text_tools::pos($arg(0), $arg(1), (int) $arg(2));
+
+			case 'rpos':
+				return text_tools::rpos($arg(0), $arg(1));
+
+			case 'sub':
+				return text_tools::sub($arg(0), (int) $arg(1), ($arg(2) === '') ? null : (int) $arg(2));
+
+			case 'replace':
+				return text_tools::replace($arg(0), $arg(1), $arg(2));
+
+			case 'explode':
+				return text_tools::explode($arg(0), $arg(1), (int) $arg(2), ($arg(3) === '') ? null : (int) $arg(3));
 		}
 
 		return $this->error($this->language->lang('WIKI_TEMPLATE_UNKNOWN_FUNCTION', '#' . $function));
@@ -415,16 +465,45 @@ class templates
 				return mb_strtoupper($text);
 			case 'lcfirst':
 				return mb_strtolower(mb_substr($text, 0, 1)) . mb_substr($text, 1);
+			case 'urlencode':
+				return urlencode($text);
+			case 'anchorencode':
+				return markup::anchor($text);
 			default:
 				return mb_strtoupper(mb_substr($text, 0, 1)) . mb_substr($text, 1);
 		}
 	}
 
 	/**
-	 * {{PAGENAME}}, {{FULLPAGENAME}} and {{NAMESPACE}} for the article being shown.
+	 * {{padleft:text|length|fill}} and {{padright:text|length|fill}}.
+	 *
+	 * @param bool $left
+	 * @param array $args The arguments as written
+	 * @return string
+	 */
+	protected function pad_function($left, array $args)
+	{
+		$text = isset($args[0]) ? trim($this->expand_text($args[0])) : '';
+		$length = isset($args[1]) ? (int) trim($this->expand_text($args[1])) : 0;
+		$fill = isset($args[2]) ? trim($this->expand_text($args[2])) : '0';
+
+		return text_tools::pad($text, $length, ($fill === '') ? '0' : $fill, $left);
+	}
+
+	/**
+	 * @return int The time now, as a Unix timestamp
+	 */
+	protected function now()
+	{
+		return time();
+	}
+
+	/**
+	 * {{PAGENAME}}, {{FULLPAGENAME}}, {{NAMESPACE}}, {{SITENAME}} and the date words such as
+	 * {{CURRENTYEAR}}.
 	 *
 	 * @param string $word
-	 * @return string
+	 * @return string|null Null when the word is none of these, so it may be a template
 	 */
 	protected function magic_word($word)
 	{
@@ -437,9 +516,13 @@ class templates
 				return $full;
 			case 'NAMESPACE':
 				return $in_namespace ? rtrim(self::PREFIX, ':') : '';
-			default:
+			case 'PAGENAME':
 				return $in_namespace ? ltrim(substr($full, strlen(self::PREFIX))) : $full;
+			case 'SITENAME':
+				return (string) $this->config['sitename'];
 		}
+
+		return text_tools::date_word($word, $this->now());
 	}
 
 	/**
@@ -774,6 +857,6 @@ class templates
 	 */
 	protected function error($message)
 	{
-		return '[color=red][b]' . str_replace(array('[', ']'), '', $message) . '[/b][/color]';
+		return self::ERROR_OPEN . str_replace(array('[', ']'), '', $message) . '[/b][/color]';
 	}
 }

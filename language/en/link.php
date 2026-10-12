@@ -46,6 +46,7 @@ $lang = array_merge($lang, array(
 	'WIKI_TEMPLATE_LOOP'		=> 'Template loop: “%s” includes itself',
 	'WIKI_TEMPLATE_TOO_DEEP'	=> 'Too many templates inside templates at “%s”',
 	'WIKI_TEMPLATE_UNKNOWN_FUNCTION'	=> 'Unknown function “%s”',
+	'WIKI_TIME_INVALID'			=> 'Invalid time',
 	'WIKI_EXPR_ERROR'			=> 'Expression error: %s',
 	'WIKI_EXPR_TOO_LONG'		=> 'the expression is too long',
 	'WIKI_EXPR_UNEXPECTED'		=> 'unexpected “%s”',
