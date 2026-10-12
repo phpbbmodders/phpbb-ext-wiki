@@ -1,5 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
+
 <h1>{L_ACP_WIKI_SETTINGS}</h1>
 
 <p>{L_ACP_WIKI_SETTINGS_EXPLAIN}</p>
@@ -7,6 +8,10 @@
 <form id="wiki_settings" method="post" action="{U_ACTION}">
 	<fieldset>
 		<legend>{L_ACP_WIKI_SETTINGS}</legend>
+		<dl>
+			<dt><label for="wiki_icon">{L_WIKI_ICON}{L_COLON}</label><br><span>{L_WIKI_ICON_EXPLAIN}</span></dt>
+			<dd><input id="wiki_icon" type="text" name="wiki_icon" size="30" maxlength="50" value="{WIKI_ICON}"></dd>
+		</dl>
 		<dl>
 			<dt><label for="wiki_discussion_forum_id">{L_WIKI_DISCUSSION_FORUM}{L_COLON}</label><br><span>{L_WIKI_DISCUSSION_FORUM_EXPLAIN}</span></dt>
 			<dd><select id="wiki_discussion_forum_id" name="wiki_discussion_forum_id">{S_WIKI_FORUM_OPTIONS}</select></dd>
