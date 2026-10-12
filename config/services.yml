@@ -33,6 +33,7 @@ services:
             - '@phpbbmodders.wiki.edit'
             - '@phpbbmodders.wiki.compare'
             - '@phpbbmodders.wiki.view'
+            - '@phpbbmodders.wiki.discussion'
             - '%core.root_path%'
             - '%core.php_ext%'
     phpbbmodders.wiki.listener:
@@ -95,6 +96,19 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@phpbbmodders.wiki.links'
+            - '@phpbbmodders.wiki.discussion'
+    phpbbmodders.wiki.discussion:
+        class: phpbbmodders\wiki\wiki\discussion
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@user'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
     phpbbmodders.wiki.links:
         class: phpbbmodders\wiki\wiki\links
         arguments:

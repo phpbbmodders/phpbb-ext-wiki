@@ -173,12 +173,6 @@ BBCode comfortably.
 A one-click "Restore this version" in the version history. Today the only
 way is to approve the old version again.
 
-## Start discussion button
-
-Articles can link a discussion topic, but only by typing its topic ID by
-hand in the edit form. A "Start discussion" button would create the topic
-and link it.
-
 ## File uploads
 
 Let editors upload images and files to an article, the way posts take

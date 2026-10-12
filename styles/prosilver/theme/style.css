@@ -22,3 +22,8 @@ body[class~="section-app/kb/"] ul.topiclist dd {
 a.wikilink-new {
 	color: #bc2a4d;
 }
+
+/* A little room after the label of the article buttons (the label only shows where the board style does not hide it) */
+.wiki-buttons .button > span {
+	padding-right: 4px;
+}
