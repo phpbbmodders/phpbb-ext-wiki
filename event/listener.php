@@ -26,6 +26,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbbmodders\wiki\wiki\watch */
+	protected $watch;
+
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -48,8 +51,9 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\template				$template				Template object
 	* @param \phpbb\user					$user					User object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\watch $watch)
 	{
+		$this->watch = $watch;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->helper = $helper;
@@ -64,6 +68,7 @@ class listener implements EventSubscriberInterface
 			'core.page_header'			=> 'page_header',
 			'core.permissions'			=> 'permissions',
 			'core.user_setup'			=> 'user_setup',
+			'core.delete_user_after'	=> 'delete_user_after',
 		);
 	}
 
@@ -193,4 +198,15 @@ class listener implements EventSubscriberInterface
 		$event['lang_set_ext'] = $lang_ary;
 	}
 
+
+	/**
+	 * A deleted member no longer watches anything.
+	 *
+	 * @param \phpbb\event\data $event The event object
+	 * @return void
+	 */
+	public function delete_user_after($event)
+	{
+		$this->watch->delete_for_users(array_map('intval', (array) $event['user_ids']));
+	}
 }

@@ -1,6 +1,7 @@
 parameters:
     tables.wiki.article: '%core.table_prefix%wiki_article'
     tables.wiki.file: '%core.table_prefix%wiki_file'
+    tables.wiki.watch: '%core.table_prefix%wiki_watch'
 
 services:
     _defaults:
@@ -52,6 +53,18 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    phpbbmodders.wiki.watch:
+        class: phpbbmodders\wiki\wiki\watch
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.wiki.watch%'
+            - '%tables.wiki.article%'
+
     phpbbmodders.wiki.files:
         class: phpbbmodders\wiki\wiki\files
         arguments:
@@ -83,6 +96,7 @@ services:
             - '@phpbbmodders.wiki.view'
             - '@phpbbmodders.wiki.discussion'
             - '@phpbbmodders.wiki.files'
+            - '@phpbbmodders.wiki.watch'
             - '%core.root_path%'
             - '%core.php_ext%'
     phpbbmodders.wiki.listener:
@@ -94,6 +108,7 @@ services:
             - '@notification_manager'
             - '@template'
             - '@user'
+            - '@phpbbmodders.wiki.watch'
         tags:
             - { name: event.listener }
     phpbbmodders.wiki.edit:
@@ -110,6 +125,7 @@ services:
             - '%tables.wiki.article%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.watch'
     phpbbmodders.wiki.compare:
         class: phpbbmodders\wiki\wiki\compare
         arguments:
@@ -134,6 +150,7 @@ services:
             - '%tables.wiki.article%'
             - '@phpbbmodders.wiki.files'
             - '@request'
+            - '@phpbbmodders.wiki.watch'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:
@@ -150,6 +167,7 @@ services:
             - '@phpbbmodders.wiki.links'
             - '@phpbbmodders.wiki.discussion'
             - '@phpbbmodders.wiki.files'
+            - '@phpbbmodders.wiki.watch'
     phpbbmodders.wiki.discussion:
         class: phpbbmodders\wiki\wiki\discussion
         arguments:
@@ -197,3 +215,15 @@ services:
             - [set_name, [phpbbmodders_wiki_article]]
         tags:
             - { name: text_reparser.plugin}
+    phpbbmodders.wiki.notification.type.article_watch:
+        class: phpbbmodders\wiki\notification\article_watch
+        parent: notification.type.base
+        # Symfony 3.4 (phpBB 3.3.x) does not let a service with a parent take "public" from _defaults.
+        public: true
+        shared: false
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_helper, ['@controller.helper']]
+            - [set_watch, ['@phpbbmodders.wiki.watch']]
+        tags:
+            - { name: notification.type }

@@ -46,6 +46,9 @@ class ext extends \phpbb\extension\base
 	];
 	const NEW_NOTIFICATION_TYPE = 'phpbbmodders.wiki.notification.type.article_edit';
 
+	/** Notification type that tells watchers a new version went live */
+	const WATCH_NOTIFICATION_TYPE = 'phpbbmodders.wiki.notification.type.article_watch';
+
 	/** Text reparser service name (the key of its CLI resume data) before and after the rename */
 	const OLD_REPARSER_NAME = 'tas2580.wiki.text_reparser.article_text';
 	const NEW_REPARSER_NAME = 'phpbbmodders.wiki.text_reparser.article_text';
@@ -120,7 +123,7 @@ class ext extends \phpbb\extension\base
 		{
 			case false:
 			case '':
-				return $this->notification_handler('enable', [self::NEW_NOTIFICATION_TYPE]);
+				return $this->notification_handler('enable', [self::NEW_NOTIFICATION_TYPE, self::WATCH_NOTIFICATION_TYPE]);
 
 			default:
 				return parent::enable_step($old_state);
@@ -139,7 +142,7 @@ class ext extends \phpbb\extension\base
 		{
 			case false:
 			case '':
-				return $this->notification_handler('disable', [self::NEW_NOTIFICATION_TYPE]);
+				return $this->notification_handler('disable', [self::NEW_NOTIFICATION_TYPE, self::WATCH_NOTIFICATION_TYPE]);
 
 			default:
 				return parent::disable_step($old_state);
@@ -158,7 +161,7 @@ class ext extends \phpbb\extension\base
 		{
 			case false:
 			case '':
-				return $this->notification_handler('purge', [self::NEW_NOTIFICATION_TYPE]);
+				return $this->notification_handler('purge', [self::NEW_NOTIFICATION_TYPE, self::WATCH_NOTIFICATION_TYPE]);
 
 			default:
 				return parent::purge_step($old_state);

@@ -1,0 +1,14 @@
+Subject: "{SITENAME}" — Watched wiki article updated
+
+Hello {USERNAME},
+
+{NOTIFICATION_SUBJECT}
+
+View the article: {U_LINK}
+
+You are receiving this because you watch the article. Stop watching it from the article page, or change how you are notified under Notification settings in your control panel.
+
+Board index:
+{U_INDEX}
+
+{EMAIL_SIG}

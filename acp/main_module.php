@@ -54,6 +54,7 @@ class main_module
 			$forum_id = $request->variable('wiki_discussion_forum_id', 0);
 			$icon = trim($request->variable('wiki_icon', ''));
 			$feed_format = $request->variable('wiki_feed_format', '');
+			$auto_watch = $request->variable('wiki_auto_watch', 0) ? 1 : 0;
 
 			if (!\phpbbmodders\wiki\wiki\feed::is_valid_setting($feed_format))
 			{
@@ -85,6 +86,7 @@ class main_module
 			$config->set('wiki_discussion_forum_id', $forum_id);
 			$config->set('wiki_icon', $icon);
 			$config->set('wiki_feed_format', $feed_format);
+			$config->set('wiki_auto_watch', $auto_watch);
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
@@ -98,6 +100,7 @@ class main_module
 
 		$template->assign_vars(array(
 			'S_WIKI_FEED_OPTIONS'		=> $feed_options,
+			'S_WIKI_AUTO_WATCH'			=> !isset($config['wiki_auto_watch']) || !empty($config['wiki_auto_watch']),
 			'WIKI_ICON'					=> isset($config['wiki_icon']) ? $config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON,
 			'U_ACTION'					=> $this->u_action,
 			'S_WIKI_FORUM_OPTIONS'		=> '<option value="0"' . (empty($config['wiki_discussion_forum_id']) ? ' selected="selected"' : '') . '>' . $language->lang('WIKI_DISCUSSION_FORUM_NONE') . '</option>'

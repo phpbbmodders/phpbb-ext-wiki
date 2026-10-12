@@ -1,0 +1,14 @@
+Subject: "{SITENAME}" — Beobachteter Wiki-Artikel aktualisiert
+
+Hallo {USERNAME},
+
+{NOTIFICATION_SUBJECT}
+
+Artikel ansehen: {U_LINK}
+
+Du erhältst diese Nachricht, weil du den Artikel beobachtest. Beende das Beobachten auf der Artikelseite oder ändere die Benachrichtigungen in deinen Benachrichtigungseinstellungen im Kontrollzentrum.
+
+Zur Forenübersicht:
+{U_INDEX}
+
+{EMAIL_SIG}
