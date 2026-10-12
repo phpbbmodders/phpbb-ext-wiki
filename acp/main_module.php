@@ -53,6 +53,12 @@ class main_module
 
 			$forum_id = $request->variable('wiki_discussion_forum_id', 0);
 			$icon = trim($request->variable('wiki_icon', ''));
+			$feed_format = $request->variable('wiki_feed_format', '');
+
+			if (!\phpbbmodders\wiki\wiki\feed::is_valid_setting($feed_format))
+			{
+				trigger_error($language->lang('WIKI_FEED_FORMAT_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 
 			if (!\phpbbmodders\wiki\wiki\icon::is_valid($icon))
 			{
@@ -78,11 +84,20 @@ class main_module
 
 			$config->set('wiki_discussion_forum_id', $forum_id);
 			$config->set('wiki_icon', $icon);
+			$config->set('wiki_feed_format', $feed_format);
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
 
+		$feed_format = isset($config['wiki_feed_format']) ? $config['wiki_feed_format'] : \phpbbmodders\wiki\wiki\feed::BOTH;
+		$feed_options = '';
+		foreach (array(\phpbbmodders\wiki\wiki\feed::BOTH => 'WIKI_FEED_FORMAT_BOTH', \phpbbmodders\wiki\wiki\feed::RSS => 'WIKI_FEED_FORMAT_RSS', \phpbbmodders\wiki\wiki\feed::ATOM => 'WIKI_FEED_FORMAT_ATOM') as $value => $label)
+		{
+			$feed_options .= '<option value="' . $value . '"' . ($feed_format === $value ? ' selected="selected"' : '') . '>' . $language->lang($label) . '</option>';
+		}
+
 		$template->assign_vars(array(
+			'S_WIKI_FEED_OPTIONS'		=> $feed_options,
 			'WIKI_ICON'					=> isset($config['wiki_icon']) ? $config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON,
 			'U_ACTION'					=> $this->u_action,
 			'S_WIKI_FORUM_OPTIONS'		=> '<option value="0"' . (empty($config['wiki_discussion_forum_id']) ? ' selected="selected"' : '') . '>' . $language->lang('WIKI_DISCUSSION_FORUM_NONE') . '</option>'

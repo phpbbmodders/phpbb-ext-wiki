@@ -165,8 +165,12 @@ class listener implements EventSubscriberInterface
 		if ($this->auth->acl_get('u_wiki_view'))
 		{
 			$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
+			$feed_setting = isset($this->config['wiki_feed_format']) ? $this->config['wiki_feed_format'] : \phpbbmodders\wiki\wiki\feed::BOTH;
 			$this->template->assign_vars(array(
 				'U_WIKI'	=> $this->helper->route('phpbbmodders_wiki_index', array()),
+				'U_WIKI_RECENT_CHANGES'	=> $this->helper->route('phpbbmodders_wiki_recent_changes', array()),
+				'U_WIKI_FEED_RSS'		=> \phpbbmodders\wiki\wiki\feed::offers($feed_setting, \phpbbmodders\wiki\wiki\feed::RSS) ? $this->helper->route('phpbbmodders_wiki_recent_changes_feed', array('_format' => 'rss')) : '',
+				'U_WIKI_FEED_ATOM'		=> \phpbbmodders\wiki\wiki\feed::offers($feed_setting, \phpbbmodders\wiki\wiki\feed::ATOM) ? $this->helper->route('phpbbmodders_wiki_recent_changes_feed', array('_format' => 'atom')) : '',
 				'WIKI_ICON_CLASSES'	=> \phpbbmodders\wiki\wiki\icon::classes(isset($this->config['wiki_icon']) ? $this->config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON),
 			));
 		}

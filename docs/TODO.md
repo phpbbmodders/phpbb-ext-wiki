@@ -103,15 +103,6 @@ wiki content to visually match the rest of the forum, others will want it
 to look like an actual wiki. Scope depends heavily on the table of contents
 item above landing first, since a real wiki layout wants one.
 
-## Recent Changes feed
-
-A chronological list of *every* edit/approval across all articles, not
-just the newest one per article. "Latest Articles" on the overview page
-only shows the most recent version per distinct article — it can't answer
-"what changed on the wiki in the last day," which is the primary
-navigation view on most real wikis. Worth pairing with an RSS/Atom feed
-the same way the board already has `feed.php` for forum activity.
-
 ## Per-article edit protection
 
 Not built yet. Permissions are board-wide today: `u_wiki_edit` lets a user
