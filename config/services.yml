@@ -111,17 +111,13 @@ services:
 
     phpbbmodders.wiki.notification.type.article_edit:
         class: phpbbmodders\wiki\notification\article_edit
+        parent: notification.type.base
+        # Symfony 3.4 (phpBB 3.3.x) does not let a service with a parent take "public" from _defaults.
+        public: true
         shared: false
-        arguments:
-            - '@user_loader'
-            - '@dbal.conn'
-            - '@language'
-            - '@user'
-            - '@auth'
-            - '@controller.helper'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '%tables.user_notifications%'
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_helper, ['@controller.helper']]
         tags:
             - { name: notification.type }
     phpbbmodders.wiki.text_reparser.article_text:

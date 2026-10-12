@@ -29,23 +29,31 @@ class article_edit extends \phpbb\notification\type\base
 	protected $user_loader;
 
 	/**
-	* Notification Type Boardrules Constructor
-	*
-	* @param \phpbb\user_loader					$user_loader
-	* @param \phpbb\db\driver\driver_interface		$db
-	* @param \phpbb\language\language				$language
-	* @param \phpbb\user							$user
-	* @param \phpbb\auth\auth						$auth
-	* @param \phpbb\controller\helper				$helper
-	* @param string									$phpbb_root_path
-	* @param string									$php_ext
-	* @param string									$user_notifications_table
-	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\controller\helper $helper, $phpbb_root_path, $php_ext, $user_notifications_table)
+	 * Set the user loader (injected by the service definition).
+	 *
+	 * There is deliberately no constructor: phpBB 3.3.x and 4.0 give the notification base class
+	 * different constructor arguments (4.0 adds an avatar helper and the controller helper in
+	 * front), so a constructor that calls the parent one only works on one of them. The service
+	 * definition inherits its constructor arguments from the core notification.type.base service
+	 * and hands over what this class needs with these setters.
+	 *
+	 * @param \phpbb\user_loader $user_loader
+	 * @return void
+	 */
+	public function set_user_loader(\phpbb\user_loader $user_loader)
 	{
 		$this->user_loader = $user_loader;
+	}
+
+	/**
+	 * Set the controller helper (injected by the service definition).
+	 *
+	 * @param \phpbb\controller\helper $helper
+	 * @return void
+	 */
+	public function set_helper(\phpbb\controller\helper $helper)
+	{
 		$this->helper = $helper;
-		parent::__construct($db, $language, $user, $auth, $phpbb_root_path, $php_ext, $user_notifications_table);
 	}
 
 	public function is_available()
