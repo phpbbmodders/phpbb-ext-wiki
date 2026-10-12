@@ -345,6 +345,9 @@ class files
 		$back = $this->helper->route('phpbbmodders_wiki_article', array('article' => $article_url));
 		$back_link = '<br /><br /><a href="' . $back . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>';
 
+		// The upload class words its errors with keys from the posting language file
+		$this->user->add_lang('posting');
+
 		$upload = $this->files_factory->get('files.upload')
 			->set_allowed_extensions($this->allowed_extensions())
 			->set_max_filesize((int) $this->config['max_filesize']);
