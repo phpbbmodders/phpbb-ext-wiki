@@ -112,14 +112,6 @@ only shows the most recent version per distinct article — it can't answer
 navigation view on most real wikis. Worth pairing with an RSS/Atom feed
 the same way the board already has `feed.php` for forum activity.
 
-## User contributions page
-
-"Everything this user has edited or created," the way MediaWiki's
-Special:Contributions works. Version history already shows a `User` column
-per edit (see `article_versions.html`), but there's no page that rolls
-that up per-user across every article — today you'd have to check every
-article's version history individually to find a user's activity.
-
 ## Per-article edit protection
 
 Not built yet. Permissions are board-wide today: `u_wiki_edit` lets a user
