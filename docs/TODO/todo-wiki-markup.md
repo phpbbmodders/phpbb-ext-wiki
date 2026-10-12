@@ -8,11 +8,12 @@ articles.
 
 Headings (`==` to `======`), `[[Article#Section]]` and `[[#Section]]` links, the
 table of contents (`__TOC__`, `__FORCETOC__`, `__NOTOC__`, automatic from four
-headings) and the `#REDIRECT [[Article]]` first line are done. They are read only
-while a wiki article is saved or previewed, by switching the `WIKIHEADING` and
-`WIKIMAGIC` tags on in `core.text_formatter_s9e_parse_before` (see `wiki/markup.php`),
-and articles saved earlier are converted with
-`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. What is left below is tables, the text
+headings), the `#REDIRECT [[Article]]` first line and HTML tables (`table`, `caption`,
+`thead`, `tbody`, `tfoot`, `tr`, `th`, `td`, with `colspan` and `rowspan`) are done. They
+are read only while a wiki article is saved or previewed, by switching the `WIKIHEADING`
+and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_parse_before`
+(see `event/wikilink_listener.php` and `wiki/markup.php`), and articles saved earlier are converted with
+`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. What is left below is the text
 styles and references (not wanted yet), `[[Category:Name]]`, and templates.
 
 ## Scope: wiki articles only
@@ -58,7 +59,7 @@ Still to confirm on the test board before building on it.
 |---|---|---|
 | `== Section ==` | Headings | Built; see "Built so far". |
 | `[[Article#Section]]` | Link to a heading in an article | `#` isn't allowed inside `[[ ]]` today, so this shows as plain text. |
-| HTML tables | Tables | See below. |
+| HTML tables | Tables | Built; see below. |
 
 ## Optional syntax
 
@@ -142,7 +143,7 @@ like *Version*, *Author* and *Requires* that each article fills in.
   text, so a template can't bring in HTML or BBCode an article couldn't.
 - **What links here** should also list the articles using each template.
 
-This is the biggest item in this plan; build it after headings and tables.
+This is the biggest item in this plan; headings and tables are built, so templates are next.
 
 A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
 repository: [Starter templates repository](todo-wiki-templates-repo.md).

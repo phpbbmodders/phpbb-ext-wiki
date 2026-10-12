@@ -96,3 +96,31 @@ a.wikilink-new {
 #postform fieldset.submit-buttons dd {
 	margin-left: 15em;
 }
+
+/* Tables written in an article, on the article page and in the edit preview */
+.wiki .content table,
+.content.wiki-preview table {
+	border-collapse: collapse;
+	margin: 0.8em 0;
+}
+
+.wiki .content table th,
+.wiki .content table td,
+.content.wiki-preview table th,
+.content.wiki-preview table td {
+	border: 1px solid #ccc;
+	padding: 0.3em 0.6em;
+	vertical-align: top;
+}
+
+.wiki .content table th,
+.content.wiki-preview table th {
+	background-color: rgba(128, 128, 128, 0.12);
+	text-align: center;
+}
+
+.wiki .content table caption,
+.content.wiki-preview table caption {
+	font-weight: bold;
+	padding: 0.3em 0;
+}
