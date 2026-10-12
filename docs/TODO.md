@@ -125,6 +125,14 @@ reusable templates and infoboxes, in wiki articles only, using s9e's
 allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
 [`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
 
+## Starter templates repository
+
+A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
+this wiki can do, kept out of the GPL-2.0 extension, with an ACP button that
+installs them as `Template:` pages. Waits for the template system in the Wiki
+markup item above. Plan, licence rules and open questions:
+[`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
+
 ## Readable version compare
 
 The compare page shows raw BBCode with changes marked in red and green.

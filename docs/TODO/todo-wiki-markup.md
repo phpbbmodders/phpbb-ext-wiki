@@ -144,6 +144,9 @@ like *Version*, *Author* and *Requires* that each article fills in.
 
 This is the biggest item in this plan; build it after headings and tables.
 
+A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
+repository: [Starter templates repository](todo-wiki-templates-repo.md).
+
 ## Still to decide
 
 - Template syntax: MediaWiki's `{{Name | key = value}}`, or a BBCode such as
