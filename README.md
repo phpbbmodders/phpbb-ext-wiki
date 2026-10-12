@@ -10,7 +10,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Start an article from the overview page's **New article title** box, or by linking to `/wiki/<article-name>` and following the link.
 - Link to another article by writing `[[Article name]]`, in articles and in forum posts; links to articles that don't exist yet are shown in red and open the editor. Each article lists the articles that link to it under **What links here**. See [Linking between articles](#linking-between-articles).
 - Every edit is saved as a new version; compare any two versions side by side.
-- Edits can wait for approval: moderators get a **Pending articles** list with Approve and Reject. Approving a version older than the live one is blocked, so a stale draft can't overwrite newer content.
+- Edits can wait for approval: moderators get a **Pending articles** list with Approve and Disapprove. Approving a version older than the live one is blocked, so a stale draft can't overwrite newer content.
 - Moderators can take an article offline or delete it, and articles can be made sticky or set to redirect.
 - Notifications when an edit is waiting for approval.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
@@ -25,10 +25,10 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 |---|---|
 | [![Edit form](docs/images/wiki-edit.png)](docs/images/wiki-edit.png) | [![Pending articles awaiting approval](docs/images/wiki-pending-articles.png)](docs/images/wiki-pending-articles.png) |
 
-Approving or rejecting a pending edit shows a diff against the currently
+Approving or disapproving a pending edit shows a diff against the currently
 active version:
 
-[![Version diff with approve/reject actions](docs/images/wiki-compare.png)](docs/images/wiki-compare.png)
+[![Version diff with approve/disapprove actions](docs/images/wiki-compare.png)](docs/images/wiki-compare.png)
 
 The version history page also has a "Moderator controls" dropdown for taking
 an active article offline or deleting it entirely:
@@ -108,7 +108,7 @@ Contributions are welcome!
   [phpBB.de fork](https://github.com/phpbb-de/wiki).
 - This fork builds on Crizz0's phpBB.de branch: fixed phpBB 3.3.x/4.0
   compatibility (routing, YAML parsing, notification API, Flash BBCode
-  removal), completed missing English translations, added an approve/reject
+  removal), completed missing English translations, added an approve/disapprove
   moderation queue for pending articles, and general bug fixes.
 - Code review, bug fixes, and documentation assisted by [Claude](https://www.anthropic.com/claude).
 

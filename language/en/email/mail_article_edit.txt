@@ -1,12 +1,12 @@
-Subject: "{SITENAME}" — New article in the Wiki
+Subject: "{SITENAME}" — Wiki article awaiting approval
 
 Hello,
 
 {NOTIFICATION_SUBJECT}
 
-To the article: {U_LINK}
+View the article: {U_LINK}
 
-To the board:
+Board index:
 {U_INDEX}
 
 {EMAIL_SIG}

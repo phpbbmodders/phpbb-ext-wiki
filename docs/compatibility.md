@@ -1,6 +1,6 @@
 # Compatibility
 
-Verified working, end to end (create/edit/versioning/compare/approve-reject/
+Verified working, end to end (create/edit/versioning/compare/approve-disapprove/
 notifications), on:
 
 - phpBB 3.3.x (tested on 3.3.18-dev)

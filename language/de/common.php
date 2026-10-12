@@ -36,7 +36,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'NO_ARTICLE'					=> 'Der gewünschte Artikel existiert nicht.<br>Du bist nicht berechtigt den Artikel anzulegen.',
 	'MODERATOR_CONTROLS'			=> 'Schnellmoderation',
-	'NO_ARTICLE_REDIRECT'			=> '<strong>Artikel wurde ersetzt!</strong><br><br> Der gewünschte Artikel existiert nicht mehr. <br> Der Artikel wurde mit einem neuen Artikel ersetzt: <a href="%1$s">%2$s</a>.<br><br><hr>',
+	'NO_ARTICLE_REDIRECT'			=> '<p><strong>Dieser Artikel wurde ersetzt.</strong> Siehe stattdessen <a href="%1$s">%2$s</a>.</p>',
 	'LAST_EDIT'						=> 'Zuletzt bearbeitet',
 	'EDIT_WIKI'						=> 'Artikel bearbeiten',
 	'VERSIONS_WIKI'					=> 'Versionen anzeigen',
