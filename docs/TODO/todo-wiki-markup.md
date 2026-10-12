@@ -147,14 +147,17 @@ like *Version*, *Author* and *Requires* that each article fills in.
 
 Built so far: the syntax and parameters described above, the `Template:` pages, expansion on
 display, the loop and depth limits, **What links here** for templates, and the parser functions
-`#if`, `#ifeq`, `#switch`, `#ifexist`, `#expr`, `#ifexpr`, `lc`, `uc`, `lcfirst`, `ucfirst` and the
-magic words `PAGENAME`, `FULLPAGENAME` and `NAMESPACE` (see `wiki/templates.php` and
-`wiki/expression.php`). Calls are worked out as text, before the article is parsed, so a parameter
-can be another call and only the chosen branch of a function is worked out. Still to do:
+`#if`, `#ifeq`, `#switch`, `#ifexist`, `#expr`, `#ifexpr`, `#iferror`, `#time`, the string functions
+`#len`, `#pos`, `#rpos`, `#sub`, `#replace` and `#explode`, `lc`, `uc`, `lcfirst`, `ucfirst`,
+`padleft`, `padright`, `urlencode`, `anchorencode`, the magic words `PAGENAME`, `FULLPAGENAME`,
+`NAMESPACE` and `SITENAME`, and the `CURRENT...` date words (see `wiki/templates.php`,
+`wiki/expression.php` and `wiki/text_tools.php`). Calls are worked out as text, before the article
+is parsed, so a parameter can be another call and only the chosen branch of a function is worked
+out. Still to do:
 
-- More parser functions and magic words that Wikipedia's templates use: `#iferror`, `#time`,
-  `#titleparts`, `#rel2abs`, string functions (`#len`, `#pos`, `#sub`, `#replace`), `padleft`,
-  `urlencode`, `anchorencode`, `CURRENTYEAR` and the other date words, `SITENAME`.
+- Parser functions Wikipedia's templates use that are not here yet: `#titleparts`, `#rel2abs`,
+  `#tag`, `formatnum`, `plural`, `gender`, `#invoke` (Lua, not planned), the
+  `LOCAL...` and `REVISION...` magic words, and `#time` in the viewer's time zone and language.
 - A cache of rendered articles, cleared when a template changes. Expansion runs on every view
   today; add the cache only if a real board shows it is slow.
 - Template pages show `<noinclude>` and `<includeonly>` as text; a tidier template page view.
