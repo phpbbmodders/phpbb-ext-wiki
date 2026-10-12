@@ -13,6 +13,7 @@
 .gitignore			export-ignore
 .github/			export-ignore
 docs/images/		export-ignore
+docs/update/		export-ignore
 tests/				export-ignore
 README.md		export-ignore
 version-check.json	export-ignore

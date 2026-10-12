@@ -11,7 +11,8 @@ table of contents (`__TOC__`, `__FORCETOC__`, `__NOTOC__`, automatic from four
 headings) and the `#REDIRECT [[Article]]` first line are done. They are read only
 while a wiki article is saved or previewed, by switching the `WIKIHEADING` and
 `WIKIMAGIC` tags on in `core.text_formatter_s9e_parse_before` (see `wiki/markup.php`),
-and a migration reparses saved articles. What is left below is tables, the text
+and articles saved earlier are converted with
+`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. What is left below is tables, the text
 styles and references (not wanted yet), `[[Category:Name]]`, and templates.
 
 ## Scope: wiki articles only
