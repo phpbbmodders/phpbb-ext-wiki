@@ -79,3 +79,20 @@ a.wikilink-new {
 	margin-right: 0.3em;
 	opacity: 0.7;
 }
+
+/* Edit form: a little room between a label's help text and its field, and the reason line laid out like the other rows */
+#postform fieldset.fields1 dt,
+#postform fieldset.submit-buttons dt {
+	box-sizing: border-box;
+	width: 15em;
+	padding-right: 1em;
+	text-align: left;
+}
+
+#postform fieldset.submit-buttons dl {
+	text-align: left;
+}
+
+#postform fieldset.submit-buttons dd {
+	margin-left: 15em;
+}
