@@ -1,0 +1,44 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{CONTRIBUTIONS_TITLE}</h2>
+<p>{CONTRIBUTIONS_EXPLAIN_TEXT}</p>
+<!-- IF .contributions -->
+<div class="forumbg forumbg-table">
+	<div class="inner">
+		<table class="table1">
+			<thead>
+				<tr>
+					<th>{L_CONTRIBUTIONS_ARTICLE}</th>
+					<th class="big">{L_REASON_EDIT}</th>
+					<th class="middle">{L_CONTRIBUTIONS_SAVED}</th>
+					<th class="big">{L_CONTRIBUTIONS_STATUS}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN contributions -->
+				<tr class="<!-- IF contributions.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td><a href="<!-- IF contributions.S_LIVE -->{contributions.U_ARTICLE}<!-- ELSE -->{contributions.U_VERSION}<!-- ENDIF -->"><strong>{contributions.ARTICLE_TITLE}</strong></a></td>
+					<td>{contributions.EDIT_REASON}</td>
+					<td>{contributions.EDIT_TIME}</td>
+					<td>{contributions.STATUS}</td>
+				</tr>
+				<!-- END contributions -->
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- ELSE -->
+<p>{L_CONTRIBUTIONS_NONE}</p>
+<!-- ENDIF -->
+
+<div class="action-bar bottom">
+	<div class="pagination">
+		{TOTAL_ITEMS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			 &bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

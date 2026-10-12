@@ -212,7 +212,7 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				'ARTICLE_TEXT'			=> ($this->data['article_redirect'])? $redirect_note : $this->message_parser->message,
 				'LAST_EDIT'				=> $this->user->format_date($this->data['article_last_edit']),
 				'LAST_EDIT_ISO'			=> date('Y-m-d', $this->data['article_last_edit']),
-				'ARTICLE_USER'			=> get_username_string('full', $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
+				'ARTICLE_USER'			=> \phpbbmodders\wiki\wiki\author::link($this->helper, $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
 				'S_EDIT'				=> ($this->auth->acl_get('u_wiki_edit') && $s_edit_redirect),
 				'U_EDIT'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'edit')),
 				'S_VERSIONS'			=> $this->auth->acl_get('u_wiki_versions'),

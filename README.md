@@ -12,6 +12,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Every edit is saved as a new version; compare any two versions side by side.
 - Edits can wait for approval: moderators get a **Pending articles** list with Approve and Disapprove. Approving a version older than the live one is blocked, so a stale draft can't overwrite newer content.
 - Moderators can take an article offline or delete it, and articles can be made sticky or set to redirect.
+- A contributions page for every member, at `/wiki/contributions/<username>`, lists every version they saved across all articles, newest first. Author names on articles and in the version history link to it. Versions waiting for approval, and those of switched-off articles, show only to moderators and to the author.
 - Notifications when an edit is waiting for approval.
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
 - A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.

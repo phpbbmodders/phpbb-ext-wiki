@@ -21,6 +21,21 @@ services:
                 - '%core.php_ext%'
                 - '%tables.wiki.article%'
 
+    phpbbmodders.wiki.contributions:
+        class: phpbbmodders\wiki\controller\contributions
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.wiki.article%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     phpbbmodders.wiki.main:
         class: phpbbmodders\wiki\controller\main
         arguments:

@@ -2,6 +2,12 @@ phpbbmodders_wiki_index:
     path: /wiki/
     defaults: { _controller: phpbbmodders.wiki.overview:base }
 
+phpbbmodders_wiki_contributions:
+    path: /wiki/contributions/{username}
+    defaults: { _controller: phpbbmodders.wiki.contributions:view }
+    requirements:
+        username: .+
+
 phpbbmodders_wiki_article:
     path: /wiki/{article}
     defaults: { _controller: phpbbmodders.wiki.main:article, article: "" }

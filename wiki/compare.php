@@ -214,7 +214,7 @@ class compare
 				'ARTICLE_TITLE'		=> $this->data['article_title'],
 				'EDIT_REASON'		=> $this->data['article_edit_reason'],
 				'S_ACTIVE'			=> ($this->data['article_approved'] == 1) ? true : false,
-				'USER'				=> get_username_string('full', $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
+				'USER'				=> \phpbbmodders\wiki\wiki\author::link($this->helper, $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
 				'EDIT_TIME'			=> $this->user->format_date($this->data['article_last_edit']),
 				'U_VERSION'			=> $this->helper->route('phpbbmodders_wiki_article', array('id' => $this->data['article_id'])),
 				'U_DELETE'			=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
