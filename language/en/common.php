@@ -47,7 +47,7 @@ $lang = array_merge($lang, array(
 	'ARTICLE_DESCRIPTION_EXPLAIN'	=> 'A short summary shown in the article listing.',
 	'NEW_ARTICLE_TITLE'			=> 'New article title',
 	'GO_TO_ARTICLE'					=> 'Create',
-	'NO_ARTICLE_REDIRECT'			=> '<strong>Article has been replaced!</strong><br><br> The requested article no longer exists. <br> It has been replaced with a new article: <a href="%1$s">%1$s</a>.<br><br>',
+	'NO_ARTICLE_REDIRECT'			=> '<p><strong>This article has been replaced.</strong> See <a href="%1$s">%2$s</a> instead.</p>',
 	'LAST_EDIT'					=> 'Last modified',
 	'EDIT_WIKI'					=> 'Edit article',
 	'VERSIONS_WIKI'				=> 'View versions',
