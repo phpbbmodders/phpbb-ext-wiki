@@ -45,5 +45,12 @@ $lang = array_merge($lang, array(
 	'WIKI_WHAT_LINKS_HERE'		=> 'What links here',
 	'WIKI_TEMPLATE_LOOP'		=> 'Template loop: “%s” includes itself',
 	'WIKI_TEMPLATE_TOO_DEEP'	=> 'Too many templates inside templates at “%s”',
+	'WIKI_TEMPLATE_UNKNOWN_FUNCTION'	=> 'Unknown function “%s”',
+	'WIKI_EXPR_ERROR'			=> 'Expression error: %s',
+	'WIKI_EXPR_TOO_LONG'		=> 'the expression is too long',
+	'WIKI_EXPR_UNEXPECTED'		=> 'unexpected “%s”',
+	'WIKI_EXPR_MISSING'			=> 'something is missing',
+	'WIKI_EXPR_DIV_ZERO'		=> 'division by zero',
+	'WIKI_EXPR_NAN'				=> 'the result is not a number',
 
 ));
