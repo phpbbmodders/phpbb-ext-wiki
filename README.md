@@ -19,6 +19,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - **Watch article** on every article page, for signed-in members: they are notified when a new version of a watched article goes live (a moderator approved an edit, or a trusted editor's edit went live directly), never about their own edit. It is a notification type in phpBB's notification settings, so members choose the bell, email or both. With the ACP setting **Watch edited articles** (on by default, under **Extensions > Wiki > Settings**), saving an edit also starts watching the article. Watches are removed with the article and with the member.
 - Wikipedia-style headings: `== Heading ==` to `====== Heading ======` in an article become section headings with anchors, `[[Article#Section]]` and `[[#Section]]` link to them, and a table of contents shows after the intro when an article has four or more headings (`__TOC__` places it, `__FORCETOC__` forces it, `__NOTOC__` hides it). A first line `#REDIRECT [[Article]]` sets the redirect for members who may set redirects. This works in wiki articles only; in a forum post `== text ==` stays plain text.
 - Tables, written as HTML in an article: `<table>`, `<caption>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>` and `<td>`, with `colspan` and `rowspan` on a cell. BBCode and `[[links]]` work inside cells. Any other attribute (`style`, `onclick`, `class`) is dropped, and any other element (`script`, `iframe`) stays plain text. Like headings, tables work in wiki articles only; in a forum post `<table>` stays plain text. After upgrading, disable and enable the extension so the board rebuilds its cache.
+- Templates: `{{Name}}`, `{{Name|first|second}}` and `{{Name|key=value}}` in an article include the live version of the article `Template:Name`, so a notice or infobox is written once and edited in one place. See [Templates](#templates).
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
 - A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
@@ -42,6 +43,30 @@ The version history page also has a "Moderator controls" dropdown for taking
 an active article offline or deleting it entirely:
 
 [![Moderator controls dropdown: set article inactive, delete article](docs/images/wiki-moderator-controls.png)](docs/images/wiki-moderator-controls.png)
+
+## Templates
+
+A template is an ordinary wiki article whose name starts with `Template:`, for example `Template:Out of date`, so it has versions, approval and permissions like any article. Write `{{Out of date}}` in another article and the live version of the template is shown at that place.
+
+Inside the template, `{{{1}}}`, `{{{2}}}` stand for the parameters by position and `{{{reason}}}` for a named one. `{{{reason|no reason given}}}` gives a default for when the parameter is missing; `{{{reason|}}}` makes it empty.
+
+```text
+Template:Out of date
+<noinclude>Shows a notice that an article is out of date.</noinclude>
+[b]Out of date[/b]: {{{reason|no reason given}}}
+
+An article
+{{Out of date|reason=the 2.0 release changed this}}
+```
+
+- Parameters are `{{Name|value}}` by position (the first bare value is `{{{1}}}`) or `{{Name|key=value}}`; a bar inside a `[[link|text]]` or another template belongs to that.
+- What is inside `<noinclude>` is left out when the template is included, and `<includeonly>` text is included without the tags, so a template page can carry its own documentation.
+- The template is looked up when the article is shown, so editing it changes every article that uses it. Only a template's approved version is used.
+- A template can include other templates, ten levels deep at most; a template that includes itself shows an error where the loop is. A call to a template that does not exist is a red link to `Template:Name`.
+- The text of a template is parsed like article text, so it can use BBCode, `[[links]]`, headings and tables, and nothing an article could not.
+- **What links here** on a template page lists the articles that use it.
+- Like headings and tables, this works in wiki articles only; in a forum post `{{Name}}` stays plain text. The first letter of a template name is not case-sensitive (`{{out of date}}` finds `Template:Out of date`).
+- After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier hold `{{...}}` as plain text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
 
 ## Linking between articles
 

@@ -185,6 +185,12 @@ services:
         arguments:
             - '@dbal.conn'
             - '%tables.wiki.article%'
+    phpbbmodders.wiki.templates:
+        class: phpbbmodders\wiki\wiki\templates
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '%tables.wiki.article%'
     phpbbmodders.wiki.wikilink_listener:
         class: phpbbmodders\wiki\event\wikilink_listener
         arguments:
@@ -192,6 +198,7 @@ services:
             - '@language'
             - '@phpbbmodders.wiki.links'
             - '@phpbbmodders.wiki.files'
+            - '@phpbbmodders.wiki.templates'
         tags:
             - { name: event.listener }
 

@@ -70,13 +70,27 @@ class links
 	 */
 	public function what_links_here($name)
 	{
-		// Links are stored in the parsed text as <WIKILINK name="...">.
-		$needle = '<WIKILINK name="' . htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . '"';
+		// Links are stored in the parsed text as <WIKILINK name="...">, and {{template}} calls
+		// as <WIKITEMPLATE call="..." name="..."> (attributes in alphabetical order).
+		$any = $this->db->get_any_char();
+		$escaped = htmlspecialchars($name, ENT_COMPAT, 'UTF-8');
+		$conditions = array(
+			'article_text ' . $this->db->sql_like_expression($any . '<WIKILINK name="' . $escaped . '"' . $any),
+		);
+		if (strpos($name, \phpbbmodders\wiki\wiki\templates::PREFIX) === 0)
+		{
+			$template = htmlspecialchars(substr($name, strlen(\phpbbmodders\wiki\wiki\templates::PREFIX)), ENT_COMPAT, 'UTF-8');
+			foreach (array($template, $escaped) as $written)
+			{
+				$conditions[] = 'article_text ' . $this->db->sql_like_expression($any . '<WIKITEMPLATE ' . $any . ' name="' . $written . '">' . $any);
+			}
+		}
+
 		$sql = 'SELECT article_id, article_url, article_title, article_last_edit
 			FROM ' . $this->article_table . '
 			WHERE article_approved = 1
 				AND article_url <> \'' . $this->db->sql_escape($name) . '\'
-				AND article_text ' . $this->db->sql_like_expression($this->db->get_any_char() . $needle . $this->db->get_any_char());
+				AND (' . implode(' OR ', $conditions) . ')';
 		$result = $this->db->sql_query($sql);
 		$candidates = array();
 		while ($row = $this->db->sql_fetchrow($result))
