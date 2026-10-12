@@ -27,3 +27,12 @@ a.wikilink-new {
 .wiki-buttons .button > span {
 	padding-right: 4px;
 }
+
+/* Pending articles: the date and the actions sit side by side, in the header and in every row */
+.forumbg ul.topiclist dd.lastpost.wiki-pending-date {
+	width: 200px;
+}
+
+.forumbg ul.topiclist dd.lastpost.wiki-pending-action {
+	width: 230px;
+}
