@@ -154,7 +154,7 @@ class compare
 
 		$sql = 'SELECT *
 			FROM ' . $this->article_table . '
-			WHERE article_url = "' . $this->db->sql_escape($article) . '"
+			WHERE article_url = \'' . $this->db->sql_escape($article) . '\'
 			ORDER BY article_last_edit DESC';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$this->data = $this->db->sql_fetchrow($result);
@@ -188,7 +188,7 @@ class compare
 					'ON'	=> 'u.user_id = a.article_user_id'
 				)
 			),
-			'WHERE'		=> 'article_url = "' . $this->db->sql_escape($article) . '"',
+			'WHERE'		=> 'article_url = \'' . $this->db->sql_escape($article) . '\'',
 			'ORDER_BY'	=> 'a.article_last_edit DESC',
 		);
 
