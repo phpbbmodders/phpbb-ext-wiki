@@ -43,5 +43,5 @@ $lang = array_merge($lang, array(
 	'ARTICLES_PENDING'			=> 'Pending articles (awaiting approval)',
 
 	'ARTICLE_CREATED'			=> 'Article created',
-	'ARTICLE_LAST_EDIT'			=> 'Last updated',
+	'ARTICLE_LAST_EDIT'			=> 'Last modified',
 ));
