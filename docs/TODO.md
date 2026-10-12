@@ -78,27 +78,12 @@ search index, so this isn't surprising, but it does mean articles are
 currently undiscoverable except by browsing the overview page or already
 knowing the URL.
 
-Chosen direction: integrate wiki articles into phpBB's existing board
-search, alongside forum posts, using the normal search interface.
-
-Proposed scope:
-
-- Search article titles and the current approved article text; exclude
-  pending edits, inactive versions, and historical revisions.
-- Respect wiki viewing permissions in results, snippets, counts, and
-  direct result links so restricted content is not disclosed.
-- Clearly identify wiki results and link to the article. Consider a wiki
-  content filter within phpBB search rather than a separate search page.
-- Keep the index current after approval, edits, deletion, and restoration;
-  support indexing existing articles and rebuilding the index.
-- Investigate extension hooks and compatibility with the board's enabled
-  search backend before choosing an indexing approach. Preserve normal
-  post search and avoid requiring phpBB core modifications; document any
-  missing extension points as upstream event requests.
-- Verify mixed post/article results, pagination, permission changes, and
-  indexing lifecycle behavior before considering integration complete.
-
-This is a proposed feature; implementation details still require review.
+Chosen direction (confirmed 10/12/2026): first port the Knowledge Base's search engine to the
+wiki, then show wiki matches in a block above the results of phpBB's normal board search
+(grouped results, not one mixed list), with an "Also search the Wiki" checkbox on Advanced
+search. Searches respect the wiki's viewing permissions, use only the current approved article text
+and need no core change. The full plan, scope and verification list are in
+[`TODO/todo-forum-search-integration.md`](TODO/todo-forum-search-integration.md).
 
 ## A wiki-style UI, not just reskinned forum templates
 

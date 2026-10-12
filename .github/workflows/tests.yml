@@ -20,6 +20,8 @@ jobs:
       EXTNAME: phpbbmodders/wiki
       PHPBB_BRANCH: '3.3.x'
       RUN_FUNCTIONAL_TESTS: 0
+      PRIMARY_PHP_VERSION: '8.2'
+      PHP_VERSION_MATRIX: '["8.2", "8.3", "8.4", "8.5"]'
 
   # phpBB 4.0 (master) compatibility
   call-tests-master:
@@ -30,4 +32,4 @@ jobs:
       PHPBB_BRANCH: 'master'
       RUN_FUNCTIONAL_TESTS: 0
       PRIMARY_PHP_VERSION: '8.2'
-      PHP_VERSION_MATRIX: '["8.2", "8.3", "8.4"]'
+      PHP_VERSION_MATRIX: '["8.2", "8.3", "8.4", "8.5"]'
