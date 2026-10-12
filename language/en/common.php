@@ -70,7 +70,10 @@ $lang = array_merge($lang, array(
 
 	'ACTIVATE_VERSION_SUCCESS'		=> 'The article version has been successfully set as active.',
 	'ARTICLE_HAS_NEW'				=> 'A newer version of this article is available.',
-	'ARTICLE_VIEWS_TEXT'			=> 'This article has been viewed <strong>%d</strong> times.',
+	'ARTICLE_VIEWS_TEXT'			=> array(
+		1 => 'This article has been viewed <strong>%d</strong> time.',
+		2 => 'This article has been viewed <strong>%d</strong> times.',
+	),
 	'CONFIRM_ACTIVATE_VERSION'		=> 'Are you sure you want to set the selected version as the active version for this article?',
 	'CONFIRM_DEACTIVATE_ARTICLE'	=> 'Are you sure you want to set the entire article to inactive?',
 	'CONFIRM_DELETE_ARTICLE'		=> 'Are you sure you want to permanently delete this article <strong>and all its versions</strong>?',
