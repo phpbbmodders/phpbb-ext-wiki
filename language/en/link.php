@@ -39,6 +39,7 @@ $lang = array_merge($lang, array(
 	'WIKI_ARTICLE_UPDATE'			=> 'An edit of a wiki article is awaiting approval',
 	'WIKI_WATCHED_ARTICLE'			=> 'A wiki article you watch has a new version',
 	'WIKI_WATCHED_ARTICLE_LIVE'		=> 'A new version of the wiki article <strong>%1$s</strong> is now live.',
+	'WIKI_TOC'					=> 'Contents',
 	'WIKI_LINK_BUTTON'			=> 'Wiki link: [[Article name]] or [[Article name|link text]]',
 	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',
 	'WIKI_WHAT_LINKS_HERE'		=> 'What links here',
