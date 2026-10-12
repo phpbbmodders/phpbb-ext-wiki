@@ -78,12 +78,27 @@ search index, so this isn't surprising, but it does mean articles are
 currently undiscoverable except by browsing the overview page or already
 knowing the URL.
 
-Two ways to close this, not mutually exclusive:
+Chosen direction: integrate wiki articles into phpBB's existing board
+search, alongside forum posts, using the normal search interface.
 
-- Hook wiki content into phpBB's existing search backends, so it shows up
-  in normal board search alongside posts.
-- A dedicated wiki-scoped search page/box, simpler to build but a second,
-  separate search UI for members to learn.
+Proposed scope:
+
+- Search article titles and the current approved article text; exclude
+  pending edits, inactive versions, and historical revisions.
+- Respect wiki viewing permissions in results, snippets, counts, and
+  direct result links so restricted content is not disclosed.
+- Clearly identify wiki results and link to the article. Consider a wiki
+  content filter within phpBB search rather than a separate search page.
+- Keep the index current after approval, edits, deletion, and restoration;
+  support indexing existing articles and rebuilding the index.
+- Investigate extension hooks and compatibility with the board's enabled
+  search backend before choosing an indexing approach. Preserve normal
+  post search and avoid requiring phpBB core modifications; document any
+  missing extension points as upstream event requests.
+- Verify mixed post/article results, pagination, permission changes, and
+  indexing lifecycle behavior before considering integration complete.
+
+This is a proposed feature; implementation details still require review.
 
 ## A wiki-style UI, not just reskinned forum templates
 
@@ -122,15 +137,21 @@ article's version history individually to find a user's activity.
 
 ## Per-article edit protection
 
-Permissions are board-wide today — `u_wiki_edit` either lets a user edit
-*any* article or none of them. No way to lock down a specific
-high-traffic/important article to a smaller group, the way MediaWiki
-protects frequently-vandalized pages. Should be **group-based**: an
-article-level setting naming which phpBB group(s) can edit it, checked in
-addition to (not instead of) the existing `u_wiki_edit` permission —
-falling back to "any group with `u_wiki_edit`" when no restriction is set
-on a given article, so this is opt-in per article rather than a behavior
-change for existing ones.
+Not built yet. Permissions are board-wide today: `u_wiki_edit` lets a user
+edit *any* article or none of them, so a specific high-traffic or important
+article can't yet be limited to a smaller group, the way MediaWiki protects
+frequently vandalized pages.
+
+Until then, the approval queue already keeps unwanted edits off the live
+site: an edit by someone without `u_wiki_set_active` is saved as a pending
+version and only goes live once a moderator approves it.
+
+Plan: a **group-based** article-level setting naming which phpBB group(s)
+can edit it, set by moderators from the article's moderator controls.
+It's checked in addition to (not instead of) the existing `u_wiki_edit`
+permission, and falls back to "any group with `u_wiki_edit`" when no
+restriction is set on a given article, so this is opt-in per article rather
+than a behavior change for existing ones.
 
 ## Edit-conflict detection and page locking
 
