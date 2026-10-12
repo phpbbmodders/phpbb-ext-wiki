@@ -13,8 +13,10 @@ headings), the `#REDIRECT [[Article]]` first line and HTML tables (`table`, `cap
 are read only while a wiki article is saved or previewed, by switching the `WIKIHEADING`
 and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_parse_before`
 (see `event/wikilink_listener.php` and `wiki/markup.php`), and articles saved earlier are converted with
-`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. What is left below is the text
-styles and references (not wanted yet), `[[Category:Name]]`, and templates.
+`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
+`{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
+shown (see `wiki/templates.php`), nested ten deep with a loop check. What is left below is
+the text styles and references (not wanted yet), `[[Category:Name]]`, and the rest of templates.
 
 ## Scope: wiki articles only
 
@@ -143,7 +145,17 @@ like *Version*, *Author* and *Requires* that each article fills in.
   text, so a template can't bring in HTML or BBCode an article couldn't.
 - **What links here** should also list the articles using each template.
 
-This is the biggest item in this plan; headings and tables are built, so templates are next.
+Built so far: the syntax and parameters described above, the `Template:` pages, expansion on
+display, the loop and depth limits, and **What links here** for templates. Still to do:
+
+- Parser functions (`{{#if:}}`, `{{#ifeq:}}`, `{{#switch:}}`, `{{#expr:}}`) and magic words
+  (`{{PAGENAME}}`), which most Wikipedia templates need.
+- A cache of rendered articles, cleared when a template changes. Expansion runs on every view
+  today; add the cache only if a real board shows it is slow.
+- Template pages show `<noinclude>` and `<includeonly>` as text; a tidier template page view.
+- A template call holds other calls in its parameters three levels deep, and a default value holds
+  one level of `{{template}}`; deeper nesting stays text.
+- A list of templates and a "Template" start-point in the article picker.
 
 A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
 repository: [Starter templates repository](todo-wiki-templates-repo.md).

@@ -141,14 +141,15 @@ class markup_test extends \PHPUnit\Framework\TestCase
 			$this->createMock(\phpbb\controller\helper::class),
 			$this->createMock(\phpbb\language\language::class),
 			$this->createMock(\phpbbmodders\wiki\wiki\links::class),
-			$this->createMock(\phpbbmodders\wiki\wiki\files::class)
+			$this->createMock(\phpbbmodders\wiki\wiki\files::class),
+			$this->createMock(\phpbbmodders\wiki\wiki\templates::class)
 		);
 
 		$configurator = new \s9e\TextFormatter\Configurator;
 		$listener->configure_wikilink(array('configurator' => $configurator));
 		extract($configurator->finalize());
 
-		$tags = array('WIKIHEADING', 'WIKIMAGIC');
+		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE');
 		foreach (\phpbbmodders\wiki\event\wikilink_listener::TABLE_ELEMENTS as $element)
 		{
 			$tags[] = 'html:' . $element;
@@ -225,6 +226,45 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame(1, substr_count($xml, '<WIKILINK'));
 	}
 
+	public function test_template_calls_become_tags_with_their_name_and_call()
+	{
+		$xml = $this->parse('Hi {{Out of date}} and {{Infobox|name=Wiki|v={{Ver|1}}|[[A|b]]}} and {{  Spaced  |x}}.');
+
+		$this->assertSame(3, substr_count($xml, '<WIKITEMPLATE'), $xml);
+		$this->assertStringContainsString('<WIKITEMPLATE call="Out of date" name="Out of date">', $xml);
+		$this->assertStringContainsString('<WIKITEMPLATE call="Infobox|name=Wiki|v={{Ver|1}}|[[A|b]]" name="Infobox">', $xml);
+		$this->assertStringContainsString('name="Spaced"', $xml);
+	}
+
+	public function test_things_that_are_not_template_calls_stay_text()
+	{
+		foreach (array('{{{1}}}', '{{ }}', '{{|x}}', '{{#if:a|b}}', '{{A|x}}}', 'a {b} c', '{{', '{{A') as $text)
+		{
+			$this->assertStringNotContainsString('<WIKITEMPLATE', $this->parse($text), $text);
+		}
+	}
+
+	public function test_a_parameter_inside_a_call_does_not_end_it()
+	{
+		$xml = $this->parse('{{A|{{{1}}}}} {{B|{{C|{{D}}}}}}');
+
+		$this->assertSame(2, substr_count($xml, '<WIKITEMPLATE'), $xml);
+		$this->assertStringContainsString('call="A|{{{1}}}"', $xml);
+		$this->assertStringContainsString('call="B|{{C|{{D}}}}"', $xml);
+	}
+
+	public function test_template_calls_stay_plain_text_outside_a_wiki_article()
+	{
+		$this->assertStringNotContainsString('<WIKITEMPLATE', $this->parse('{{Out of date}}', false));
+	}
+
+	public function test_a_template_call_renders_as_a_placeholder()
+	{
+		$html = $this->render('{{Out of date|reason=x "quoted"}}');
+
+		$this->assertStringContainsString('<span class="wikitemplate" data-wiki-template="Out of date" data-wiki-call="Out of date|reason=x &quot;quoted&quot;"></span>', $html);
+	}
+
 	private const TABLE = "<table>\n<caption>Versions</caption>\n<tr><th>Name</th><th colspan=\"2\">Notes</th></tr>\n<tr><td>[b]Wiki[/b]</td><td rowspan=\"2\">1.1.0</td><td>[[Main Page]]</td></tr>\n</table>";
 
 	public function test_an_html_table_becomes_tags_in_a_wiki_article()
@@ -274,7 +314,8 @@ class markup_test extends \PHPUnit\Framework\TestCase
 			$this->createMock(\phpbb\controller\helper::class),
 			$this->createMock(\phpbb\language\language::class),
 			$this->createMock(\phpbbmodders\wiki\wiki\links::class),
-			$this->createMock(\phpbbmodders\wiki\wiki\files::class)
+			$this->createMock(\phpbbmodders\wiki\wiki\files::class),
+			$this->createMock(\phpbbmodders\wiki\wiki\templates::class)
 		);
 
 		$configurator = new \s9e\TextFormatter\Configurator;

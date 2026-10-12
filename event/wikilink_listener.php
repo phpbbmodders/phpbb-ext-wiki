@@ -28,6 +28,9 @@ class wikilink_listener implements EventSubscriberInterface
 
 	const NAME_PATTERN = self::NAME_CLASS . '{1,255}';
 
+	/** How many {{templates}} deep a template call may hold others in its parameters. */
+	const TEMPLATE_NESTING = 3;
+
 	/** HTML elements a wiki article may use to write a table. */
 	const TABLE_ELEMENTS = array('table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td');
 
@@ -43,13 +46,19 @@ class wikilink_listener implements EventSubscriberInterface
 	/** @var \phpbbmodders\wiki\wiki\files */
 	protected $files;
 
+	/** @var \phpbbmodders\wiki\wiki\templates */
+	protected $templates;
+
 	/**
 	 * @param \phpbb\controller\helper			$helper		Controller helper object
 	 * @param \phpbb\language\language			$language	Language object
 	 * @param \phpbbmodders\wiki\wiki\links		$links		Wiki links service
+	 * @param \phpbbmodders\wiki\wiki\files		$files		Wiki files service
+	 * @param \phpbbmodders\wiki\wiki\templates	$templates	Wiki templates service
 	 */
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\files $files)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\templates $templates)
 	{
+		$this->templates = $templates;
 		$this->files = $files;
 		$this->helper = $helper;
 		$this->language = $language;
@@ -66,6 +75,25 @@ class wikilink_listener implements EventSubscriberInterface
 			'core.text_formatter_s9e_parse_before'		=> 'toggle_wiki_markup',
 			'core.text_formatter_s9e_render_after'		=> 'link_wikilinks',
 		);
+	}
+
+	/**
+	 * The pattern for {{Name|parameters}}. s9e cannot read a recursive pattern, so
+	 * templates inside the braces are matched down to a fixed depth.
+	 *
+	 * @return string
+	 */
+	protected static function template_pattern()
+	{
+		// Anything but a brace, a {{{parameter}}}, or a brace on its own
+		$plain = '[^{}]++|\\{\\{\\{[^{}]*+\\}\\}\\}|\\{(?![{])|\\}(?![}])';
+		$inner = '(?:' . $plain . ')*?';
+		for ($level = 0; $level < self::TEMPLATE_NESTING; $level++)
+		{
+			$inner = '(?:' . $plain . '|\\{\\{(?![{])' . $inner . '\\}\\})*?';
+		}
+
+		return '/(?<![{])\\{\\{(?![{])(?=\\s*(?<name>[^|{}\\[\\]<>"#\\s][^|{}\\[\\]<>"\\n]{0,254}?)\\s*(?:\\||\\}\\}))(?<call>' . $inner . ')\\}\\}(?![}])/';
 	}
 
 	/**
@@ -120,6 +148,16 @@ class wikilink_listener implements EventSubscriberInterface
 
 		$configurator->Preg->match('/__(?<word>FORCETOC|NOTOC|TOC)__/', 'WIKIMAGIC');
 
+		// {{Name}}, {{Name|parameter}} and {{Name|key=value}} include the page "Template:Name".
+		// The braces may hold other {{templates}} and {{{parameters}}}. The call is kept as
+		// written and expanded when the article is shown (see templates::expand_all()).
+		$template = $configurator->tags->add('WIKITEMPLATE');
+		$template->attributes->add('name');
+		$template->attributes->add('call');
+		$template->template = '<span class="wikitemplate" data-wiki-template="{@name}" data-wiki-call="{@call}"></span>';
+
+		$configurator->Preg->match(self::template_pattern(), 'WIKITEMPLATE');
+
 		$tag = $configurator->tags->add('WIKILINK');
 		$tag->attributes->add('name')->required = false;
 		$tag->attributes->add('section')->required = false;
@@ -159,7 +197,7 @@ class wikilink_listener implements EventSubscriberInterface
 	{
 		$parser = $event['parser']->get_parser();
 
-		$tags = array('WIKIHEADING', 'WIKIMAGIC');
+		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE');
 		foreach (self::TABLE_ELEMENTS as $element)
 		{
 			$tags[] = 'html:' . $element;
@@ -181,6 +219,19 @@ class wikilink_listener implements EventSubscriberInterface
 	public function link_wikilinks($event)
 	{
 		$html = $event['html'];
+
+		if (strpos($html, 'class="wikitemplate"') !== false)
+		{
+			$html = $this->templates->expand_all($html);
+			$event['html'] = $html;
+		}
+
+		// A template's text is part of the article it sits in: that article's pass below
+		// finishes it (headings, files, links) once everything is in place
+		if ($this->templates->is_expanding())
+		{
+			return;
+		}
 
 		if (strpos($html, 'class="wikiheading"') !== false || strpos($html, 'class="wikimagic"') !== false)
 		{

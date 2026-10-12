@@ -43,5 +43,7 @@ $lang = array_merge($lang, array(
 	'WIKI_LINK_BUTTON'			=> 'Wiki link: [[Article name]] or [[Article name|link text]]',
 	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',
 	'WIKI_WHAT_LINKS_HERE'		=> 'What links here',
+	'WIKI_TEMPLATE_LOOP'		=> 'Template loop: “%s” includes itself',
+	'WIKI_TEMPLATE_TOO_DEEP'	=> 'Too many templates inside templates at “%s”',
 
 ));
