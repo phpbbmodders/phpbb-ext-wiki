@@ -123,7 +123,7 @@ class wikilink_listener implements EventSubscriberInterface
 		$tag->attributes->add('text')->required = false;
 		$tag->template = '<a class="wikilink" data-wiki-article="{@name}" data-wiki-section="{@section}">'
 			. '<xsl:choose><xsl:when test="@text"><xsl:value-of select="@text"/></xsl:when>'
-			. '<xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise></xsl:choose></a>';
+			. '<xsl:otherwise><xsl:value-of select="@name"/><xsl:if test="@section">#<xsl:value-of select="@section"/></xsl:if></xsl:otherwise></xsl:choose></a>';
 
 		$configurator->Preg->match(
 			'/\[\[\s*(?!File:)(?=[^\]|])(?<name>' . self::NAME_CLASS . '{0,255}?)\s*(?:#\s*(?<section>[^\[\]|<>"\n]{1,255}?)\s*)?(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',

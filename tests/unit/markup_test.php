@@ -218,4 +218,41 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame(2, substr_count($xml, '<WIKIFILE'));
 		$this->assertSame(1, substr_count($xml, '<WIKILINK'));
 	}
+
+	private function render(string $text): string
+	{
+		$listener = new \phpbbmodders\wiki\event\wikilink_listener(
+			$this->createMock(\phpbb\controller\helper::class),
+			$this->createMock(\phpbb\language\language::class),
+			$this->createMock(\phpbbmodders\wiki\wiki\links::class),
+			$this->createMock(\phpbbmodders\wiki\wiki\files::class)
+		);
+
+		$configurator = new \s9e\TextFormatter\Configurator;
+		// The PHP renderer, like phpBB's own: the default XSLT one needs ext-xsl, which some CI runners lack
+		$configurator->rendering->setEngine('PHP');
+		$listener->configure_wikilink(array('configurator' => $configurator));
+		extract($configurator->finalize());
+
+		return $renderer->render($parser->parse($text));
+	}
+
+	/** @dataProvider link_texts */
+	public function test_a_link_shows_a_readable_text(string $text, string $expected)
+	{
+		$html = $this->render($text);
+
+		$this->assertMatchesRegularExpression('/<a class="wikilink"[^>]*>' . preg_quote($expected, '/') . '<\/a>/', $html, $html);
+	}
+
+	public static function link_texts(): array
+	{
+		return array(
+			'article'				=> array('[[Main Page]]', 'Main Page'),
+			'article with section'	=> array('[[Main Page#History]]', 'Main Page#History'),
+			'same-page section'		=> array('[[#History]]', '#History'),
+			'own text'				=> array('[[Main Page#History|the history]]', 'the history'),
+			'own text, same page'	=> array('[[#History|below]]', 'below'),
+		);
+	}
 }
