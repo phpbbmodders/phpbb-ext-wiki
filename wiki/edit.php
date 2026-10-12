@@ -243,7 +243,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		else if ($preview) // Display the preview
 		{
 			$this->message_parser->parse($this->option['bbcode'], $this->option['url'], $this->option['smilies'], $this->option['img'], $this->option['flash'], $this->option['quote']);
+			\phpbbmodders\wiki\wiki\files::set_context($article);
 			$this->message_parser->format_display($this->option['bbcode'], $this->option['url'], $this->option['smilies']);
+			\phpbbmodders\wiki\wiki\files::set_context(null);
 
 			foreach ($sources_array as $source)
 			{

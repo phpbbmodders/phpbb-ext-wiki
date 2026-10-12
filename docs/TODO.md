@@ -164,19 +164,3 @@ BBCode comfortably.
 
 A one-click "Restore this version" in the version history. Today the only
 way is to approve the old version again.
-
-## File uploads
-
-Let editors upload images and files to an article, the way posts take
-attachments. phpBB's attachment system is built around posts and private
-messages, so the wiki either needs its own upload handling or a careful
-reuse of phpBB's file upload classes with its own table.
-
-- Uploads belong to an article and survive across its versions; deleting
-  an article deletes them.
-- Reuse the board's allowed file types, size limits and quota where
-  possible, with a separate permission to upload.
-- Serve files through the extension's own controller, which checks the
-  reader's wiki permissions, never straight from a public folder.
-- An uploaded image can be placed in the article text, for example with
-  `[[File:Diagram.png]]`.

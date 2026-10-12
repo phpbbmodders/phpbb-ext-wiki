@@ -42,6 +42,9 @@ class main
 	/** @var \phpbbmodders\wiki\wiki\discussion */
 	protected $discussion;
 
+	/** @var \phpbbmodders\wiki\wiki\files */
+	protected $files;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -61,10 +64,11 @@ class main
 	* @param \phpbbmodders\wiki\wiki\compare		$compare				Diff Wiki object
 	* @param \phpbbmodders\wiki\wiki\view		$view					View Wiki object
 	* @param \phpbbmodders\wiki\wiki\discussion	$discussion				Start discussion object
+	* @param \phpbbmodders\wiki\wiki\files		$files					Uploaded files object
 	* @param string							$phpbb_root_path
 	* @param string							$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->helper = $helper;
@@ -76,6 +80,7 @@ class main
 		$this->compare = $compare;
 		$this->view = $view;
 		$this->discussion = $discussion;
+		$this->files = $files;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -148,6 +153,15 @@ class main
 
 			case 'start_discussion':
 				return $this->discussion->start($article);
+
+			case 'upload':
+				return $this->files->upload($article);
+
+			case 'file':
+				return $this->files->serve($article, $id);
+
+			case 'delete_file':
+				return $this->files->delete($article, $id);
 
 			default:
 				return $this->view->view_article($article, $id);
