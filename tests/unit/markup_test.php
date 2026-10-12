@@ -148,7 +148,13 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$listener->configure_wikilink(array('configurator' => $configurator));
 		extract($configurator->finalize());
 
-		foreach (array('WIKIHEADING', 'WIKIMAGIC') as $tag)
+		$tags = array('WIKIHEADING', 'WIKIMAGIC');
+		foreach (\phpbbmodders\wiki\event\wikilink_listener::TABLE_ELEMENTS as $element)
+		{
+			$tags[] = 'html:' . $element;
+		}
+
+		foreach ($tags as $tag)
 		{
 			$wiki_markup ? $parser->enableTag($tag) : $parser->disableTag($tag);
 		}
@@ -217,6 +223,49 @@ class markup_test extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame(2, substr_count($xml, '<WIKIFILE'));
 		$this->assertSame(1, substr_count($xml, '<WIKILINK'));
+	}
+
+	private const TABLE = "<table>\n<caption>Versions</caption>\n<tr><th>Name</th><th colspan=\"2\">Notes</th></tr>\n<tr><td>[b]Wiki[/b]</td><td rowspan=\"2\">1.1.0</td><td>[[Main Page]]</td></tr>\n</table>";
+
+	public function test_an_html_table_becomes_tags_in_a_wiki_article()
+	{
+		$xml = $this->parse(self::TABLE);
+
+		foreach (array('table', 'caption', 'tr', 'th', 'td') as $element)
+		{
+			$this->assertStringContainsString('<html:' . $element, $xml, $element);
+		}
+		$this->assertStringContainsString('colspan="2"', $xml);
+		$this->assertStringContainsString('rowspan="2"', $xml);
+		$this->assertStringContainsString('<WIKILINK name="Main Page">', $xml, 'wiki links work inside a cell');
+	}
+
+	public function test_an_html_table_stays_plain_text_outside_a_wiki_article()
+	{
+		$xml = $this->parse(self::TABLE, false);
+
+		$this->assertStringNotContainsString('<html:', $xml);
+		$this->assertStringContainsString('&lt;table&gt;', $xml);
+	}
+
+	public function test_only_the_table_elements_and_attributes_are_allowed()
+	{
+		$xml = $this->parse('<script>alert(1)</script><iframe src="x"></iframe><table><tr><td onclick="x()" style="color:red" class="a">cell</td></tr></table>');
+
+		$this->assertStringNotContainsString('<html:script', $xml);
+		$this->assertStringNotContainsString('<html:iframe', $xml);
+		$this->assertStringContainsString('<html:td>', $xml, 'the cell has none of the attributes');
+		$this->assertStringNotContainsString('onclick', str_replace('&lt;', '', preg_replace('#<s>.*?</s>#s', '', $xml)));
+	}
+
+	public function test_a_table_renders_as_html_without_stray_line_breaks()
+	{
+		$html = $this->render(self::TABLE);
+
+		$this->assertStringContainsString('<table>', $html);
+		$this->assertStringContainsString('<th colspan="2">Notes</th>', $html);
+		$this->assertStringContainsString('<td rowspan="2">1.1.0</td>', $html);
+		$this->assertStringNotContainsString('<script', $html);
 	}
 
 	private function render(string $text): string

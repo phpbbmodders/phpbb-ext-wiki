@@ -28,6 +28,9 @@ class wikilink_listener implements EventSubscriberInterface
 
 	const NAME_PATTERN = self::NAME_CLASS . '{1,255}';
 
+	/** HTML elements a wiki article may use to write a table. */
+	const TABLE_ELEMENTS = array('table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td');
+
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -129,6 +132,20 @@ class wikilink_listener implements EventSubscriberInterface
 			'/\[\[\s*(?!File:)(?=[^\]|])(?<name>' . self::NAME_CLASS . '{0,255}?)\s*(?:#\s*(?<section>[^\[\]|<>"\n]{1,255}?)\s*)?(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
 			'WIKILINK'
 		);
+
+		// <table> written as HTML. Only these elements and the colspan and rowspan of a cell
+		// are allowed; s9e refuses scripts, styles and event attributes itself. The parser
+		// reads them only while a wiki article is saved (see toggle_wiki_markup()).
+		$html = $configurator->HTMLElements;
+		foreach (self::TABLE_ELEMENTS as $element)
+		{
+			$html->allowElement($element);
+		}
+		foreach (array('th', 'td') as $cell)
+		{
+			$html->allowAttribute($cell, 'colspan');
+			$html->allowAttribute($cell, 'rowspan');
+		}
 	}
 
 	/**
@@ -142,7 +159,13 @@ class wikilink_listener implements EventSubscriberInterface
 	{
 		$parser = $event['parser']->get_parser();
 
-		foreach (array('WIKIHEADING', 'WIKIMAGIC') as $tag)
+		$tags = array('WIKIHEADING', 'WIKIMAGIC');
+		foreach (self::TABLE_ELEMENTS as $element)
+		{
+			$tags[] = 'html:' . $element;
+		}
+
+		foreach ($tags as $tag)
 		{
 			if (\phpbbmodders\wiki\wiki\markup::is_active())
 			{
