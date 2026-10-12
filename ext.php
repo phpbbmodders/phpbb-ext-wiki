@@ -203,6 +203,8 @@ class ext extends \phpbb\extension\base
 		$rows = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
+		$recorded = array_column($rows, 'migration_name', 'migration_name');
+
 		foreach ($rows as $row)
 		{
 			// Other extensions' migrations may depend on ours, so their
@@ -216,6 +218,18 @@ class ext extends \phpbb\extension\base
 			{
 				continue;
 			}
+
+			// The new name is already recorded when the old extension was
+			// enabled again after an earlier move: drop the old row rather
+			// than collide with the unique index on the name
+			if ($name !== $row['migration_name'] && isset($recorded[$name]))
+			{
+				$db->sql_query('DELETE FROM ' . $prefix . "migrations
+					WHERE migration_name = '" . $db->sql_escape($row['migration_name']) . "'");
+				continue;
+			}
+
+			$recorded[$name] = $name;
 
 			$db->sql_query('UPDATE ' . $prefix . 'migrations SET ' . $db->sql_build_array('UPDATE', [
 				'migration_name'		=> $name,
