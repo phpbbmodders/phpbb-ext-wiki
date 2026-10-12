@@ -491,6 +491,13 @@ class files
 	 */
 	public function delete($article_url, $file_id)
 	{
+		// confirm_box(true) can only be asked once per request
+		$confirmed = confirm_box(true);
+		if ($confirmed)
+		{
+			$article_url = functions::confirmed_article($this->request, $article_url);
+		}
+
 		$file = $this->get_file($article_url, $file_id);
 		if (!$file)
 		{
@@ -504,7 +511,7 @@ class files
 
 		$back = $this->helper->route('phpbbmodders_wiki_article', array('article' => $article_url));
 
-		if (confirm_box(true))
+		if ($confirmed)
 		{
 			$this->remove_files(array($file));
 			trigger_error($this->user->lang('WIKI_FILE_DELETED', $file['file_name']) . '<br /><br /><a href="' . $back . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');

@@ -132,6 +132,8 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 
 		if (confirm_box(true))
 		{
+			$article = self::confirmed_article($this->request, $article);
+
 			// Set all versions to not approved
 			$sql = 'UPDATE ' . $this->article_table . "
 				SET article_approved = 0

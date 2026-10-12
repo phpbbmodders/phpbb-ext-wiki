@@ -133,6 +133,7 @@ services:
             - '@user'
             - '%tables.wiki.article%'
             - '@phpbbmodders.wiki.files'
+            - '@request'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:
