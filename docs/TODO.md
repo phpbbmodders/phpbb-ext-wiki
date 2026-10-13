@@ -27,11 +27,23 @@ new URL and losing the connection to its history. Needs a "move" action
 permission) that renames `article_url` across all of an article's versions
 and optionally leaves a redirect stub at the old URL.
 
-## Categories/tags
+## Categories
 
-Browsing is flat today — Popular/Latest/All/Sticky/Pending on the overview
-page, nothing that groups articles by topic. Would need a taxonomy (even a
-simple one-tag-per-article model to start) and a browse-by-category view.
+Built: `[[Category:Name]]` in an article puts it in a category, a category page
+(`/wiki/Category:Name`) lists the articles in it, and `/wiki/categories` lists them all. See
+the README.
+
+Not built:
+
+- A category added by a template (`<includeonly>[[Category:Stubs]]</includeonly>`) shows under
+  the articles that use the template, but those articles are not in the category's member list,
+  which is found from the articles' own text. Listing them needs a table of memberships that is
+  worked out when a version goes live and again for every article that uses a template when the
+  template changes.
+- Sub-categories, `[[:Category:Name]]` (a link to a category without joining it), and sort keys
+  (a sort key after a bar is accepted and ignored).
+- The member list reads every live article that holds a category mark, so it is meant for wikis
+  of moderate size; a membership table would also fix that.
 
 ## Wiki search
 

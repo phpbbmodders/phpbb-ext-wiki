@@ -110,6 +110,18 @@ class wikilink_listener implements EventSubscriberInterface
 			return;
 		}
 
+		// [[Category:Name]] puts the article in a category and shows nothing where it stands. The
+		// parser reads it only while a wiki article is saved (see toggle_wiki_markup()); a sort key
+		// after a bar is accepted and ignored.
+		$category = $configurator->tags->add('WIKICATEGORY');
+		$category->attributes->add('name')->filterChain->append('\phpbbmodders\wiki\wiki\categories::normalise');
+		$category->template = '<span class="wikicategory" data-wiki-category="{@name}"></span>';
+
+		$configurator->Preg->match(
+			'/\[\[\s*Category:\s*(?=[^\s\]|])(?<name>' . self::NAME_CLASS . '{1,255}?)\s*(?:\|[^\[\]\n]*)?\]\]/i',
+			'WIKICATEGORY'
+		);
+
 		// [[File:name]] and [[File:name|alt text]] embed one of the article's uploaded files.
 		// It is added first, and WIKILINK leaves "File:" names to it.
 		$file_tag = $configurator->tags->add('WIKIFILE');
@@ -169,7 +181,7 @@ class wikilink_listener implements EventSubscriberInterface
 			. '<xsl:otherwise><xsl:value-of select="@name"/><xsl:if test="@section">#<xsl:value-of select="@section"/></xsl:if></xsl:otherwise></xsl:choose></a>';
 
 		$configurator->Preg->match(
-			'/\[\[\s*(?!File:)(?=[^\]|])(?<name>' . self::NAME_CLASS . '{0,255}?)\s*(?:#\s*(?<section>[^\[\]|<>"\n]{1,255}?)\s*)?(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
+			'/\[\[\s*(?!(?:File|Category):)(?=[^\]|])(?<name>' . self::NAME_CLASS . '{0,255}?)\s*(?:#\s*(?<section>[^\[\]|<>"\n]{1,255}?)\s*)?(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
 			'WIKILINK'
 		);
 
@@ -199,7 +211,7 @@ class wikilink_listener implements EventSubscriberInterface
 	{
 		$parser = $event['parser']->get_parser();
 
-		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE');
+		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE', 'WIKICATEGORY');
 		foreach (self::TABLE_ELEMENTS as $element)
 		{
 			$tags[] = 'html:' . $element;
@@ -233,6 +245,20 @@ class wikilink_listener implements EventSubscriberInterface
 		if ($this->templates->is_expanding())
 		{
 			return;
+		}
+
+		if (strpos($html, 'class="wikicategory"') !== false)
+		{
+			// Note the categories, for the article's page to list, and take the marks out
+			if (preg_match_all('/<span class="wikicategory" data-wiki-category="([^"]*)"><\/span>/', $html, $marks))
+			{
+				foreach ($marks[1] as $mark)
+				{
+					\phpbbmodders\wiki\wiki\categories::add(htmlspecialchars_decode($mark, ENT_QUOTES));
+				}
+			}
+			$html = preg_replace('/<span class="wikicategory" data-wiki-category="[^"]*"><\/span>/', '', $html);
+			$event['html'] = $html;
 		}
 
 		if (strpos($html, 'class="wikiheading"') !== false || strpos($html, 'class="wikimagic"') !== false)

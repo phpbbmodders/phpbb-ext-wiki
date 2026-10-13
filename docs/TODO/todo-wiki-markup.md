@@ -16,7 +16,7 @@ and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_p
 `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
 `{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
 shown (see `wiki/templates.php`), nested ten deep with a loop check. What is left below is
-the text styles and references (not wanted yet), `[[Category:Name]]`, and the rest of templates.
+the text styles and references (not wanted yet), and the rest of templates.
 
 ## Scope: wiki articles only
 
@@ -68,7 +68,7 @@ Still to confirm on the test board before building on it.
 | Syntax | What it does | Notes |
 |---|---|---|
 | `#REDIRECT [[Other article]]` | Redirect set in the article text | Redirects already exist as an editor field; this is a familiar shortcut. |
-| `[[Category:Name]]` | Put an article in a category | Only useful once categories are built (see the master TODO). |
+| `[[Category:Name]]` | Put an article in a category | Built; see the README. |
 
 ## Syntax not to add
 

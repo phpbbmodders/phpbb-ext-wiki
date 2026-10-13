@@ -20,6 +20,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Wikipedia-style headings: `== Heading ==` to `====== Heading ======` in an article become section headings with anchors, `[[Article#Section]]` and `[[#Section]]` link to them, and a table of contents shows after the intro when an article has four or more headings (`__TOC__` places it, `__FORCETOC__` forces it, `__NOTOC__` hides it). A first line `#REDIRECT [[Article]]` sets the redirect for members who may set redirects. This works in wiki articles only; in a forum post `== text ==` stays plain text.
 - Tables, written as HTML in an article: `<table>`, `<caption>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>` and `<td>`, with `colspan` and `rowspan` on a cell. BBCode and `[[links]]` work inside cells. Any other attribute (`style`, `onclick`, `class`) is dropped, and any other element (`script`, `iframe`) stays plain text. Like headings, tables work in wiki articles only; in a forum post `<table>` stays plain text. After upgrading, disable and enable the extension so the board rebuilds its cache.
 - Templates: `{{Name}}`, `{{Name|first|second}}` and `{{Name|key=value}}` in an article include the live version of the article `Template:Name`, so a notice or infobox is written once and edited in one place. See [Templates](#templates).
+- Categories: `[[Category:Name]]` in an article puts it in a category. The article lists its categories at the bottom, `/wiki/Category:Name` lists the articles in a category, and `/wiki/categories` lists every category. See [Categories](#categories).
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
 - A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
@@ -97,6 +98,17 @@ An article
 
   The arguments of a function are trimmed of spaces and line breaks before it works on them.
 - After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier hold `{{...}}` as plain text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
+
+## Categories
+
+Write `[[Category:Name]]` anywhere in a wiki article to put it in a category. The mark shows nothing in the text; the article lists its categories at the bottom, each linking to the category's page.
+
+- `[[Category:boxes]]` and `[[Category:Boxes]]` are the same category: the first letter is capitalised and underscores count as spaces. A sort key after a bar (`[[Category:Boxes|key]]`) is accepted and ignored.
+- **A category page** is the article `Category:Name`, at `/wiki/Category:Name`. If nobody wrote it, the page still exists as a list of the articles in the category, A to Z with their descriptions, with a link to write a description. If an article called `Category:Name` exists, its text is shown above the list, and it has the usual edit and version buttons.
+- **`/wiki/categories`** lists every category with a live article in it and how many, linked from the overview.
+- Only the live version of an article counts. A forum post keeps `[[Category:Name]]` as plain text, like the rest of the wiki markup.
+- A template page counts for the categories it names outside `<includeonly>`, so `<noinclude>[[Category:Infobox templates]]</noinclude>` puts the template in that category. A category added inside `<includeonly>` by a template shows under the articles that use the template, but those articles are not in the category's list, which is found from the articles' own text.
+- After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved before this build keep `[[Category:Name]]` as text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
 
 ## Linking between articles
 
