@@ -1,0 +1,44 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{L_WIKI_TEMPLATES}</h2>
+<p>{L_WIKI_TEMPLATES_EXPLAIN}</p>
+<!-- IF .templates -->
+<div class="forumbg forumbg-table">
+	<div class="inner">
+		<table class="table1">
+			<thead>
+				<tr>
+					<th>{L_WIKI_TEMPLATE}</th>
+					<th>{L_WIKI_TEMPLATE_DESCRIPTION}</th>
+					<th class="middle">{L_WIKI_TEMPLATE_USED_IN}</th>
+					<th class="big">{L_LAST_EDIT}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN templates -->
+				<tr class="<!-- IF templates.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td><a href="{templates.U_TEMPLATE}"><strong>{templates.NAME}</strong></a></td>
+					<td>{templates.DESCRIPTION}</td>
+					<td>{templates.USED_ON}</td>
+					<td>{templates.EDIT_TIME}</td>
+				</tr>
+				<!-- END templates -->
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- ELSE -->
+<p>{L_WIKI_TEMPLATES_NONE}</p>
+<!-- ENDIF -->
+
+<div class="action-bar bottom">
+	<div class="pagination">
+		{TOTAL_ITEMS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			 &bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->
