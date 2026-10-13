@@ -101,7 +101,11 @@ other happened until they check the pending-approval queue. Even a simple
 form would help; phpBB's own posting flow has similar double-submission
 awareness to look at for the pattern.
 
-A stronger option is page locking: opening the edit form locks the
+Decided 10/13/2026: build both, and let the admin choose in the ACP between the notice
+alone and the lock. When the lock option is on, moderators get a notification that a lock
+has occurred.
+
+The lock works like this: opening the edit form locks the
 article for that user for a limited time (for example 30 minutes, renewed
 while they keep editing). Others see who holds the lock and until when,
 and can't save until it's released or expires. Moderators can break a
