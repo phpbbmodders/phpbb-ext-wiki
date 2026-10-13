@@ -124,3 +124,13 @@ a.wikilink-new {
 	font-weight: bold;
 	padding: 0.3em 0;
 }
+
+/* The article text starts level with the buttons on the right, which keep the place they had:
+   the room above the buttons moves from their margin to the top of the text area */
+.wiki .content[itemprop~="articleBody"] {
+	padding-top: 0.8em;
+}
+
+.wiki .content ul.post-buttons.wiki-buttons {
+	margin-top: 0;
+}
