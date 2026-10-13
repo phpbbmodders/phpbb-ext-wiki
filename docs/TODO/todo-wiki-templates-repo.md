@@ -43,7 +43,8 @@ out how the licences apply to them.
 
 ## Using it from the wiki
 
-An ACP button, "Install starter templates", reads the files and creates one
+An ACP button, "Install starter templates", reads the files from the uploaded zip or from the
+folder in `store/` and creates one
 `Template:` page per file. Each created page keeps the header, so the board shows
 the attribution on the template page itself. Installing is optional and can be
 repeated; an existing template page is not overwritten without asking.
@@ -71,8 +72,7 @@ Only templates that work as plain wiki text with parameters:
   organisation (10/13/2026).
 - It is created on 10/14/2026, now that the template system exists, after the go-ahead
   (creating a public repository is an outward-facing step).
-
-## Still to decide
-
-- How the ACP import is packaged: files read from a downloaded copy of the
-  repository, or a release archive the extension fetches.
+- The templates reach a board by hand, with no download by the extension: the admin uploads
+  the repository's zip in the ACP from the browser, or copies the files by FTP into a folder
+  in `store/` (folder name to be chosen when it is built). The ACP button then installs from
+  there (10/13/2026).
