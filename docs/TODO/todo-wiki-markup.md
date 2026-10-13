@@ -15,8 +15,9 @@ and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_p
 (see `event/wikilink_listener.php` and `wiki/markup.php`), and articles saved earlier are converted with
 `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
 `{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
-shown (see `wiki/templates.php`), nested ten deep with a loop check. What is left below is
-the text styles and references (not wanted yet), and the rest of templates.
+shown (see `wiki/templates.php`), nested ten deep with a loop check, with the parser functions (`#if`,
+`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. What is left
+below is the text styles and references (not wanted yet).
 
 ## Scope: wiki articles only
 
