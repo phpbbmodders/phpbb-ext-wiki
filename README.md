@@ -21,7 +21,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Tables, written as HTML in an article: `<table>`, `<caption>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>` and `<td>`, with `colspan` and `rowspan` on a cell. BBCode and `[[links]]` work inside cells. Any other attribute (`style`, `onclick`, `class`) is dropped, and any other element (`script`, `iframe`) stays plain text. Like headings, tables work in wiki articles only; in a forum post `<table>` stays plain text. After upgrading, disable and enable the extension so the board rebuilds its cache.
 - Templates: `{{Name}}`, `{{Name|first|second}}` and `{{Name|key=value}}` in an article include the live version of the article `Template:Name`, so a notice or infobox is written once and edited in one place. See [Templates](#templates).
 - Categories: `[[Category:Name]]` in an article puts it in a category. The article lists its categories at the bottom, `/wiki/Category:Name` lists the articles in a category, and `/wiki/categories` lists every category. See [Categories](#categories).
-- Search: `/wiki/search` and a search box on the overview find articles by their title, description and text, with highlighted snippets. It has its own index, kept current as articles are saved, approved, set offline and deleted, and three backends to choose from in the ACP (native, MySQL fulltext, PostgreSQL fulltext). See [Search](#search).
+- Search: `/wiki/search` and a search box on the overview find articles by their title, description and text, with highlighted snippets. It has its own index, kept current as articles are saved, approved, set offline and deleted, and three backends to choose from in the ACP (native, MySQL fulltext, PostgreSQL fulltext). The board's own search can show the matching articles in a block of their own, with an "Also search the Wiki" option. See [Search](#search).
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
 - A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
@@ -120,7 +120,9 @@ The wiki has its own search, separate from phpBB's search of posts: **Search the
 - It follows the articles: saving a live article, approving a version, setting an article offline, putting it back and deleting it all update the search at once.
 - The search needs the permission to read the wiki and phpBB's own "Can use search" permission, and it is off when the board's search is off.
 
-**In the ACP**, under **Extensions > Wiki > Search**, switch the wiki search on or off, set the results per page, and choose the backend:
+**In the board's search.** A search for words in phpBB's own search, or from the search box in the header, also looks in the wiki. The matching articles are shown in a **Wiki (N)** block above the forum results, with the title, description, a snippet and a link to all of the matches; the forum results themselves are not changed. The advanced search has an **Also search the Wiki** option, ticked by default, to leave the wiki out. The block shows only on the first page of the results, only for members who may read the wiki, and not for searches by author, within one topic, or the pre-made ones such as active topics.
+
+**In the ACP**, under **Extensions > Wiki > Search**, switch the wiki search on or off, set the results per page, switch the board search block on or off and set how many articles it lists, and choose the backend:
 
 | Backend | For | Notes |
 | --- | --- | --- |
@@ -128,7 +130,7 @@ The wiki has its own search, separate from phpBB's search of posts: **Search the
 | MySQL fulltext | MySQL | Adds fulltext indexes to the search's text table |
 | PostgreSQL fulltext | PostgreSQL | Adds text-search indexes to the search's text table |
 
-Only the backends the database can run are offered. After installing, or after switching backend, press **Create index** under **Search index** for the backend you chose; until then the native backend finds only articles saved since it was installed, and the fulltext backends find nothing. The page shows each index's statistics and can delete it.
+All three backends are listed; the ones the database cannot run are marked as unavailable and cannot be chosen. After installing, or after switching backend, press **Create index** under **Search index** for the backend you chose; until then the native backend finds only articles saved since it was installed, and the fulltext backends find nothing. The page shows each index's statistics and can delete it.
 
 The search keeps a plain-text copy of each live article in its own table (`wiki_search_text`); **Create index** makes that copy again from the articles before it builds the backend's index, so it is also the way to rebuild everything.
 

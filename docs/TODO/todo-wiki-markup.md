@@ -169,14 +169,11 @@ out. Still to do:
 A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
 repository: [Starter templates repository](todo-wiki-templates-repo.md).
 
-## Still to decide
+## Decided
 
-- Template syntax: MediaWiki's `{{Name | key = value}}`, or a BBCode such as
-  `[template=Name]`, which fits phpBB's editor buttons better.
-- Whether infoboxes get a default floating-box style in prosilver, or each
-  template brings its own HTML table.
-- Heading levels: only `==` and `===`, or the full MediaWiki range.
-- Anchor names for headings, so `[[Article#Section]]` matches reliably
-  (spaces, case, non-ASCII titles).
-- Whether existing articles need reparsing after the change, using the
-  extension's reparser (`php bin/phpbbcli.php reparser:reparse`).
+- Template syntax is MediaWiki's `{{Name|key=value}}`; there is no `[template=Name]` BBCode.
+- All six heading levels are supported, and `[[Article#Section]]` anchors are built.
+- Existing articles are reparsed with the extension's reparser
+  (`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`).
+- Infoboxes get no default floating-box style in prosilver; each template brings its own
+  table, as the Extension infobox does (10/13/2026).

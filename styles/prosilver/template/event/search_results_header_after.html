@@ -1,0 +1,30 @@
+<!-- IF S_WIKI_BOARD_BLOCK -->
+	<div class="forumbg wiki-board-search">
+		<div class="inner">
+			<ul class="topiclist">
+				<li class="header"><dl class="row-item"><dt><div class="list-inner">{WIKI_BOARD_TOTAL}</div></dt></dl></li>
+			</ul>
+			<ul class="topiclist topics">
+				<!-- BEGIN wiki_matches -->
+				<li class="row <!-- IF wiki_matches.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<dl class="row-item">
+						<dt>
+							<div class="list-inner">
+								<a href="{wiki_matches.U_ARTICLE}" class="topictitle">{wiki_matches.TITLE}</a>
+								<!-- IF wiki_matches.DESCRIPTION --><br />{wiki_matches.DESCRIPTION}<!-- ENDIF -->
+								<!-- IF wiki_matches.SNIPPET --><br /><span>{wiki_matches.SNIPPET}</span><!-- ENDIF -->
+								<br />{wiki_matches.AUTHOR} &raquo; {wiki_matches.DATE}
+							</div>
+						</dt>
+					</dl>
+				</li>
+				<!-- END wiki_matches -->
+				<li class="row bg3 wiki-board-search-all">
+					<dl class="row-item">
+						<dt><div class="list-inner"><a href="{U_WIKI_BOARD_VIEW_ALL}">{WIKI_BOARD_VIEW_ALL}</a></div></dt>
+					</dl>
+				</li>
+			</ul>
+		</div>
+	</div>
+<!-- ENDIF -->

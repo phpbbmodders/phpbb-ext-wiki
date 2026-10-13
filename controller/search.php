@@ -15,20 +15,11 @@ namespace phpbbmodders\wiki\controller;
  */
 class search
 {
-	/** Longest stretch of text shown for a result, in characters */
-	const SNIPPET_LENGTH = 300;
-
-	/** Most matches counted, to spare the server on a very broad search */
-	const MATCH_LIMIT = 1000;
-
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
 	/** @var \phpbb\config\config */
 	protected $config;
-
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
 
 	/** @var \phpbb\controller\helper */
 	protected $helper;
@@ -51,11 +42,8 @@ class search
 	/** @var \phpbbmodders\wiki\search\wiki_search_backend_factory */
 	protected $factory;
 
-	/** @var string */
-	protected $article_table;
-
-	/** @var string */
-	protected $search_text_table;
+	/** @var \phpbbmodders\wiki\wiki\search_results */
+	protected $search_results;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -66,7 +54,6 @@ class search
 	/**
 	 * @param \phpbb\auth\auth											$auth
 	 * @param \phpbb\config\config										$config
-	 * @param \phpbb\db\driver\driver_interface							$db
 	 * @param \phpbb\controller\helper									$helper
 	 * @param \phpbb\language\language									$language
 	 * @param \phpbb\pagination											$pagination
@@ -74,16 +61,14 @@ class search
 	 * @param \phpbb\template\template									$template
 	 * @param \phpbb\user												$user
 	 * @param \phpbbmodders\wiki\search\wiki_search_backend_factory	$factory
-	 * @param string													$article_table
-	 * @param string													$search_text_table
+	 * @param \phpbbmodders\wiki\wiki\search_results					$search_results
 	 * @param string													$phpbb_root_path
 	 * @param string													$php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\search\wiki_search_backend_factory $factory, $article_table, $search_text_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\search\wiki_search_backend_factory $factory, \phpbbmodders\wiki\wiki\search_results $search_results, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
-		$this->db = $db;
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->pagination = $pagination;
@@ -91,8 +76,7 @@ class search
 		$this->template = $template;
 		$this->user = $user;
 		$this->factory = $factory;
-		$this->article_table = $article_table;
-		$this->search_text_table = $search_text_table;
+		$this->search_results = $search_results;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -122,32 +106,6 @@ class search
 			$this->template->assign_var('S_NO_SEARCH', true);
 			trigger_error('NO_SEARCH_TIME');
 		}
-	}
-
-	/**
-	 * The words to mark in the results, as a regular expression part, from the search words.
-	 *
-	 * @param string $keywords What was typed
-	 * @return array The words, each already safe in a regular expression
-	 */
-	protected function highlight_words($keywords)
-	{
-		$hilit = phpbb_clean_search_string(str_replace(array('+', '-', '|', '(', ')', '&quot;'), ' ', $keywords));
-		$words = array_filter(explode(' ', $hilit), 'strlen');
-
-		$safe = array();
-		foreach ($words as $word)
-		{
-			$word = phpbb_clean_search_string($word);
-			$word = str_replace('\*', '\w*?', preg_quote($word, '#'));
-			$word = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $word);
-			if ($word !== '')
-			{
-				$safe[] = $word;
-			}
-		}
-
-		return $safe;
 	}
 
 	/**
@@ -200,8 +158,9 @@ class search
 			return $this->helper->render('search.html', $this->user->lang('WIKI_SEARCH'));
 		}
 
-		$correct = $search->split_keywords($keywords, $terms);
-		if (!$correct || !$search->get_search_query())
+		$per_page = max(1, (int) $this->config['wiki_per_page_search']);
+		$found = $this->search_results->find($keywords, $terms, $fields, $sort_key, $sort_dir, $start, $per_page);
+		if ($found === false)
 		{
 			$common = $search->get_common_words();
 			$ignored = count($common) ? $this->language->lang('IGNORED_TERMS_EXPLAIN', implode(' ', $common)) . '<br>' : '';
@@ -209,58 +168,10 @@ class search
 			trigger_error($ignored . ($length ? $this->language->lang('NO_KEYWORDS', $this->language->lang('CHARACTERS', (int) $length['min']), $this->language->lang('CHARACTERS', (int) $length['max'])) : ''));
 		}
 
-		$per_page = max(1, (int) $this->config['wiki_per_page_search']);
-		$sort_by_sql = array('t' => 'article_date', 's' => 'article_title');
-		$ids = array();
-		$total = (int) $search->keyword_search('posts', $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, '0', array(), 0, array(), '', $ids, $start, $per_page);
-
-		$words = $this->highlight_words($keywords);
-		$pattern = !empty($words) ? '#(?!<.*)(?<!\w)(' . implode('|', $words) . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu' : '';
-
-		if (!empty($ids))
+		$total = $found['total'];
+		foreach ($found['rows'] as $row)
 		{
-			$sql = 'SELECT s.article_id, s.article_title, s.article_description, s.article_body, s.article_date, s.author, a.article_url, a.article_user_id
-				FROM ' . $this->search_text_table . ' s
-				INNER JOIN ' . $this->article_table . ' a ON (a.article_id = s.article_id)
-				WHERE ' . $this->db->sql_in_set('s.article_id', $ids) . '
-					AND a.article_approved = 1';
-			$result = $this->db->sql_query($sql);
-			$rows = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$rows[(int) $row['article_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-
-			// In the order the backend gave
-			foreach ($ids as $id)
-			{
-				if (!isset($rows[(int) $id]))
-				{
-					continue;
-				}
-
-				$row = $rows[(int) $id];
-				$title = htmlspecialchars($row['article_title'], ENT_COMPAT, 'UTF-8');
-				$description = htmlspecialchars($row['article_description'], ENT_COMPAT, 'UTF-8');
-				$snippet = ($fields === 'titleonly') ? '' : get_context(htmlspecialchars($row['article_body'], ENT_COMPAT, 'UTF-8'), $words ? array_map('stripslashes', $words) : array(), self::SNIPPET_LENGTH);
-				if ($pattern !== '')
-				{
-					$mark = '<span class="posthilit">$1</span>';
-					$title = preg_replace($pattern, $mark, $title);
-					$description = preg_replace($pattern, $mark, $description);
-					$snippet = preg_replace($pattern, $mark, $snippet);
-				}
-
-				$this->template->assign_block_vars('results', array(
-					'TITLE'			=> $title,
-					'DESCRIPTION'	=> $description,
-					'SNIPPET'		=> $snippet,
-					'DATE'			=> $this->user->format_date($row['article_date']),
-					'AUTHOR'		=> htmlspecialchars($row['author'], ENT_COMPAT, 'UTF-8'),
-					'U_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
-				));
-			}
+			$this->template->assign_block_vars('results', $row);
 		}
 
 		$u_params = array('keywords' => $keywords);

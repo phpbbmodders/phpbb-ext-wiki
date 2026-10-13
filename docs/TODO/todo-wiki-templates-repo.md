@@ -3,7 +3,7 @@
 A separate repository of ready-made wiki templates, adapted from Wikipedia's
 for what this wiki can do, so a board can install a useful set instead of
 writing every template from nothing. It depends on the template system in
-[Wiki markup](todo-wiki-markup.md), which is not built yet.
+[Wiki markup](todo-wiki-markup.md), which is built.
 
 ## Why a separate repository
 
@@ -65,11 +65,14 @@ Only templates that work as plain wiki text with parameters:
 - TemplateStyles (CSS shipped inside a template).
 - Anything whose licence notice on the source page says it is not plain CC BY-SA.
 
+## Decided
+
+- The repository is named `phpbbmodders/wiki-templates` and lives under the `phpbbmodders`
+  organisation (10/13/2026).
+- It is created on 10/14/2026, now that the template system exists, after the go-ahead
+  (creating a public repository is an outward-facing step).
+
 ## Still to decide
 
-- The repository's name, and whether it lives under the `phpbbmodders` organisation.
-- Whether to create it now, with a few hand-written templates, or after the
-  template system exists so every file can be tested against it. Creating a public
-  repository is an outward-facing step and needs a go-ahead first.
 - How the ACP import is packaged: files read from a downloaded copy of the
   repository, or a release archive the extension fetches.

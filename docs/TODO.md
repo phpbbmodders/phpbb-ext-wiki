@@ -22,10 +22,20 @@ Not built:
 The URL slug is fixed forever once an article is created — only the title
 can change. There's no way to rename a page's URL while keeping its version
 history attached; today that means manually recreating the article under a
-new URL and losing the connection to its history. Needs a "move" action
-(permission-gated, presumably `u_wiki_set_redirect`-adjacent or its own new
-permission) that renames `article_url` across all of an article's versions
-and optionally leaves a redirect stub at the old URL.
+new URL and losing the connection to its history. Needs a "move" action that
+renames `article_url` across all of an article's versions.
+
+Decided 10/13/2026:
+
+- It gets its own permission, named like the existing ones (`u_wiki_move`),
+  rather than reusing `u_wiki_set_redirect`.
+- A move carries the whole article with it: every version, the uploaded files
+  and the watchers.
+- The move form has a "leave a redirect at the old address" box, ticked by default.
+
+Still to decide: what a moderator sees when moving a `Template:` page (articles that use
+it by the old name would break), and whether links in other articles are rewritten or left
+to the redirect.
 
 ## Categories
 
@@ -44,13 +54,6 @@ Not built:
   (a sort key after a bar is accepted and ignored).
 - The member list reads every live article that holds a category mark, so it is meant for wikis
   of moderate size; a membership table would also fix that.
-
-## Wiki search
-
-Built: the wiki's own search page, index and ACP page (a port of the Knowledge Base's engine; see
-the README and [`docs/TODO/todo-forum-search-integration.md`](TODO/todo-forum-search-integration.md)).
-Next: a "Wiki (N)" block and an "Also search the Wiki" checkbox in phpBB's own search, with the wiki
-results kept apart from the board results.
 
 ## A wiki-style UI, not just reskinned forum templates
 
@@ -117,8 +120,9 @@ allow-list so no unsafe HTML gets through. Full plan, including the syntax not t
 
 A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
 this wiki can do, kept out of the GPL-2.0 extension, with an ACP button that
-installs them as `Template:` pages. Waits for the template system in the Wiki
-markup item above. Plan, licence rules and open questions:
+installs them as `Template:` pages. The template system it needs is built. To be named
+`phpbbmodders/wiki-templates` under the phpbbmodders organisation (agreed 10/13/2026), and
+created on 10/14/2026 once the go-ahead is given. Plan, licence rules and open questions:
 [`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
 
 ## Readable version compare
