@@ -788,6 +788,55 @@ class templates
 	}
 
 	/**
+	 * What to show on the page of a template: its documentation, which is what stands
+	 * inside <noinclude> (worked out like an article, so it can show examples), and
+	 * its text as a template, which is what an article gets, shown as it is written.
+	 *
+	 * @param string $article_text The stored text of the page
+	 * @param string $bbcode_uid The page's bbcode_uid
+	 * @return array The rendered documentation ("" when there is none) and the template text
+	 */
+	public function page_view($article_text, $bbcode_uid)
+	{
+		$edit = generate_text_for_edit($article_text, $bbcode_uid, OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);
+		$raw = htmlspecialchars_decode($edit['text'], ENT_COMPAT);
+
+		$documentation = self::documentation($raw);
+		$html = '';
+		if ($documentation !== '')
+		{
+			$uid = $bitfield = '';
+			$flags = 0;
+			$was_active = markup::is_active();
+			markup::set_active(true);
+			try
+			{
+				generate_text_for_storage($documentation, $uid, $bitfield, $flags, true, true, true);
+			}
+			finally
+			{
+				markup::set_active($was_active);
+			}
+			$html = generate_text_for_display($documentation, $uid, $bitfield, $flags);
+		}
+
+		return array($html, trim(self::transclusion_text($raw)));
+	}
+
+	/**
+	 * The text inside the <noinclude> parts of a template page.
+	 *
+	 * @param string $text The template page's text
+	 * @return string The parts one after the other, "" when there are none
+	 */
+	public static function documentation($text)
+	{
+		preg_match_all('#<noinclude>(.*?)</noinclude>#is', $text, $matches);
+
+		return trim(implode("\n\n", array_map('trim', $matches[1])));
+	}
+
+	/**
 	 * The text of the live version of a template page, as an editor would see it.
 	 *
 	 * @param string $article The template's article name, with the prefix

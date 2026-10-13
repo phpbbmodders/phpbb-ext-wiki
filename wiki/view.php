@@ -48,6 +48,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\watch */
 	protected $watch;
 
+	/** @var \phpbbmodders\wiki\wiki\templates */
+	protected $templates;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -74,9 +77,11 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\discussion			$discussion			Start discussion object
 	* @param \phpbbmodders\wiki\wiki\files				$files				Uploaded files object
 	* @param \phpbbmodders\wiki\wiki\watch				$watch				Watched articles object
+	* @param \phpbbmodders\wiki\wiki\templates			$templates			Wiki templates object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates)
 	{
+		$this->templates = $templates;
 		$this->discussion = $discussion;
 		$this->files = $files;
 		$this->watch = $watch;
@@ -196,7 +201,17 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
 			// [[File:name]] in the text refers to this article's files
 			\phpbbmodders\wiki\wiki\files::set_context($this->data['article_url']);
-			$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+			$template_source = null;
+			if (strpos($this->data['article_url'], \phpbbmodders\wiki\wiki\templates::PREFIX) === 0)
+			{
+				// The page of a template shows its documentation, and its text as it is written
+				list($documentation, $template_source) = $this->templates->page_view($this->data['article_text'], $this->data['bbcode_uid']);
+				$this->message_parser->message = $documentation;
+			}
+			else
+			{
+				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
+			}
 			\phpbbmodders\wiki\wiki\files::set_context(null);
 
 			if (!empty($this->data['article_redirect']))
@@ -242,8 +257,18 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			$this->files->assign_to_template($this->data['article_url']);
 			$this->watch->assign_to_template($this->data['article_url']);
 
-			// Other articles whose live version links here with [[ ]].
-			foreach ($this->links->what_links_here($this->data['article_url']) as $linking)
+			$linking_articles = $this->links->what_links_here($this->data['article_url']);
+			if ($template_source !== null)
+			{
+				$this->template->assign_vars(array(
+					'S_TEMPLATE_PAGE'		=> true,
+					'TEMPLATE_SOURCE'		=> htmlspecialchars($template_source, ENT_COMPAT, 'UTF-8'),
+					'TEMPLATE_USED_ON'		=> $this->user->lang('WIKI_TEMPLATE_USED_ON', count($linking_articles)),
+				));
+			}
+
+			// Other articles whose live version links here with [[ ]], or uses it as a template
+			foreach ($linking_articles as $linking)
 			{
 				$this->template->assign_block_vars('what_links_here', array(
 					'TITLE'	=> $linking['article_title'],

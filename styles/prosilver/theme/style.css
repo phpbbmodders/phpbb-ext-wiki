@@ -134,3 +134,14 @@ a.wikilink-new {
 .wiki .content ul.post-buttons.wiki-buttons {
 	margin-top: 0;
 }
+
+/* The text of a template, shown as it is written on the template's page */
+pre.wiki-template-source {
+	margin: 0.5em 0;
+	padding: 0.6em 0.8em;
+	overflow: auto;
+	white-space: pre-wrap;
+	border: 1px solid #ccc;
+	background-color: rgba(128, 128, 128, 0.08);
+	font-family: monospace;
+}

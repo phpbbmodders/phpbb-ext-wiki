@@ -44,6 +44,12 @@ $lang = array_merge($lang, array(
 	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',
 	'WIKI_WHAT_LINKS_HERE'		=> 'What links here',
 	'WIKI_TEMPLATE_LOOP'		=> 'Template loop: “%s” includes itself',
+	'WIKI_TEMPLATE_TEXT'		=> 'Template text',
+	'WIKI_TEMPLATE_USED_ON'		=> array(
+		0	=> 'Not used in any article yet.',
+		1	=> 'Used in 1 article.',
+		2	=> 'Used in %d articles.',
+	),
 	'WIKI_TEMPLATE_TOO_DEEP'	=> 'Too many templates inside templates at “%s”',
 	'WIKI_TEMPLATE_UNKNOWN_FUNCTION'	=> 'Unknown function “%s”',
 	'WIKI_TIME_INVALID'			=> 'Invalid time',

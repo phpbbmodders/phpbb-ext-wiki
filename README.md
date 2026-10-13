@@ -66,7 +66,7 @@ An article
 - Limits, so one article cannot slow the board down: at most 500 template calls written in an article, 2000 calls and functions in all (including those inside templates), and about 500,000 characters of output. Past a limit the rest of the calls show "Too many templates" where they stand.
 - A template can include other templates, ten levels deep at most; a template that includes itself, directly or through another template, shows an error where the loop is (it cannot stop its own recursion with `{{#if:}}`, as on Wikipedia). A call to a template that does not exist is a red link to `Template:Name`.
 - The text of a template is parsed like article text, so it can use BBCode, `[[links]]`, headings and tables, and nothing an article could not.
-- **What links here** on a template page lists the articles that use it.
+- The page of a template shows its documentation (what is inside `<noinclude>`, with its calls worked out, so it can show examples), then **Template text**: the text an article gets, as it is written and not worked out, with how many articles use it. `<includeonly>` text is left off the page. **What links here** lists the articles that use the template.
 - Like headings and tables, this works in wiki articles only; in a forum post `{{Name}}` stays plain text. The first letter of a template name is not case-sensitive (`{{out of date}}` finds `Template:Out of date`).
 - **Parser functions** decide what a template shows. Only the part that is chosen is worked out, so the branch that is not taken can hold anything.
 

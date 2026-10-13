@@ -168,6 +168,7 @@ services:
             - '@phpbbmodders.wiki.discussion'
             - '@phpbbmodders.wiki.files'
             - '@phpbbmodders.wiki.watch'
+            - '@phpbbmodders.wiki.templates'
     phpbbmodders.wiki.discussion:
         class: phpbbmodders\wiki\wiki\discussion
         arguments:
