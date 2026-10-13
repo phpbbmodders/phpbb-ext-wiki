@@ -38,6 +38,20 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    phpbbmodders.wiki.template_list:
+        class: phpbbmodders\wiki\controller\template_list
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.links'
+            - '%tables.wiki.article%'
+
     phpbbmodders.wiki.contributions:
         class: phpbbmodders\wiki\controller\contributions
         arguments:
