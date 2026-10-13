@@ -163,7 +163,6 @@ out. Still to do:
   400 calls to a template took about 400 ms longer than the same table written out), one extra
   query for the template pages however many calls there are, and at most 500 calls and 2000
   functions per article. Add the cache only if articles with hundreds of calls become common.
-- Template pages show `<noinclude>` and `<includeonly>` as text; a tidier template page view.
 - A template call holds other calls in its parameters three levels deep, and a default value holds
   one level of `{{template}}`; deeper nesting stays text.
 - A list of templates and a "Template" start-point in the article picker.

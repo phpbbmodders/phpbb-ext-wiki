@@ -90,4 +90,13 @@ class templates_test extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame('Body only here', templates::transclusion_text($text));
 	}
+
+	public function test_the_documentation_of_a_template_is_what_stands_in_noinclude()
+	{
+		$text = "<noinclude>First note.</noinclude>Body{{{1}}}<includeonly> hidden </includeonly><noinclude>\nSecond note.\n</noinclude>";
+
+		$this->assertSame("First note.\n\nSecond note.", templates::documentation($text));
+		$this->assertSame('', templates::documentation('Body only'));
+		$this->assertSame('Body{{{1}}} hidden ', templates::transclusion_text($text));
+	}
 }
