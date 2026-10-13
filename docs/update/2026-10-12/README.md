@@ -43,3 +43,21 @@ The overview page with pending articles, as a moderator sees it.
 ACP > Extensions > Wiki > Settings.
 
 ![Wiki settings in the ACP](07-acp-settings.png)
+
+## Tables
+
+A table written as HTML in an article, with a caption, a `colspan` header, a `rowspan` cell, BBCode and a link in the cells.
+
+![An article with a table](08-tables.png)
+
+## Templates
+
+An article that uses two templates: a notice (`{{Out of date|reason=...}}`) and an infobox (`{{Extension infobox|name=...|version=...}}`) whose rows appear only when a value is given. The template pages are `Template:Out of date` and `Template:Extension infobox`, and each lists the articles that use it under **What links here**.
+
+![An article with a notice and an infobox from templates](09-template-in-article.png)
+
+## Parser functions
+
+Each row shows a call, written in a `[code]` block, and what the wiki makes of it: `#if`, `#switch`, `#expr`, `#time`, `#ifexist`, `#sub`, `#replace`, `padleft` and `#iferror`.
+
+![A table of parser function calls and their results](10-parser-functions.png)
