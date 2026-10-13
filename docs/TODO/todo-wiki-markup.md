@@ -158,8 +158,11 @@ out. Still to do:
 - Parser functions Wikipedia's templates use that are not here yet: `#titleparts`, `#rel2abs`,
   `#tag`, `formatnum`, `plural`, `gender`, `#invoke` (Lua, not planned), the
   `LOCAL...` and `REVISION...` magic words, and `#time` in the viewer's time zone and language.
-- A cache of rendered articles, cleared when a template changes. Expansion runs on every view
-  today; add the cache only if a real board shows it is slow.
+- A cache of rendered articles, cleared when a template changes. Expansion runs on every view.
+  Measured on a MySQL board: about 1 ms for each template call written in an article (a table of
+  400 calls to a template took about 400 ms longer than the same table written out), one extra
+  query for the template pages however many calls there are, and at most 500 calls and 2000
+  functions per article. Add the cache only if articles with hundreds of calls become common.
 - Template pages show `<noinclude>` and `<includeonly>` as text; a tidier template page view.
 - A template call holds other calls in its parameters three levels deep, and a default value holds
   one level of `{{template}}`; deeper nesting stays text.

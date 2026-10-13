@@ -273,7 +273,7 @@ class markup_test extends \PHPUnit\Framework\TestCase
 	{
 		$html = $this->render('{{Out of date|reason=x "quoted"}}');
 
-		$this->assertStringContainsString('<span class="wikitemplate" data-wiki-template="Out of date" data-wiki-call="Out of date|reason=x &quot;quoted&quot;"></span>', $html);
+		$this->assertStringContainsString('<template class="wikitemplate" data-wiki-template="Out of date" data-wiki-call="Out of date|reason=x &quot;quoted&quot;"></template>', $html);
 	}
 
 	private const TABLE = "<table>\n<caption>Versions</caption>\n<tr><th>Name</th><th colspan=\"2\">Notes</th></tr>\n<tr><td>[b]Wiki[/b]</td><td rowspan=\"2\">1.1.0</td><td>[[Main Page]]</td></tr>\n</table>";
