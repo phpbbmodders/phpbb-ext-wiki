@@ -44,7 +44,7 @@ class category
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbbmodders\wiki\wiki\categories */
+	/** @var categories */
 	protected $categories;
 
 	/** @var \phpbbmodders\wiki\controller\main */
@@ -62,11 +62,11 @@ class category
 	 * @param \phpbb\request\request				$request
 	 * @param \phpbb\template\template				$template
 	 * @param \phpbb\user							$user
-	 * @param \phpbbmodders\wiki\wiki\categories	$categories
+	 * @param categories	$categories
 	 * @param \phpbbmodders\wiki\controller\main	$main
 	 * @param string								$article_table
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\categories $categories, \phpbbmodders\wiki\controller\main $main, $article_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, categories $categories, \phpbbmodders\wiki\controller\main $main, $article_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
