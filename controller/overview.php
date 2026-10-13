@@ -85,6 +85,7 @@ class overview
 
 		$this->user->add_lang_ext('phpbbmodders/wiki', 'common');
 		$this->user->add_lang_ext('phpbbmodders/wiki', 'overview');
+		$this->user->add_lang_ext('phpbbmodders/wiki', 'search');
 
 		// get all article
 

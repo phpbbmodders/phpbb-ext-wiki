@@ -2,6 +2,10 @@ parameters:
     tables.wiki.article: '%core.table_prefix%wiki_article'
     tables.wiki.file: '%core.table_prefix%wiki_file'
     tables.wiki.watch: '%core.table_prefix%wiki_watch'
+    tables.wiki.search_text: '%core.table_prefix%wiki_search_text'
+    tables.wiki.search_results: '%core.table_prefix%wiki_search_results'
+    tables.wiki.search_wordlist: '%core.table_prefix%wiki_src_wrdlist'
+    tables.wiki.search_wordmatch: '%core.table_prefix%wiki_src_wrdmtch'
 
 services:
     _defaults:
@@ -164,6 +168,7 @@ services:
             - '%core.php_ext%'
             - '@phpbbmodders.wiki.watch'
             - '@phpbbmodders.wiki.templates'
+            - '@phpbbmodders.wiki.search_sync'
     phpbbmodders.wiki.compare:
         class: phpbbmodders\wiki\wiki\compare
         arguments:
@@ -189,6 +194,7 @@ services:
             - '@phpbbmodders.wiki.files'
             - '@request'
             - '@phpbbmodders.wiki.watch'
+            - '@phpbbmodders.wiki.search_sync'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:
@@ -274,3 +280,102 @@ services:
             - [set_watch, ['@phpbbmodders.wiki.watch']]
         tags:
             - { name: notification.type }
+
+    # Search: the three backends, the factory that picks the active one, and the
+    # service that keeps the search's copy of the articles current
+    phpbbmodders.wiki.search.fulltext.mysql:
+        class: phpbbmodders\wiki\search\backend\wiki_fulltext_mysql
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '%tables.wiki.search_text%'
+            - '%tables.wiki.search_results%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: phpbbmodders.wiki.search.backend }
+
+    phpbbmodders.wiki.search.fulltext.native:
+        class: phpbbmodders\wiki\search\backend\wiki_fulltext_native
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '%tables.wiki.search_text%'
+            - '%tables.wiki.search_results%'
+            - '%tables.wiki.search_wordmatch%'
+            - '%tables.wiki.search_wordlist%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: phpbbmodders.wiki.search.backend }
+
+    phpbbmodders.wiki.search.fulltext.postgres:
+        class: phpbbmodders\wiki\search\backend\wiki_fulltext_postgres
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '%tables.wiki.search_text%'
+            - '%tables.wiki.search_results%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: phpbbmodders.wiki.search.backend }
+
+    phpbbmodders.wiki.search.backend_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: phpbbmodders.wiki.search.backend, class_name_aware: true }
+
+    phpbbmodders.wiki.search.backend_factory:
+        class: phpbbmodders\wiki\search\wiki_search_backend_factory
+        arguments:
+            - '@config'
+            - '@phpbbmodders.wiki.search.backend_collection'
+
+    phpbbmodders.wiki.search_sync:
+        class: phpbbmodders\wiki\wiki\search_sync
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbmodders.wiki.search.backend_factory'
+            - '%tables.wiki.article%'
+            - '%tables.wiki.search_text%'
+
+    phpbbmodders.wiki.acp_search:
+        class: phpbbmodders\wiki\controller\acp_search
+        arguments:
+            - '@config'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.search.backend_collection'
+            - '@phpbbmodders.wiki.search.backend_factory'
+            - '@phpbbmodders.wiki.search_sync'
+
+    phpbbmodders.wiki.search:
+        class: phpbbmodders\wiki\controller\search
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.search.backend_factory'
+            - '%tables.wiki.article%'
+            - '%tables.wiki.search_text%'
+            - '%core.root_path%'
+            - '%core.php_ext%'

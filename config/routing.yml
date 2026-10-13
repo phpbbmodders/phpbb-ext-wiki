@@ -12,6 +12,10 @@ phpbbmodders_wiki_recent_changes:
     path: /wiki/recent-changes
     defaults: { _controller: phpbbmodders.wiki.recent_changes:page }
 
+phpbbmodders_wiki_search:
+    path: /wiki/search
+    defaults: { _controller: phpbbmodders.wiki.search:main }
+
 phpbbmodders_wiki_categories:
     path: /wiki/categories
     defaults: { _controller: phpbbmodders.wiki.category:index }

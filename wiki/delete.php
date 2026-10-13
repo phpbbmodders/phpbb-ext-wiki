@@ -53,8 +53,9 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbb\request\request				$request				Request object
 	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\search_sync $search_sync)
 	{
+		$this->search_sync = $search_sync;
 		$this->files = $files;
 		$this->request = $request;
 		$this->watch = $watch;
@@ -123,6 +124,9 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 		if (confirm_box(true))
 		{
 			$article = self::confirmed_article($this->request, $article);
+
+			// Out of the search first, while its versions can still be found
+			$this->search_sync->remove($article);
 
 			$sql = 'DELETE FROM ' . $this->article_table . "
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";

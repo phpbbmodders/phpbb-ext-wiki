@@ -21,6 +21,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Tables, written as HTML in an article: `<table>`, `<caption>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>` and `<td>`, with `colspan` and `rowspan` on a cell. BBCode and `[[links]]` work inside cells. Any other attribute (`style`, `onclick`, `class`) is dropped, and any other element (`script`, `iframe`) stays plain text. Like headings, tables work in wiki articles only; in a forum post `<table>` stays plain text. After upgrading, disable and enable the extension so the board rebuilds its cache.
 - Templates: `{{Name}}`, `{{Name|first|second}}` and `{{Name|key=value}}` in an article include the live version of the article `Template:Name`, so a notice or infobox is written once and edited in one place. See [Templates](#templates).
 - Categories: `[[Category:Name]]` in an article puts it in a category. The article lists its categories at the bottom, `/wiki/Category:Name` lists the articles in a category, and `/wiki/categories` lists every category. See [Categories](#categories).
+- Search: `/wiki/search` and a search box on the overview find articles by their title, description and text, with highlighted snippets. It has its own index, kept current as articles are saved, approved, set offline and deleted, and three backends to choose from in the ACP (native, MySQL fulltext, PostgreSQL fulltext). See [Search](#search).
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
 - A **Start discussion** button on each article creates its discussion topic in a forum chosen under **Extensions > Wiki > Settings** in the ACP, and links the topic to the article. It shows to members who hold the "Can change the discussion topic for an article" permission and may post in that forum, and stays hidden until a forum is chosen.
 - Separate permissions for viewing, editing, version history, deleting and moderating.
@@ -109,6 +110,27 @@ Write `[[Category:Name]]` anywhere in a wiki article to put it in a category. Th
 - Only the live version of an article counts. A forum post keeps `[[Category:Name]]` as plain text, like the rest of the wiki markup.
 - A template page counts for the categories it names outside `<includeonly>`, so `<noinclude>[[Category:Infobox templates]]</noinclude>` puts the template in that category. A category added inside `<includeonly>` by a template shows under the articles that use the template, but those articles are not in the category's list, which is found from the articles' own text.
 - After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved before this build keep `[[Category:Name]]` as text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
+
+## Search
+
+The wiki has its own search, separate from phpBB's search of posts: **Search the wiki** on the overview, or `/wiki/search?keywords=...`.
+
+- It searches the live version of each article: its title, its description and its text, with the markup (BBCode, links, templates, tables, categories) reduced to the words in it. Older versions and edits waiting for approval are not searched. Template and category pages are articles too, so they are found.
+- Choose to match all the words or any of them, to search titles only or text only, and to sort by last edit or title. Results show the title, description, a snippet with the words marked, and the date.
+- It follows the articles: saving a live article, approving a version, setting an article offline, putting it back and deleting it all update the search at once.
+- The search needs the permission to read the wiki and phpBB's own "Can use search" permission, and it is off when the board's search is off.
+
+**In the ACP**, under **Extensions > Wiki > Search**, switch the wiki search on or off, set the results per page, and choose the backend:
+
+| Backend | For | Notes |
+| --- | --- | --- |
+| Native | Every database, including SQLite | Keeps its own word tables. Words in most articles are treated as common once a wiki has 100 articles or more, as in phpBB's own search |
+| MySQL fulltext | MySQL | Adds fulltext indexes to the search's text table |
+| PostgreSQL fulltext | PostgreSQL | Adds text-search indexes to the search's text table |
+
+Only the backends the database can run are offered. After installing, or after switching backend, press **Create index** under **Search index** for the backend you chose; until then the native backend finds only articles saved since it was installed, and the fulltext backends find nothing. The page shows each index's statistics and can delete it.
+
+The search keeps a plain-text copy of each live article in its own table (`wiki_search_text`); **Create index** makes that copy again from the articles before it builds the backend's index, so it is also the way to rebuild everything.
 
 ## Linking between articles
 

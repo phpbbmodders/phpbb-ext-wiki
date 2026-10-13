@@ -12,6 +12,23 @@ namespace phpbbmodders\wiki\wiki;
 
 class functions
 {
+	/** @var \phpbbmodders\wiki\wiki\search_sync|null Keeps the search current; set by the classes that change articles */
+	protected $search_sync = null;
+
+	/**
+	 * Tell the search that the live version of an article may have changed.
+	 *
+	 * @param string $article_url
+	 * @return void
+	 */
+	protected function sync_search($article_url)
+	{
+		if ($this->search_sync !== null)
+		{
+			$this->search_sync->sync($article_url);
+		}
+	}
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -110,6 +127,8 @@ class functions
 			SET article_approved = 1
 			WHERE article_id = ' . (int) $id;
 		$this->db->sql_query($sql);
+		$this->sync_search($row['article_url']);
+
 		return $row['article_url'];
 	}
 

@@ -21,4 +21,5 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_WIKI_TITLE'	=> 'Wiki',
 	'ACP_WIKI_SETTINGS'	=> 'Settings',
+	'ACP_WIKI_SEARCH'		=> 'Search',
 ));

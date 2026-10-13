@@ -34,5 +34,13 @@ $lang = array_merge($lang, array(
 	'WIKI_DISCUSSION_FORUM'				=> 'Discussion forum',
 	'WIKI_DISCUSSION_FORUM_EXPLAIN'		=> 'The forum where the “Start discussion” button on an article creates its discussion topic. Choose “None (disabled)” to hide the button.',
 	'WIKI_DISCUSSION_FORUM_NONE'		=> '-- None (disabled) --',
+	'ACP_WIKI_SEARCH'					=> 'Search',
+	'WIKI_SEARCH_SETTINGS_EXPLAIN'		=> 'The wiki has its own search. Choose how it finds articles and build its index; the search covers the live version of each article and keeps itself current when articles are saved, approved or deleted.',
+	'WIKI_SEARCH_ENABLE'				=> 'Enable wiki search',
+	'WIKI_SEARCH_ENABLE_EXPLAIN'		=> 'Lets members search the wiki. When off, the search page and the search box are hidden.',
+	'WIKI_PER_PAGE_SEARCH'				=> 'Results per page',
+	'WIKI_PER_PAGE_SEARCH_EXPLAIN'		=> 'How many articles the wiki search results page shows at a time.',
+	'WIKI_SEARCH_INDEX_EXPLAIN'			=> 'Build the index of the search backend you use. Until it is built the native backend finds only articles saved since it was installed, and the MySQL and PostgreSQL backends find nothing. Switching backend does not delete the other one’s index.',
+	'LOG_WIKI_CONFIG_SEARCH'			=> '<strong>Altered wiki search settings</strong>',
 	'WIKI_DISCUSSION_FORUM_INVALID'		=> 'The forum you chose does not exist or cannot hold topics.',
 ));
