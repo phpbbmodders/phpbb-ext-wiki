@@ -50,6 +50,7 @@ services:
             - '@template'
             - '@user'
             - '@phpbbmodders.wiki.links'
+            - '@phpbbmodders.wiki.templates'
             - '%tables.wiki.article%'
 
     phpbbmodders.wiki.contributions:
@@ -140,6 +141,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@phpbbmodders.wiki.watch'
+            - '@phpbbmodders.wiki.templates'
     phpbbmodders.wiki.compare:
         class: phpbbmodders\wiki\wiki\compare
         arguments:

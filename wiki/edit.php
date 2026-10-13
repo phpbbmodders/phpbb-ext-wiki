@@ -43,6 +43,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\watch */
 	protected $watch;
 
+	/** @var \phpbbmodders\wiki\wiki\templates */
+	protected $templates;
+
 	/** @var string article_table */
 	protected $article_table;
 
@@ -73,10 +76,12 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$article_table
 	* @param string									$phpbb_root_path
 	* @param string									$php_ext
-
+	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles object
+	* @param \phpbbmodders\wiki\wiki\templates			$templates				Wiki templates object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates)
 	{
+		$this->templates = $templates;
 		$this->watch = $watch;
 		$this->auth = $auth;
 		$this->config = $config;
@@ -333,10 +338,53 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$this->message_parser->message = $this->data['article_text'];
 			$this->message_parser->decode_message($this->data['bbcode_uid']);
 
+			if (empty($this->data['article_id']))
+			{
+				$this->offer_start_templates($article);
+			}
+
 			$this->display_edit_form(false);
 		}
 		return $this->helper->render('article_edit.html', $this->user->lang('EDIT_WIKI'));
 	}
+	/**
+	 * For a new article: offer the "Template:Start ..." pages to start from, and fill the
+	 * text box with the one that was chosen.
+	 *
+	 * @param string $article The new article's name, as in its address
+	 * @return void
+	 */
+	protected function offer_start_templates($article)
+	{
+		$options = $this->templates->start_templates();
+		if (empty($options))
+		{
+			return;
+		}
+
+		$chosen = $this->request->variable('start_from', '', true);
+		$text = ($chosen === '') ? null : $this->templates->start_text($chosen);
+		if ($text !== null)
+		{
+			// The text box takes text escaped as decode_message() leaves it
+			$this->message_parser->message = htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
+		}
+
+		foreach ($options as $option)
+		{
+			$this->template->assign_block_vars('start_options', array(
+				'NAME'			=> $option['name'],
+				'LABEL'			=> $option['label'],
+				'S_SELECTED'	=> ($text !== null && $option['name'] === \phpbbmodders\wiki\wiki\templates::normalise_name($chosen)),
+			));
+		}
+
+		$this->template->assign_vars(array(
+			'S_START_PICKER'	=> true,
+			'U_START_ACTION'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)),
+		));
+	}
+
 	/**
 	 * Make a version live, then tell the members watching the article.
 	 *

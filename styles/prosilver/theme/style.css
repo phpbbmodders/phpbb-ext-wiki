@@ -145,3 +145,8 @@ pre.wiki-template-source {
 	background-color: rgba(128, 128, 128, 0.08);
 	font-family: monospace;
 }
+
+/* "Start from" above the edit form of a new article */
+form.wiki-start-from p {
+	margin: 0.4em 0 0.8em;
+}

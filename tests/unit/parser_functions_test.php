@@ -312,6 +312,19 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('<tr><td>x</td></tr>', $class::unwrap_table("<table>\n<tr><td>x</td></tr>\n</table>\n", '<table>'), 'a row keeps its own tr');
 	}
 
+	public function test_a_new_article_can_start_from_a_start_template_only()
+	{
+		$this->templates->pages['Template:Start Extension'] = "<noinclude>Docs</noinclude>== Overview ==\nText [b]bold[/b] {{{1}}}";
+
+		$this->assertSame("== Overview ==\nText [b]bold[/b] {{{1}}}", $this->templates->start_text('Start Extension'));
+		$this->assertSame("== Overview ==\nText [b]bold[/b] {{{1}}}", $this->templates->start_text('Template:Start Extension'));
+		$this->assertSame("== Overview ==\nText [b]bold[/b] {{{1}}}", $this->templates->start_text('start Extension'));
+		$this->assertNull($this->templates->start_text('Start Nothing'), 'no such page');
+		$this->assertNull($this->templates->start_text('Hello'), 'a template that is not a start template is not offered');
+		$this->assertNull($this->templates->start_text('Main Page'));
+		$this->assertNull($this->templates->start_text(''));
+	}
+
 	public function test_a_flood_of_calls_is_cut_off()
 	{
 		$out = $this->run_text(str_repeat('{{#if: x | a }}', 3000));
