@@ -48,6 +48,16 @@
 		</div>
 	</div>
 
+	<!-- IF .categories -->
+		<p class="wiki-categories">{L_WIKI_CATEGORIES}{L_COLON}
+			<!-- BEGIN categories --><a href="{categories.U_CATEGORY}">{categories.NAME}</a><!-- IF not categories.S_LAST_ROW --> &bull; <!-- ENDIF --><!-- END categories -->
+		</p>
+	<!-- ENDIF -->
+
+	<!-- IF S_CATEGORY_PAGE -->
+		<!-- INCLUDE category_members.html -->
+	<!-- ENDIF -->
+
 	<!-- IF S_TEMPLATE_PAGE -->
 		<h3>{L_WIKI_TEMPLATE_TEXT}</h3>
 		<p>{TEMPLATE_USED_ON}</p>

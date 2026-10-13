@@ -38,6 +38,28 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    phpbbmodders.wiki.categories:
+        class: phpbbmodders\wiki\wiki\categories
+        arguments:
+            - '@dbal.conn'
+            - '@phpbbmodders.wiki.templates'
+            - '%tables.wiki.article%'
+
+    phpbbmodders.wiki.category:
+        class: phpbbmodders\wiki\controller\category
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.categories'
+            - '@phpbbmodders.wiki.main'
+            - '%tables.wiki.article%'
+
     phpbbmodders.wiki.template_list:
         class: phpbbmodders\wiki\controller\template_list
         arguments:

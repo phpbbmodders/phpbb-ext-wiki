@@ -1,0 +1,40 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{L_WIKI_CATEGORIES}</h2>
+<p>{L_WIKI_CATEGORIES_EXPLAIN}</p>
+<!-- IF .categories -->
+<div class="forumbg forumbg-table">
+	<div class="inner">
+		<table class="table1">
+			<thead>
+				<tr>
+					<th>{L_WIKI_CATEGORY}</th>
+					<th class="middle">{L_WIKI_CATEGORY_ARTICLES}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN categories -->
+				<tr class="<!-- IF categories.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td><a href="{categories.U_CATEGORY}"><strong>{categories.NAME}</strong></a></td>
+					<td>{categories.COUNT}</td>
+				</tr>
+				<!-- END categories -->
+			</tbody>
+		</table>
+	</div>
+</div>
+<!-- ELSE -->
+<p>{L_WIKI_CATEGORIES_NONE}</p>
+<!-- ENDIF -->
+
+<div class="action-bar bottom">
+	<div class="pagination">
+		{TOTAL_ITEMS}
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			 &bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

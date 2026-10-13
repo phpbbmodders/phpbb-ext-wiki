@@ -1,0 +1,255 @@
+<?php
+/**
+ *
+ * Wiki extension for the phpBB Forum Software package
+ *
+ * @copyright (c) 2026, phpBB Modders, https://www.phpbbmodders.com/
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+
+namespace phpbbmodders\wiki\wiki;
+
+/**
+ * Categories: [[Category:Name]] in a wiki article puts it in a category. The text
+ * formatter stores the mark as a WIKICATEGORY tag, which renders as nothing; the names
+ * are collected while an article is shown, to list under it, and the members of a
+ * category are the live articles whose stored text holds the tag.
+ *
+ * A category added by a template shows under the article that uses the template, but
+ * the member list of the category only knows what is written in the articles themselves.
+ */
+class categories
+{
+	/** A category page is an article called "Category:Name". */
+	const PREFIX = 'Category:';
+
+	/** @var array Names found in the text rendered since reset(), in order */
+	protected static $found = array();
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbbmodders\wiki\wiki\templates */
+	protected $templates;
+
+	/** @var string */
+	protected $article_table;
+
+	/**
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbbmodders\wiki\wiki\templates	$templates		Wiki templates service, for the live-version query
+	 * @param string								$article_table	Wiki article table
+	 */
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbbmodders\wiki\wiki\templates $templates, $article_table)
+	{
+		$this->db = $db;
+		$this->templates = $templates;
+		$this->article_table = $article_table;
+	}
+
+	/**
+	 * A category name as it is kept: spaces for underscores, runs of spaces made one, and a
+	 * capital first letter, so [[Category:boxes]] and [[Category:Boxes]] are one category.
+	 * Also the filter the text formatter runs on the name in the tag.
+	 *
+	 * @param string $name The name as written
+	 * @return string
+	 */
+	public static function normalise($name)
+	{
+		$name = trim(preg_replace('/[\s_]+/u', ' ', (string) $name));
+
+		return mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
+	}
+
+	/**
+	 * Forget the names found so far, before an article is rendered.
+	 *
+	 * @return void
+	 */
+	public static function reset()
+	{
+		self::$found = array();
+	}
+
+	/**
+	 * Note that rendered text puts the article in a category.
+	 *
+	 * @param string $name The category's name
+	 * @return void
+	 */
+	public static function add($name)
+	{
+		$name = self::normalise($name);
+		if ($name !== '' && !in_array($name, self::$found, true))
+		{
+			self::$found[] = $name;
+		}
+	}
+
+	/**
+	 * The categories found in the text rendered since reset(), in the order they were written.
+	 *
+	 * @return array
+	 */
+	public static function found()
+	{
+		return self::$found;
+	}
+
+	/**
+	 * The category names in the stored text of an article.
+	 *
+	 * @param string $stored The article text as it is stored (XML)
+	 * @return array Unique names, in the order they were written
+	 */
+	public static function names_in($stored)
+	{
+		if (!preg_match_all('/<WIKICATEGORY name="([^"]*)"/', $stored, $matches))
+		{
+			return array();
+		}
+
+		$names = array();
+		foreach ($matches[1] as $name)
+		{
+			$name = html_entity_decode($name, ENT_QUOTES | ENT_XML1, 'UTF-8');
+			if (!in_array($name, $names, true))
+			{
+				$names[] = $name;
+			}
+		}
+
+		return $names;
+	}
+
+	/**
+	 * SQL for the live articles in a category.
+	 *
+	 * @param string $category The category's name
+	 * @return string
+	 */
+	protected function members_where($category)
+	{
+		$needle = '<WIKICATEGORY name="' . htmlspecialchars(self::normalise($category), ENT_COMPAT, 'UTF-8') . '"';
+
+		return $this->templates->live_where('a', '') . '
+			AND a.article_text ' . $this->db->sql_like_expression($this->db->get_any_char() . $needle . $this->db->get_any_char());
+	}
+
+	/**
+	 * The category names a template page puts itself in: those written outside its
+	 * <includeonly> parts, since those belong to the articles that include it.
+	 *
+	 * @param string $raw The template page's text as it is written
+	 * @return array Normalised names, unique, in order
+	 */
+	public static function names_outside_includeonly($raw)
+	{
+		$raw = preg_replace('#<includeonly>.*?</includeonly>#is', '', $raw);
+		if (!preg_match_all('/\[\[\s*Category:\s*([^\[\]|\n]+?)\s*(?:\|[^\[\]\n]*)?\]\]/i', $raw, $matches))
+		{
+			return array();
+		}
+
+		$names = array();
+		foreach ($matches[1] as $name)
+		{
+			$name = self::normalise($name);
+			if ($name !== '' && !in_array($name, $names, true))
+			{
+				$names[] = $name;
+			}
+		}
+
+		return $names;
+	}
+
+	/**
+	 * The categories a live article is in as far as its own text says. For a template page
+	 * that leaves out what is inside <includeonly>.
+	 *
+	 * @param array $row Row with article_url, article_text and bbcode_uid
+	 * @return array
+	 */
+	protected function names_of($row)
+	{
+		if (strpos($row['article_url'], templates::PREFIX) !== 0)
+		{
+			return self::names_in($row['article_text']);
+		}
+
+		$edit = generate_text_for_edit($row['article_text'], $row['bbcode_uid'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);
+
+		return self::names_outside_includeonly(htmlspecialchars_decode($edit['text'], ENT_COMPAT));
+	}
+
+	/**
+	 * Whether any live article is in a category.
+	 *
+	 * @param string $category
+	 * @return bool
+	 */
+	public function has_members($category)
+	{
+		return count($this->members($category)) > 0;
+	}
+
+	/**
+	 * Every live article in a category, A to Z.
+	 *
+	 * @param string $category
+	 * @return array Rows with article_url, article_title and article_description
+	 */
+	public function members($category)
+	{
+		$normal = self::normalise($category);
+		$sql = 'SELECT a.article_url, a.article_title, a.article_description, a.article_text, a.bbcode_uid
+			FROM ' . $this->article_table . ' a
+			WHERE ' . $this->members_where($category) . '
+			ORDER BY a.article_title ASC, a.article_id ASC';
+		$result = $this->db->sql_query($sql);
+		$members = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// A template page counts for what it says outside <includeonly>
+			if (strpos($row['article_url'], templates::PREFIX) === 0 && !in_array($normal, $this->names_of($row), true))
+			{
+				continue;
+			}
+			unset($row['article_text'], $row['bbcode_uid']);
+			$members[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $members;
+	}
+
+	/**
+	 * Every category with a live article in it, and how many.
+	 *
+	 * @return array Category names with their member counts, A to Z
+	 */
+	public function in_use()
+	{
+		$sql = 'SELECT a.article_url, a.article_text, a.bbcode_uid
+			FROM ' . $this->article_table . ' a
+			WHERE ' . $this->templates->live_where('a', '') . '
+				AND a.article_text ' . $this->db->sql_like_expression($this->db->get_any_char() . '<WIKICATEGORY name="' . $this->db->get_any_char());
+		$result = $this->db->sql_query($sql);
+		$counts = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			foreach ($this->names_of($row) as $name)
+			{
+				$counts[$name] = isset($counts[$name]) ? $counts[$name] + 1 : 1;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		ksort($counts, SORT_STRING | SORT_FLAG_CASE);
+
+		return $counts;
+	}
+}

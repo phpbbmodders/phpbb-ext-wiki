@@ -201,6 +201,7 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			$allow_bbcode = $allow_magic_url = $allow_smilies = true;
 			// [[File:name]] in the text refers to this article's files
 			\phpbbmodders\wiki\wiki\files::set_context($this->data['article_url']);
+			\phpbbmodders\wiki\wiki\categories::reset();
 			$template_source = null;
 			if (strpos($this->data['article_url'], \phpbbmodders\wiki\wiki\templates::PREFIX) === 0)
 			{
@@ -213,6 +214,16 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				$this->message_parser->format_display($allow_bbcode, $allow_magic_url, $allow_smilies);
 			}
 			\phpbbmodders\wiki\wiki\files::set_context(null);
+
+			// The categories the text put the article in, listed under it
+			foreach (\phpbbmodders\wiki\wiki\categories::found() as $category)
+			{
+				$this->template->assign_block_vars('categories', array(
+					'NAME'			=> $category,
+					'U_CATEGORY'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => \phpbbmodders\wiki\wiki\categories::PREFIX . $category)),
+				));
+			}
+			\phpbbmodders\wiki\wiki\categories::reset();
 
 			if (!empty($this->data['article_redirect']))
 			{
