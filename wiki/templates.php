@@ -43,6 +43,9 @@ class templates
 	/** Article names of templates start with this. */
 	const PREFIX = 'Template:';
 
+	/** The name of a template a new article can start from begins with this, after the prefix. */
+	const START_PREFIX = 'Start ';
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -785,6 +788,73 @@ class templates
 		$text = preg_replace('#<noinclude>.*?</noinclude>#is', '', $text);
 
 		return preg_replace('#</?includeonly>#i', '', $text);
+	}
+
+	/**
+	 * SQL condition for the live version of a template page: approved, and not replaced
+	 * by a newer approved version.
+	 *
+	 * @param string $alias The alias of the article table in the query
+	 * @param string $name_prefix What the article's name starts with, "Template:" for all templates
+	 * @return string
+	 */
+	public function live_where($alias, $name_prefix)
+	{
+		return $alias . '.article_approved = 1
+			AND ' . $alias . '.article_url ' . $this->db->sql_like_expression($name_prefix . $this->db->get_any_char()) . '
+			AND NOT EXISTS (
+				SELECT 1 FROM ' . $this->article_table . ' b
+				WHERE b.article_url = ' . $alias . '.article_url
+					AND b.article_approved = 1
+					AND (b.article_last_edit > ' . $alias . '.article_last_edit
+						OR (b.article_last_edit = ' . $alias . '.article_last_edit AND b.article_id > ' . $alias . '.article_id)))';
+	}
+
+	/**
+	 * The templates a new article can start from: the live ones called "Template:Start ...".
+	 *
+	 * @return array Rows with the name (for example "Start Extension"), a label (the rest of the name) and the description
+	 */
+	public function start_templates()
+	{
+		$sql = 'SELECT a.article_url, a.article_title, a.article_description
+			FROM ' . $this->article_table . ' a
+			WHERE ' . $this->live_where('a', self::PREFIX . self::START_PREFIX) . '
+			ORDER BY a.article_title ASC, a.article_id ASC';
+		$result = $this->db->sql_query($sql);
+		$templates = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$name = substr($row['article_url'], strlen(self::PREFIX));
+			$templates[] = array(
+				'name'			=> $name,
+				'label'			=> substr($name, strlen(self::START_PREFIX)),
+				'description'	=> $row['article_description'],
+			);
+		}
+		$this->db->sql_freeresult($result);
+
+		return $templates;
+	}
+
+	/**
+	 * The text a new article starts with, from one of the "Template:Start ..." pages: the
+	 * text of the page without its <noinclude> parts, as it is written.
+	 *
+	 * @param string $name The template's name, for example "Start Extension"
+	 * @return string|null Null when there is no such start template
+	 */
+	public function start_text($name)
+	{
+		$name = self::normalise_name($name);
+		if (strpos($name, self::START_PREFIX) !== 0)
+		{
+			return null;
+		}
+
+		$source = $this->source(self::PREFIX . $name);
+
+		return ($source === null) ? null : trim(self::transclusion_text($source));
 	}
 
 	/**

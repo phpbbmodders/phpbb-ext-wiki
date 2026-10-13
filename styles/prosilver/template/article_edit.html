@@ -27,6 +27,22 @@
 	<!-- ENDIF -->
 <!-- ENDIF -->
 
+<!-- IF S_START_PICKER -->
+<form method="get" action="{U_START_ACTION}" class="wiki-start-from">
+	<p>
+		<label for="start_from">{L_WIKI_START_FROM}{L_COLON}</label>
+		<select name="start_from" id="start_from">
+			<option value="">{L_WIKI_START_BLANK}</option>
+			<!-- BEGIN start_options -->
+			<option value="{start_options.NAME}"<!-- IF start_options.S_SELECTED --> selected="selected"<!-- ENDIF -->>{start_options.LABEL}</option>
+			<!-- END start_options -->
+		</select>
+		<input type="hidden" name="action" value="edit">
+		<input type="submit" value="{L_WIKI_START_USE}" class="button2">
+	</p>
+</form>
+<!-- ENDIF -->
+
 <form id="postform" method="post" action="{U_ACTION}">
 <div class="panel" id="postingbox">
 	<div class="inner">

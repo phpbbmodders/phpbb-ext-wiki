@@ -165,7 +165,6 @@ out. Still to do:
   functions per article. Add the cache only if articles with hundreds of calls become common.
 - A template call holds other calls in its parameters three levels deep, and a default value holds
   one level of `{{template}}`; deeper nesting stays text.
-- A "Start from" choice for templates in the article picker.
 
 A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
 repository: [Starter templates repository](todo-wiki-templates-repo.md).

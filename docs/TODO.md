@@ -4,32 +4,18 @@ Ideas not yet built, practical and speculative alike.
 
 ## Article creation templates
 
-Right now a new article always starts blank. Offer a starting-point picker
-when creating an article:
+Built: when someone creates a new article, a **Start from** choice on the edit page
+offers every template whose name starts with `Start ` (for example
+`Template:Start Extension`) and fills the text box with its text. The templates are
+ordinary wiki pages, so they have versions, approval and permissions, and there is no
+separate admin page. See the README.
 
-- **Blank** — today's behavior, an empty edit form.
-- **Generic (Wikipedia-style)** — pre-fill the message body with a common
-  encyclopedia-article skeleton (e.g. an intro paragraph placeholder,
-  `Overview`, `History`, `References` section headings) so new articles
-  don't start from a truly empty box.
+Not built:
 
-The template picker lives on the edit page itself (not the overview page's
-quick-create box, which still just takes you straight to a blank edit form
-and lets you pick there).
-
-Templates are admin-configurable: admins can add new templates beyond the
-built-in "Blank" and "Generic" ones, via an ACP page.
-
-Still needs deciding before implementation:
-
-- What a template is allowed to contain (plain text with placeholders?
-  BBCode? anything the message parser accepts?) and how that's authored in
-  the ACP form.
-- What sanitization that admin-authored template content needs before it's
-  inserted into the edit form's message body — it's admin-authored rather
-  than end-user input, but still ends up in content regular members see and
-  can build on, so it shouldn't get a free pass on the same checks normal
-  article content goes through.
+- A starter skeleton that comes with the extension (an encyclopedia-style article with
+  `Overview`, `History` and `References` headings). It would fit the starter-templates
+  repository below better than code in the extension.
+- Starting from an existing article, or a template that asks for values first.
 
 ## Move/rename an article
 

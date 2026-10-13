@@ -42,6 +42,9 @@ class template_list
 	/** @var \phpbbmodders\wiki\wiki\links */
 	protected $links;
 
+	/** @var \phpbbmodders\wiki\wiki\templates */
+	protected $templates;
+
 	/** @var string */
 	protected $article_table;
 
@@ -55,10 +58,12 @@ class template_list
 	 * @param \phpbb\template\template			$template
 	 * @param \phpbb\user						$user
 	 * @param \phpbbmodders\wiki\wiki\links		$links
+	 * @param \phpbbmodders\wiki\wiki\templates	$templates
 	 * @param string							$article_table
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\links $links, $article_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\templates $templates, $article_table)
 	{
+		$this->templates = $templates;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
@@ -69,24 +74,6 @@ class template_list
 		$this->user = $user;
 		$this->links = $links;
 		$this->article_table = $article_table;
-	}
-
-	/**
-	 * SQL condition for the live version of a template: approved, and not
-	 * replaced by a newer approved version.
-	 *
-	 * @return string
-	 */
-	protected function live_template_where()
-	{
-		return 'a.article_approved = 1
-			AND a.article_url ' . $this->db->sql_like_expression(\phpbbmodders\wiki\wiki\templates::PREFIX . $this->db->get_any_char()) . '
-			AND NOT EXISTS (
-				SELECT 1 FROM ' . $this->article_table . ' b
-				WHERE b.article_url = a.article_url
-					AND b.article_approved = 1
-					AND (b.article_last_edit > a.article_last_edit
-						OR (b.article_last_edit = a.article_last_edit AND b.article_id > a.article_id)))';
 	}
 
 	/**
@@ -105,7 +92,7 @@ class template_list
 
 		$sql = 'SELECT COUNT(a.article_id) AS total
 			FROM ' . $this->article_table . ' a
-			WHERE ' . $this->live_template_where();
+			WHERE ' . $this->templates->live_where('a', \phpbbmodders\wiki\wiki\templates::PREFIX);
 		$result = $this->db->sql_query($sql);
 		$total = (int) $this->db->sql_fetchfield('total');
 		$this->db->sql_freeresult($result);
@@ -115,7 +102,7 @@ class template_list
 
 		$sql = 'SELECT a.article_id, a.article_title, a.article_url, a.article_description, a.article_last_edit
 			FROM ' . $this->article_table . ' a
-			WHERE ' . $this->live_template_where() . '
+			WHERE ' . $this->templates->live_where('a', \phpbbmodders\wiki\wiki\templates::PREFIX) . '
 			ORDER BY a.article_title ASC, a.article_id ASC';
 		$result = $this->db->sql_query_limit($sql, $per_page, $start);
 		while ($row = $this->db->sql_fetchrow($result))
