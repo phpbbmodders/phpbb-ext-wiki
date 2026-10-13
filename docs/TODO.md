@@ -35,8 +35,8 @@ Decided 10/13/2026:
 - Moving a `Template:` page that articles use shows a warning with the number of articles,
   and asks for a second confirmation before it goes ahead, because every one of them would
   need fixing by hand if no redirect is left.
-
-Still to decide: whether links in other articles are rewritten or left to the redirect.
+- Links in other articles are not rewritten. The redirect left at the old address covers
+  them, so it has to stay in place for those links to keep working.
 
 ## Categories
 
