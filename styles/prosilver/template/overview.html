@@ -8,6 +8,16 @@
 	<!-- IF U_WIKI_FEED_ATOM --> &bull; <a href="{U_WIKI_FEED_ATOM}">{L_WIKI_FEED_ATOM_LINK}</a><!-- ENDIF -->
 </p>
 
+<!-- IF U_WIKI_SEARCH -->
+<form method="get" action="{U_WIKI_SEARCH}" class="wiki-search-box">
+	<p>
+		<label for="wiki_keywords" class="visually-hidden">{L_WIKI_SEARCH_BOX}</label>
+		<input type="search" class="inputbox" name="keywords" id="wiki_keywords" size="30" placeholder="{L_WIKI_SEARCH_BOX}">
+		<input type="submit" class="button2" value="{L_SEARCH}">
+	</p>
+</form>
+<!-- ENDIF -->
+
 <!-- IF S_AUTH_EDIT -->
 <div class="panel">
 	<div class="inner">

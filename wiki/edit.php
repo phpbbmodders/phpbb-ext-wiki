@@ -78,9 +78,11 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param string									$php_ext
 	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles object
 	* @param \phpbbmodders\wiki\wiki\templates			$templates				Wiki templates object
+	* @param \phpbbmodders\wiki\wiki\search_sync			$search_sync			Keeps the search current
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync)
 	{
+		$this->search_sync = $search_sync;
 		$this->templates = $templates;
 		$this->watch = $watch;
 		$this->auth = $auth;
@@ -148,6 +150,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 				SET article_approved = 0
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
 			$this->db->sql_query($sql);
+			$this->sync_search($article);
 
 			trigger_error($this->user->lang('DEACTIVATE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array()) . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}

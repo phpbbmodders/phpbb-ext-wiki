@@ -47,21 +47,10 @@ Not built:
 
 ## Wiki search
 
-Confirmed: wiki content is **not** in phpBB's board search at all. Checked
-both ways — no search-related code anywhere in the extension, and live on
-the test board, searching for a word that only exists in a live, approved
-article's text ("trivial", from "Getting Started") returns zero matches.
-`wiki_article` is a non-standard table outside phpBB's normal post/topic
-search index, so this isn't surprising, but it does mean articles are
-currently undiscoverable except by browsing the overview page or already
-knowing the URL.
-
-Chosen direction (confirmed 10/12/2026): first port the Knowledge Base's search engine to the
-wiki, then show wiki matches in a block above the results of phpBB's normal board search
-(grouped results, not one mixed list), with an "Also search the Wiki" checkbox on Advanced
-search. Searches respect the wiki's viewing permissions, use only the current approved article text
-and need no core change. The full plan, scope and verification list are in
-[`TODO/todo-forum-search-integration.md`](TODO/todo-forum-search-integration.md).
+Built: the wiki's own search page, index and ACP page (a port of the Knowledge Base's engine; see
+the README and [`docs/TODO/todo-forum-search-integration.md`](TODO/todo-forum-search-integration.md)).
+Next: a "Wiki (N)" block and an "Also search the Wiki" checkbox in phpBB's own search, with the wiki
+results kept apart from the board results.
 
 ## A wiki-style UI, not just reskinned forum templates
 

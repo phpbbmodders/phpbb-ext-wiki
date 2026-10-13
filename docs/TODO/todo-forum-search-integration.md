@@ -1,6 +1,6 @@
 # Wiki search and forum search integration
 
-Status: direction confirmed 10/12/2026, not started. Companion to the Knowledge Base's plan in
+Status: direction confirmed 10/12/2026. Step 1 is built (the wiki's own search); step 2 is not started. Companion to the Knowledge Base's plan in
 `phpbbmodders/knowledgebase` (`docs/TODO/todo-forum-search-integration.md`).
 
 ## Goal
@@ -10,7 +10,7 @@ search also sees matching wiki articles beside the forum results ("option 1": gr
 one mixed list). Today the wiki has no search at all: its articles are undiscoverable except by
 browsing the overview page or knowing the URL.
 
-## Step 1: give the wiki a search by porting the Knowledge Base's
+## Step 1 (built): give the wiki a search by porting the Knowledge Base's
 
 The Knowledge Base already has a complete search: its own copies of phpBB's three search engines
 (native, MySQL fulltext, PostgreSQL fulltext) behind a small interface and a factory, its own index
