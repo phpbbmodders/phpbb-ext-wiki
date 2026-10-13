@@ -17,6 +17,17 @@
 			<dt><label for="wiki_per_page_search">{L_WIKI_PER_PAGE_SEARCH}{L_COLON}</label><br><span>{L_WIKI_PER_PAGE_SEARCH_EXPLAIN}</span></dt>
 			<dd><input id="wiki_per_page_search" type="number" min="1" max="9999" name="config[wiki_per_page_search]" value="{WIKI_PER_PAGE_SEARCH}"></dd>
 		</dl>
+		<dl>
+			<dt><label for="wiki_search_board1">{L_WIKI_SEARCH_BOARD}{L_COLON}</label><br><span>{L_WIKI_SEARCH_BOARD_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="wiki_search_board1" name="config[wiki_search_board]" value="1"<!-- IF S_WIKI_SEARCH_BOARD --> checked="checked"<!-- ENDIF -->> {L_YES}</label>
+				<label><input type="radio" class="radio" name="config[wiki_search_board]" value="0"<!-- IF not S_WIKI_SEARCH_BOARD --> checked="checked"<!-- ENDIF -->> {L_NO}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="wiki_search_board_max">{L_WIKI_SEARCH_BOARD_MAX}{L_COLON}</label><br><span>{L_WIKI_SEARCH_BOARD_MAX_EXPLAIN}</span></dt>
+			<dd><input id="wiki_search_board_max" type="number" min="1" max="50" name="config[wiki_search_board_max]" value="{WIKI_SEARCH_BOARD_MAX}"></dd>
+		</dl>
 	</fieldset>
 	<fieldset>
 		<legend>{L_SEARCH_TYPE}</legend>
@@ -59,6 +70,12 @@
 
 	<p>{L_WIKI_SEARCH_INDEX_EXPLAIN}</p>
 	<!-- BEGIN backend -->
+		<!-- IF not backend.S_AVAILABLE -->
+		<fieldset class="tabulated" id="wiki_search_unavailable_{backend.TYPE}">
+			<legend>{L_INDEX_STATS}{L_COLON} {backend.NAME}</legend>
+			<p>{L_WIKI_SEARCH_BACKEND_UNAVAILABLE_EXPLAIN}</p>
+		</fieldset>
+		<!-- ELSE -->
 		<form id="wiki_search_index_{backend.TYPE}" method="post" action="{U_INDEX_ACTION}">
 		<fieldset class="tabulated">
 		{backend.S_HIDDEN_FIELDS}
@@ -94,6 +111,7 @@
 		{S_FORM_TOKEN}
 		</fieldset>
 		</form>
+		<!-- ENDIF -->
 	<!-- END backend -->
 <!-- ENDIF -->
 

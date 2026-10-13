@@ -38,4 +38,12 @@ $lang = array_merge($lang, array(
 		1	=> 'Found 1 article',
 		2	=> 'Found %d articles',
 	),
+
+	'WIKI_BOARD_SEARCH_ALSO'			=> 'Also search the Wiki',
+	'WIKI_BOARD_SEARCH_ALSO_EXPLAIN'	=> 'Shows the wiki articles that match in a block of their own above the forum results.',
+	'WIKI_BOARD_BLOCK_TITLE'			=> 'Wiki (%d)',
+	'WIKI_BOARD_VIEW_ALL'				=> array(
+		1	=> 'View the wiki article',
+		2	=> 'View all %d wiki articles',
+	),
 ));

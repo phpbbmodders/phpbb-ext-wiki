@@ -834,8 +834,8 @@ class wiki_fulltext_native extends wiki_base implements wiki_search_backend_inte
 		{
 			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT(DISTINCT {$sql_array['SELECT']}) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
-//			$total_results = (int) $this->db->sql_fetchfield('total_results');
-			$total_results = count($this->db->sql_fetchrowset($result));
+			// A grouped query gives one row per article; without a group it gives the count itself
+			$total_results = $sql_array['GROUP_BY'] ? count($this->db->sql_fetchrowset($result)) : (int) $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
 
 			if (!$total_results)

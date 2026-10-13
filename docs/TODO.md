@@ -22,10 +22,21 @@ Not built:
 The URL slug is fixed forever once an article is created — only the title
 can change. There's no way to rename a page's URL while keeping its version
 history attached; today that means manually recreating the article under a
-new URL and losing the connection to its history. Needs a "move" action
-(permission-gated, presumably `u_wiki_set_redirect`-adjacent or its own new
-permission) that renames `article_url` across all of an article's versions
-and optionally leaves a redirect stub at the old URL.
+new URL and losing the connection to its history. Needs a "move" action that
+renames `article_url` across all of an article's versions.
+
+Decided 10/13/2026:
+
+- It gets its own permission, named like the existing ones (`u_wiki_move`),
+  rather than reusing `u_wiki_set_redirect`.
+- A move carries the whole article with it: every version, the uploaded files
+  and the watchers.
+- The move form has a "leave a redirect at the old address" box, ticked by default.
+- Moving a `Template:` page that articles use shows a warning with the number of articles,
+  and asks for a second confirmation before it goes ahead, because every one of them would
+  need fixing by hand if no redirect is left.
+- Links in other articles are not rewritten. The redirect left at the old address covers
+  them, so it has to stay in place for those links to keep working.
 
 ## Categories
 
@@ -44,13 +55,6 @@ Not built:
   (a sort key after a bar is accepted and ignored).
 - The member list reads every live article that holds a category mark, so it is meant for wikis
   of moderate size; a membership table would also fix that.
-
-## Wiki search
-
-Built: the wiki's own search page, index and ACP page (a port of the Knowledge Base's engine; see
-the README and [`docs/TODO/todo-forum-search-integration.md`](TODO/todo-forum-search-integration.md)).
-Next: a "Wiki (N)" block and an "Also search the Wiki" checkbox in phpBB's own search, with the wiki
-results kept apart from the board results.
 
 ## A wiki-style UI, not just reskinned forum templates
 
@@ -97,7 +101,11 @@ other happened until they check the pending-approval queue. Even a simple
 form would help; phpBB's own posting flow has similar double-submission
 awareness to look at for the pattern.
 
-A stronger option is page locking: opening the edit form locks the
+Decided 10/13/2026: build both, and let the admin choose in the ACP between the notice
+alone and the lock. When the lock option is on, moderators get a notification when a lock
+blocks someone from editing (not each time a lock is placed), so they can break it if needed.
+
+The lock works like this: opening the edit form locks the
 article for that user for a limited time (for example 30 minutes, renewed
 while they keep editing). Others see who holds the lock and until when,
 and can't save until it's released or expires. Moderators can break a
@@ -117,8 +125,10 @@ allow-list so no unsafe HTML gets through. Full plan, including the syntax not t
 
 A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
 this wiki can do, kept out of the GPL-2.0 extension, with an ACP button that
-installs them as `Template:` pages. Waits for the template system in the Wiki
-markup item above. Plan, licence rules and open questions:
+installs them as `Template:` pages. The template system it needs is built. To be named
+`phpbbmodders/wiki-templates` under the phpbbmodders organisation (agreed 10/13/2026), and
+created on 10/14/2026 once the go-ahead is given. Admins upload its zip in the ACP or copy the
+files into a folder in `store/`. Plan, licence rules and decisions:
 [`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
 
 ## Readable version compare

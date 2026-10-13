@@ -103,19 +103,23 @@ class acp_search
 		$search_options = '';
 		foreach ($this->backends as $search)
 		{
-			// Only the backends this database can use
+			// All three are listed; the ones this database cannot run are shown but cannot be chosen
+			$type = $search->get_type();
 			if ($search->is_available())
 			{
-				$type = $search->get_type();
 				$selected = ($this->config['wiki_search_type'] === $type) ? ' selected="selected"' : '';
 				$search_options .= '<option value="' . $type . '"' . $selected . '>' . $search->get_name() . '</option>';
+			}
+			else
+			{
+				$search_options .= '<option value="' . $type . '" disabled="disabled">' . $search->get_name() . ' (' . $this->language->lang('WIKI_SEARCH_BACKEND_UNAVAILABLE') . ')</option>';
 			}
 		}
 
 		$cfg_array = $this->request->is_set('config') ? $this->request->variable('config', array('' => ''), true) : array();
 		$updated = $this->request->variable('updated', false);
 
-		$settings = array('wiki_search' => 'bool', 'wiki_per_page_search' => 'integer:1:9999');
+		$settings = array('wiki_search' => 'bool', 'wiki_per_page_search' => 'integer:1:9999', 'wiki_search_board' => 'bool', 'wiki_search_board_max' => 'integer:1:50');
 		foreach ($settings as $config_name => $var_type)
 		{
 			if (!isset($cfg_array[$config_name]))
@@ -189,6 +193,8 @@ class acp_search
 			'S_SEARCH_TYPES'		=> $search_options,
 			'S_WIKI_SEARCH'			=> (bool) $this->config['wiki_search'],
 			'WIKI_PER_PAGE_SEARCH'	=> $this->config['wiki_per_page_search'] ? (int) $this->config['wiki_per_page_search'] : 10,
+			'S_WIKI_SEARCH_BOARD'	=> (bool) $this->config['wiki_search_board'],
+			'WIKI_SEARCH_BOARD_MAX'	=> $this->config['wiki_search_board_max'] ? (int) $this->config['wiki_search_board_max'] : 5,
 			'S_SETTINGS'			=> true,
 			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('phpbbmodders_wiki_search'),
 		));
@@ -261,15 +267,21 @@ class acp_search
 	{
 		foreach ($this->backends as $search)
 		{
-			// A backend this database cannot use has no index to build
+			// A backend this database cannot use is listed, but has no index to build
 			if (!$search->is_available())
 			{
+				$this->template->assign_block_vars('backend', array(
+					'NAME'			=> $search->get_name(),
+					'TYPE'			=> $search->get_type(),
+					'S_AVAILABLE'	=> false,
+				));
 				continue;
 			}
 
 			$this->template->assign_block_vars('backend', array(
 				'NAME'				=> $search->get_name(),
 				'TYPE'				=> $search->get_type(),
+				'S_AVAILABLE'		=> true,
 				'S_ACTIVE'			=> $search->get_type() === $this->config['wiki_search_type'],
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('wiki_search_type' => $search->get_type())),
 				'S_INDEXED'			=> $search->index_created(),
