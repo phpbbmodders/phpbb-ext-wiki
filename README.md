@@ -62,6 +62,8 @@ An article
 - Parameters are `{{Name|value}}` by position (the first bare value is `{{{1}}}`) or `{{Name|key=value}}`; a bar inside a `[[link|text]]` or another template belongs to that.
 - What is inside `<noinclude>` is left out when the template is included, and `<includeonly>` text is included without the tags, so a template page can carry its own documentation.
 - The template is looked up when the article is shown, so editing it changes every article that uses it. Only a template's approved version is used.
+- A template can give table rows or cells (a text that starts with `<tr>`, `<tbody>`, `<td>` and so on), to be called between the `<table>` tags of an article: `<table>{{Row|a|1}}{{Row|b|2}}</table>`.
+- Limits, so one article cannot slow the board down: at most 500 template calls written in an article, 2000 calls and functions in all (including those inside templates), and about 500,000 characters of output. Past a limit the rest of the calls show "Too many templates" where they stand.
 - A template can include other templates, ten levels deep at most; a template that includes itself, directly or through another template, shows an error where the loop is (it cannot stop its own recursion with `{{#if:}}`, as on Wikipedia). A call to a template that does not exist is a red link to `Template:Name`.
 - The text of a template is parsed like article text, so it can use BBCode, `[[links]]`, headings and tables, and nothing an article could not.
 - **What links here** on a template page lists the articles that use it.

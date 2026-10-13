@@ -154,7 +154,9 @@ class wikilink_listener implements EventSubscriberInterface
 		$template = $configurator->tags->add('WIKITEMPLATE');
 		$template->attributes->add('name');
 		$template->attributes->add('call');
-		$template->template = '<span class="wikitemplate" data-wiki-template="{@name}" data-wiki-call="{@call}"></span>';
+		// A <template> element, because HTML allows it between table tags where a <span> would not
+		// be, so a template can give a table row
+		$template->template = '<template class="wikitemplate" data-wiki-template="{@name}" data-wiki-call="{@call}"></template>';
 
 		$configurator->Preg->match(self::template_pattern(), 'WIKITEMPLATE');
 

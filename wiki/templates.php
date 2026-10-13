@@ -34,6 +34,9 @@ class templates
 	/** Longest text a template call may come to, in characters. */
 	const MAX_LENGTH = 200000;
 
+	/** All the text the calls in one article may produce, counted as they are worked out, in characters. */
+	const MAX_OUTPUT = 500000;
+
 	/** What an error message starts with, which {{#iferror:}} looks for. */
 	const ERROR_OPEN = '[color=red][b]';
 
@@ -61,11 +64,17 @@ class templates
 	/** @var array Names of the templates being expanded, outermost first */
 	protected $stack = array();
 
+	/** @var int Characters produced by calls since the outermost one began */
+	protected $produced = 0;
+
 	/** @var int Templates being included inside the text now being worked out */
 	protected $level = 0;
 
 	/** @var int Calls, functions and magic words worked out since the outermost one began */
 	protected $operations = 0;
+
+	/** @var array Whether an article exists, by name, for this request */
+	protected $exists = array();
 
 	/** @var array Raw template text by article name, for this request */
 	protected $sources = array();
@@ -103,7 +112,15 @@ class templates
 	 */
 	public function expand_all($html)
 	{
-		$pattern = '/<span class="wikitemplate" data-wiki-template="([^"]*)" data-wiki-call="([^"]*)"><\/span>/';
+		// The limits are for the whole of one article, not for each call in it
+		if ($this->depth === 0)
+		{
+			$this->expansions = 0;
+			$this->operations = 0;
+			$this->produced = 0;
+		}
+
+		$pattern = '/<template class="wikitemplate" data-wiki-template="([^"]*)" data-wiki-call="([^"]*)"><\/template>/';
 
 		return preg_replace_callback($pattern, function ($match) {
 			return $this->expand(
@@ -122,15 +139,10 @@ class templates
 	 */
 	public function expand($name, $call)
 	{
-		if ($this->depth === 0)
+		if ($this->depth >= self::MAX_DEPTH || ++$this->expansions > self::MAX_EXPANSIONS || $this->operations > self::MAX_OPERATIONS || $this->produced > self::MAX_OUTPUT)
 		{
-			$this->expansions = 0;
-			$this->operations = 0;
-		}
-
-		if ($this->depth >= self::MAX_DEPTH || ++$this->expansions > self::MAX_EXPANSIONS)
-		{
-			return $this->render($this->error($this->language->lang('WIKI_TEMPLATE_TOO_DEEP', trim($name))));
+			// Once the limits are used up, the rest of the article's calls are cheap to refuse
+			return '<strong class="error">' . htmlspecialchars($this->language->lang('WIKI_TEMPLATE_TOO_DEEP', trim($name)), ENT_QUOTES, 'UTF-8') . '</strong>';
 		}
 
 		$text = trim($this->expand_text('{{' . $call . '}}'));
@@ -255,6 +267,24 @@ class templates
 			return $this->error($this->language->lang('WIKI_TEMPLATE_TOO_DEEP', trim(strtok($inner, '|'))));
 		}
 
+		$result = $this->evaluate_call($inner);
+		$this->produced += strlen($result);
+		if ($this->produced > self::MAX_OUTPUT)
+		{
+			return $this->error($this->language->lang('WIKI_TEMPLATE_TOO_DEEP', trim(strtok($inner, '|'))));
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Work out one call, whatever it is.
+	 *
+	 * @param string $inner What stood between the braces
+	 * @return string
+	 */
+	protected function evaluate_call($inner)
+	{
 		$trimmed = ltrim($inner);
 		if (preg_match('/^#([a-z]+)\s*:(.*)$/is', $trimmed, $match))
 		{
@@ -805,6 +835,10 @@ class templates
 		{
 			return $this->sources[$article] !== null;
 		}
+		if (isset($this->exists[$article]))
+		{
+			return $this->exists[$article];
+		}
 
 		$sql = 'SELECT article_id
 			FROM ' . $this->article_table . "
@@ -814,7 +848,7 @@ class templates
 		$exists = (bool) $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return $exists;
+		return $this->exists[$article] = $exists;
 	}
 
 	/**
@@ -827,6 +861,11 @@ class templates
 	{
 		$uid = $bitfield = '';
 		$flags = 0;
+
+		// Table rows and cells only parse inside a table, so a template that gives some
+		// is parsed in one, and the table is taken off again
+		list($open, $close) = self::table_wrapper($text);
+		$text = $open . $text . $close;
 
 		$was_active = markup::is_active();
 		markup::set_active(true);
@@ -843,12 +882,50 @@ class templates
 		$this->depth++;
 		try
 		{
-			return generate_text_for_display($text, $uid, $bitfield, $flags);
+			$html = generate_text_for_display($text, $uid, $bitfield, $flags);
 		}
 		finally
 		{
 			$this->depth--;
 		}
+
+		return ($open === '') ? $html : self::unwrap_table($html, $open);
+	}
+
+	/**
+	 * What to put around text that starts with a table row or cell so it parses.
+	 *
+	 * @param string $text
+	 * @return array The opening and closing text, empty when none is needed
+	 */
+	public static function table_wrapper($text)
+	{
+		if (preg_match('/^\s*<(tr|tbody|thead|tfoot|caption)[\s>]/i', $text))
+		{
+			return array('<table>', '</table>');
+		}
+		if (preg_match('/^\s*<(td|th)[\s>]/i', $text))
+		{
+			return array('<table><tr>', '</tr></table>');
+		}
+
+		return array('', '');
+	}
+
+	/**
+	 * Take the table put round rows or cells by table_wrapper() off the rendered text.
+	 *
+	 * @param string $html The rendered text
+	 * @param string $open The opening text table_wrapper() gave
+	 * @return string
+	 */
+	public static function unwrap_table($html, $open)
+	{
+		$row = ($open === '<table><tr>') ? '(?:<tr>\s*)' : '';
+		$html = preg_replace('#^\s*<table>\s*' . $row . '#i', '', $html);
+		$row = ($open === '<table><tr>') ? '(?:</tr>\s*)' : '';
+
+		return preg_replace('#\s*' . $row . '</table>\s*$#i', '', $html);
 	}
 
 	/**

@@ -37,6 +37,9 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 				'Template:Ping'		=> '{{Pong}}',
 				'Template:Pong'		=> '{{Ping}}',
 				'Template:Doc'		=> '<noinclude>Docs</noinclude>Body{{{x|}}}',
+				'Template:Big'		=> null,
+				'Template:Mid'		=> '{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}',
+				'Template:Wide'		=> '{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}',
 				'Template:Deep'		=> '{{#if: {{{1|}}} | {{Deep|{{{1}}}}} | end}}',
 				'Main Page'			=> 'x',
 			);
@@ -272,6 +275,41 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame('box x', $this->run_text('{{INFOBOX|x}}'));
 		$this->assertSame('[[Template:NOTHING]]', $this->run_text('{{NOTHING}}'));
+	}
+
+	public function test_a_template_that_fans_out_is_cut_off_by_the_output_limit()
+	{
+		$this->templates->pages['Template:Big'] = str_repeat('a', 100000);
+
+		$start = microtime(true);
+		$out = $this->run_text('{{Wide}}');
+
+		$this->assertLessThan(2.0, microtime(true) - $start, 'it stops early');
+		$this->assertStringContainsString('WIKI_TEMPLATE_TOO_DEEP', $out);
+		$this->assertLessThanOrEqual(\phpbbmodders\wiki\wiki\templates::MAX_LENGTH, strlen($out));
+	}
+
+	public function test_the_limits_count_all_the_calls_of_one_article_together()
+	{
+		// Many calls that each do a little add up to the limit; the counters are not reset between them
+		$out = $this->run_text(str_repeat('{{#expr: 1+1}} ', 2500));
+
+		$this->assertStringContainsString('WIKI_TEMPLATE_TOO_DEEP', $out);
+	}
+
+	public function test_rows_and_cells_are_parsed_inside_a_table_that_is_taken_off_again()
+	{
+		$class = \phpbbmodders\wiki\wiki\templates::class;
+
+		$this->assertSame(array('<table>', '</table>'), $class::table_wrapper('<tr><td>x</td></tr>'));
+		$this->assertSame(array('<table>', '</table>'), $class::table_wrapper("\n <TBODY>"));
+		$this->assertSame(array('<table><tr>', '</tr></table>'), $class::table_wrapper('<td>x</td><td>y</td>'));
+		$this->assertSame(array('', ''), $class::table_wrapper('<table><tr><td>x</td></tr></table>'));
+		$this->assertSame(array('', ''), $class::table_wrapper('plain <tr>'));
+		$this->assertSame(array('', ''), $class::table_wrapper('<track>'));
+
+		$this->assertSame('<th>r</th><td>c</td>', $class::unwrap_table("<table>\n<tr><th>r</th><td>c</td></tr>\n</table>", '<table><tr>'));
+		$this->assertSame('<tr><td>x</td></tr>', $class::unwrap_table("<table>\n<tr><td>x</td></tr>\n</table>\n", '<table>'), 'a row keeps its own tr');
 	}
 
 	public function test_a_flood_of_calls_is_cut_off()
