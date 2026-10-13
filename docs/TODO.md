@@ -32,10 +32,11 @@ Decided 10/13/2026:
 - A move carries the whole article with it: every version, the uploaded files
   and the watchers.
 - The move form has a "leave a redirect at the old address" box, ticked by default.
+- Moving a `Template:` page that articles use shows a warning with the number of articles,
+  and asks for a second confirmation before it goes ahead, because every one of them would
+  need fixing by hand if no redirect is left.
 
-Still to decide: what a moderator sees when moving a `Template:` page (articles that use
-it by the old name would break), and whether links in other articles are rewritten or left
-to the redirect.
+Still to decide: whether links in other articles are rewritten or left to the redirect.
 
 ## Categories
 
