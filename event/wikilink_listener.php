@@ -212,6 +212,28 @@ class wikilink_listener implements EventSubscriberInterface
 			$html->allowAttribute($cell, 'colspan');
 			$html->allowAttribute($cell, 'rowspan');
 		}
+
+		// <center>...</center> centres its content, as on MediaWiki. It becomes a <div> with a
+		// class, since s9e lets no style attribute through and <center> is obsolete HTML.
+		$center = $configurator->tags->add('WIKICENTER');
+		$center->template = '<div class="wikicenter"><xsl:apply-templates/></div>';
+		$html->aliasElement('center', 'WIKICENTER');
+	}
+
+	/**
+	 * The tags the parser reads only while a wiki article is saved.
+	 *
+	 * @return string[]
+	 */
+	public static function wiki_tags()
+	{
+		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE', 'WIKICATEGORY', 'WIKICENTER');
+		foreach (self::TABLE_ELEMENTS as $element)
+		{
+			$tags[] = 'html:' . $element;
+		}
+
+		return $tags;
 	}
 
 	/**
@@ -225,13 +247,7 @@ class wikilink_listener implements EventSubscriberInterface
 	{
 		$parser = $event['parser']->get_parser();
 
-		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE', 'WIKICATEGORY');
-		foreach (self::TABLE_ELEMENTS as $element)
-		{
-			$tags[] = 'html:' . $element;
-		}
-
-		foreach ($tags as $tag)
+		foreach (self::wiki_tags() as $tag)
 		{
 			if (\phpbbmodders\wiki\wiki\markup::is_active())
 			{

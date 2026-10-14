@@ -149,13 +149,7 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$listener->configure_wikilink(array('configurator' => $configurator));
 		extract($configurator->finalize());
 
-		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE', 'WIKICATEGORY');
-		foreach (\phpbbmodders\wiki\event\wikilink_listener::TABLE_ELEMENTS as $element)
-		{
-			$tags[] = 'html:' . $element;
-		}
-
-		foreach ($tags as $tag)
+		foreach (\phpbbmodders\wiki\event\wikilink_listener::wiki_tags() as $tag)
 		{
 			$wiki_markup ? $parser->enableTag($tag) : $parser->disableTag($tag);
 		}
@@ -338,6 +332,26 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('<th colspan="2">Notes</th>', $html);
 		$this->assertStringContainsString('<td rowspan="2">1.1.0</td>', $html);
 		$this->assertStringNotContainsString('<script', $html);
+	}
+
+	public function test_center_becomes_a_centred_block_in_a_wiki_article()
+	{
+		$this->assertStringContainsString('<WIKICENTER>', $this->parse('<center>[b]Title[/b]</center>'));
+		$this->assertStringContainsString('<WIKICENTER>', $this->parse('<CENTER>x</CENTER>'), 'the element name is not case-sensitive');
+
+		$html = $this->render('<center>[[Main Page]] <center style="color:red">inner</center></center>');
+		$this->assertStringContainsString('<div class="wikicenter">', $html);
+		$this->assertStringNotContainsString('<center', $html);
+		$this->assertStringNotContainsString('style', $html, 'no attribute is let through');
+		$this->assertStringContainsString('Main Page', $html);
+	}
+
+	public function test_center_stays_plain_text_outside_a_wiki_article()
+	{
+		$xml = $this->parse('<center>x</center>', false);
+
+		$this->assertStringNotContainsString('<WIKICENTER', $xml);
+		$this->assertStringContainsString('&lt;center&gt;', $xml);
 	}
 
 	private function render(string $text): string
