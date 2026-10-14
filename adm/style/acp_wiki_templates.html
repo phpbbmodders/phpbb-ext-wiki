@@ -1,0 +1,109 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_ACP_WIKI_STARTER_TEMPLATES}</h1>
+
+<p>{L_ACP_WIKI_STARTER_TEMPLATES_EXPLAIN}</p>
+
+<!-- IF not S_FOLDER_WRITABLE -->
+	<div class="errorbox">
+		<p>{L_WIKI_STARTER_FOLDER_NOT_WRITABLE}</p>
+	</div>
+<!-- ENDIF -->
+
+<form id="wiki_starter_get" method="post" action="{U_ACTION}" enctype="multipart/form-data">
+	<fieldset>
+		<legend>{L_WIKI_STARTER_GET}</legend>
+		<dl>
+			<dt><label for="starter_zip">{L_WIKI_STARTER_UPLOAD}{L_COLON}</label><br><span>{L_WIKI_STARTER_UPLOAD_EXPLAIN} {L_WIKI_STARTER_MAX_ZIP}{L_COLON} {STARTER_MAX_ZIP}</span></dt>
+			<dd>
+				<input type="file" id="starter_zip" name="starter_zip" accept=".zip,application/zip">
+				<input class="button2" type="submit" name="submit_upload" value="{L_WIKI_STARTER_UPLOAD_BUTTON}">
+			</dd>
+		</dl>
+		<dl>
+			<dt><label>{L_WIKI_STARTER_DOWNLOAD}{L_COLON}</label><br><span>{L_WIKI_STARTER_DOWNLOAD_EXPLAIN}</span></dt>
+			<dd><input class="button2" type="submit" id="submit_download" name="submit_download" value="{L_WIKI_STARTER_DOWNLOAD_BUTTON}"></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_WIKI_STARTER_FOLDER}{L_COLON}</label><br><span>{L_WIKI_STARTER_FOLDER_EXPLAIN}</span></dt>
+			<dd><code>{STARTER_FOLDER}</code></dd>
+		</dl>
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
+<form id="wiki_starter_check" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_WIKI_STARTER_CHECK}</legend>
+		<dl>
+			<dt><label for="wiki_starter_check_yes">{L_WIKI_STARTER_CHECK_ENABLE}{L_COLON}</label><br><span>{L_WIKI_STARTER_CHECK_ENABLE_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="wiki_starter_check_yes" name="wiki_starter_check" value="1"<!-- IF S_CHECK_ENABLED --> checked="checked"<!-- ENDIF -->> {L_YES}</label>
+				<label><input type="radio" class="radio" name="wiki_starter_check" value="0"<!-- IF not S_CHECK_ENABLED --> checked="checked"<!-- ENDIF -->> {L_NO}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="wiki_starter_check_days">{L_WIKI_STARTER_CHECK_DAYS}{L_COLON}</label><br><span>{L_WIKI_STARTER_CHECK_DAYS_EXPLAIN}</span></dt>
+			<dd><input id="wiki_starter_check_days" type="number" min="{STARTER_CHECK_DAYS_MIN}" max="{STARTER_CHECK_DAYS_MAX}" name="wiki_starter_check_days" value="{STARTER_CHECK_DAYS}"> {L_DAYS}</dd>
+		</dl>
+		<dl>
+			<dt><label>{L_WIKI_STARTER_LAST_CHECK}{L_COLON}</label></dt>
+			<dd>
+				<!-- IF STARTER_LAST_CHECK -->
+					{STARTER_LAST_CHECK} &ndash; {L_WIKI_STARTER_UPDATES}{L_COLON} <strong>{STARTER_UPDATES}</strong>
+				<!-- ELSE -->
+					{L_WIKI_STARTER_NEVER_CHECKED}
+				<!-- ENDIF -->
+			</dd>
+		</dl>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" name="submit_settings" value="{L_SUBMIT}">&nbsp;
+			<input class="button2" type="submit" name="submit_check" value="{L_WIKI_STARTER_CHECK_NOW}">
+		</p>
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
+<form id="wiki_starter_install" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_WIKI_STARTER_INSTALL}</legend>
+		<!-- IF S_HAS_TEMPLATES -->
+			<p>{L_WIKI_STARTER_INSTALL_EXPLAIN}</p>
+			<table class="table1 zebra-table">
+				<thead>
+					<tr>
+						<th style="width: 5%;">{L_WIKI_STARTER_INSTALL_COLUMN}</th>
+						<th>{L_WIKI_STARTER_TEMPLATE}</th>
+						<th>{L_WIKI_STARTER_STATUS}</th>
+					</tr>
+				</thead>
+				<tbody>
+				<!-- BEGIN starter_templates -->
+					<tr>
+						<td class="centered-text">
+							<!-- IF starter_templates.S_CHOOSABLE -->
+								<input type="checkbox" class="radio" id="install_{starter_templates.S_ROW_COUNT}" name="install[]" value="{starter_templates.NAME}"<!-- IF starter_templates.S_TICKED --> checked="checked"<!-- ENDIF -->>
+							<!-- ENDIF -->
+						</td>
+						<td><label for="install_{starter_templates.S_ROW_COUNT}">{L_WIKI_STARTER_TEMPLATE_PREFIX}{starter_templates.NAME}</label></td>
+						<td>
+							<!-- IF starter_templates.S_EDITED or starter_templates.S_REFUSED --><strong class="error">{starter_templates.STATUS}</strong><!-- ELSE -->{starter_templates.STATUS}<!-- ENDIF -->
+							<!-- IF starter_templates.S_EDITED --><br><span>{L_WIKI_STARTER_EDITED_WARNING}</span><!-- ENDIF -->
+							<!-- IF starter_templates.REASON --><br><span>{starter_templates.REASON}</span><!-- ENDIF -->
+						</td>
+					</tr>
+				<!-- END starter_templates -->
+				</tbody>
+			</table>
+			<p class="small"><a href="#" onclick="marklist('wiki_starter_install', 'install', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('wiki_starter_install', 'install', false); return false;">{L_UNMARK_ALL}</a></p>
+			<p class="submit-buttons">
+				<input class="button1" type="submit" name="submit_install" value="{L_WIKI_STARTER_INSTALL_BUTTON}">
+			</p>
+		<!-- ELSE -->
+			<p>{L_WIKI_STARTER_NONE}</p>
+		<!-- ENDIF -->
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

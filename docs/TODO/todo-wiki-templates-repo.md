@@ -31,7 +31,7 @@ out how the licences apply to them.
 
 ## Layout
 
-Built on 10/14/2026 in [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), except the templates themselves:
+Built on 10/14/2026 in [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), which now holds 14 templates:
 
 - The CC BY-SA 4.0 text as its `LICENSE` and a README that explains the rules above.
 - One file per template, named after the Wikipedia template (`Main.wiki`,
@@ -45,19 +45,22 @@ Built on 10/14/2026 in [`phpbbmodders/wiki-templates`](https://github.com/phpbbm
 
 ## Using it from the wiki
 
-An ACP button, "Install starter templates", reads the files from the uploaded zip or from the
-folder in `store/` and creates one
-`Template:` page per file. Each created page keeps the header, so the board shows
-the attribution on the template page itself. Installing is optional and can be
-repeated; an existing template page is not overwritten without asking.
+Built 10/14/2026: **ACP → Extensions → Wiki → Starter templates** (see the README).
 
-Idea, not decided (10/14/2026): offering updates. Like Wikipedia's templates, installed
-templates become ordinary wiki pages, and boards will edit them, so a fix made in the
-repository later would not reach a board that installed the set earlier. Installing a newer
-zip could offer to update each template page whose live text is still exactly what the
-previous install created, and leave every page that was edited on the board alone. That
-needs a record of what each install wrote, for example a checksum per page. The update is
-saved as a new version, so it can be compared and undone like any edit.
+- The admin gets the templates by uploading the repository's zip, pressing **Download latest**
+  (the extension fetches GitHub's zip; the admin's button press, never automatic), or copying
+  the files by FTP into `store/phpbbmodders_wiki/templates/`. The zip is read without being
+  extracted, and only `templates/<name>.wiki` entries are taken.
+- A file without its source and licence header, or still marked as not adapted, is listed
+  and cannot be installed.
+- Each installed template is saved as a new, live version of its `Template:` page with the
+  admin as author, so the header shows the attribution on the page and the install can be
+  compared and undone like any edit. A table keeps a checksum of each page as installed:
+  a page still matching it is offered as an update (ticked); a page edited on the board since
+  is offered unticked, with a warning.
+- An optional check (off by default; every 1 to 365 days, as the admin chooses) compares the
+  repository's file list on GitHub with the files the board has, and notifies admins once per
+  new set of changes. It downloads and installs nothing.
 
 ## What goes in
 
@@ -81,7 +84,10 @@ Only templates that work as plain wiki text with parameters:
 - The repository is named `phpbbmodders/wiki-templates` and lives under the `phpbbmodders`
   organisation (10/13/2026).
 - It was created on 10/14/2026, after the go-ahead, now that the template system exists.
-- The templates reach a board by hand, with no download by the extension: the admin uploads
-  the repository's zip in the ACP from the browser, or copies the files by FTP into a folder
-  in `store/` (folder name to be chosen when it is built). The ACP button then installs from
-  there (10/13/2026).
+- The templates reach a board only by an admin's action: uploading the repository's zip,
+  copying the files into `store/phpbbmodders_wiki/templates/` by FTP (10/13/2026), or the
+  **Download latest** button (10/14/2026). Installing is always a separate button.
+- Installed versions go live straight away with the installing admin as author; pages edited
+  on the board are offered unticked (10/14/2026).
+- The check for new templates is a cron task, off by default, with the days between checks
+  set by the admin, and notifies admins; it never downloads or installs (10/14/2026).

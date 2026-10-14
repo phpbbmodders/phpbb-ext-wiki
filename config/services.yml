@@ -6,6 +6,7 @@ parameters:
     tables.wiki.search_results: '%core.table_prefix%wiki_search_results'
     tables.wiki.search_wordlist: '%core.table_prefix%wiki_src_wrdlist'
     tables.wiki.search_wordmatch: '%core.table_prefix%wiki_src_wrdmtch'
+    tables.wiki.template_install: '%core.table_prefix%wiki_template_install'
 
 services:
     _defaults:
@@ -295,6 +296,14 @@ services:
             - [set_watch, ['@phpbbmodders.wiki.watch']]
         tags:
             - { name: notification.type }
+    phpbbmodders.wiki.notification.type.starter_templates:
+        class: phpbbmodders\wiki\notification\starter_templates
+        parent: notification.type.base
+        # Symfony 3.4 (phpBB 3.3.x) does not let a service with a parent take "public" from _defaults.
+        public: true
+        shared: false
+        tags:
+            - { name: notification.type }
 
     # Search: the three backends, the factory that picks the active one, and the
     # service that keeps the search's copy of the articles current
@@ -419,3 +428,41 @@ services:
             - '@phpbbmodders.wiki.search_results'
         tags:
             - { name: event.listener }
+
+    # Starter templates: installs templates from the phpbbmodders/wiki-templates repository,
+    # and the check (off unless switched on) that tells admins when it has new ones
+    phpbbmodders.wiki.starter_templates:
+        class: phpbbmodders\wiki\wiki\starter_templates
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@file_downloader'
+            - '@filesystem'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@phpbbmodders.wiki.edit'
+            - '%tables.wiki.article%'
+            - '%tables.wiki.template_install%'
+            - '%core.root_path%'
+
+    phpbbmodders.wiki.acp_templates:
+        class: phpbbmodders\wiki\controller\acp_templates
+        arguments:
+            - '@config'
+            - '@files.factory'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.starter_templates'
+
+    phpbbmodders.wiki.cron.task.starter_templates_check:
+        class: phpbbmodders\wiki\cron\task\starter_templates_check
+        arguments:
+            - '@phpbbmodders.wiki.starter_templates'
+        calls:
+            - [set_name, [cron.task.phpbbmodders.wiki.starter_templates_check]]
+        tags:
+            - { name: cron.task }

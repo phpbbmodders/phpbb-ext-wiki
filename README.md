@@ -24,6 +24,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - Centred text: `<center>...</center>` in an article centres what it holds (BBCode, links and templates work inside), as on MediaWiki. Its attributes are dropped. It works in wiki articles only, like tables.
 - HTML entities written in an article, such as `&nbsp;`, `&#32;` or `&mdash;`, show as the characters they stand for, as on MediaWiki, in the text and in headings, link texts and link targets. `&lt;b&gt;` shows as "<b>", never as markup, and an unknown entity stays as written. Like headings, this works in wiki articles only; a forum post shows entities as written. After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier show their entities as written until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
 - Templates: `{{Name}}`, `{{Name|first|second}}` and `{{Name|key=value}}` in an article include the live version of the article `Template:Name`, so a notice or infobox is written once and edited in one place. See [Templates](#templates).
+- Starter templates: install ready-made hatnotes, message boxes and text helpers adapted from Wikipedia from the ACP, and optionally be told when new ones are available. See [Starter templates](#starter-templates).
 - Categories: `[[Category:Name]]` in an article puts it in a category. The article lists its categories at the bottom, `/wiki/Category:Name` lists the articles in a category, and `/wiki/categories` lists every category. See [Categories](#categories).
 - Search: `/wiki/search` and a search box on the overview find articles by their title, description and text, with highlighted snippets. It has its own index, kept current as articles are saved, approved, set offline and deleted, and three backends to choose from in the ACP (native, MySQL fulltext, PostgreSQL fulltext). The board's own search can show the matching articles in a block of their own, with an "Also search the Wiki" option. See [Search](#search).
 - The Wiki link in the board header shows the Wikipedia icon by default. Under **Extensions > Wiki > Settings** in the ACP the icon can be changed to any [Font Awesome](https://fontawesome.com/v4.7.0/icons/) icon name, or left blank for no icon.
@@ -107,6 +108,14 @@ An article
 
   The arguments of a function are trimmed of spaces and line breaks before it works on them.
 - After upgrading, disable and enable the extension so the board rebuilds its cache. Articles saved earlier hold `{{...}}` as plain text until they are saved again or reparsed with `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`.
+
+### Starter templates
+
+**ACP → Extensions → Wiki → Starter templates** installs ready-made templates (`{{Main}}`, `{{See also}}`, `{{Ambox}}`, `{{Stub}}`, `{{Nowrap}}` and others) from [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates). They are adapted from Wikipedia and other wikis and shared under CC BY-SA 4.0, kept in their own repository because that licence does not mix with this extension's GPL-2.0; each template's page says where it comes from.
+
+- **Get the templates** in one of three ways: upload the repository's zip (GitHub's **Download ZIP**), press **Download latest** to fetch it from GitHub, or copy the `.wiki` files by FTP into `store/phpbbmodders_wiki/templates/`. Only the zip's `templates/` folder is read, and a file without its source and licence header, or not adapted yet, is listed but cannot be installed.
+- **Install** shows what installing each template would do. New templates and updates to pages nobody has changed are ticked. A page someone on the board edited since it was installed is listed but not ticked, so its changes are only replaced if you tick it (**Mark all** / **Unmark all** are below the list). Each install is a new version of the page, live straight away with you as its author, so earlier versions stay in its history and can be compared or restored.
+- **Check for new templates** (off unless you switch it on) asks GitHub every few days, as many as you choose (1 to 365), whether the repository has new or changed templates, and notifies the board's administrators once for each new set of changes. It never downloads or installs anything; **Check now** runs it at once.
 
 ## Categories
 
