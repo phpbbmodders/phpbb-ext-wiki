@@ -99,4 +99,21 @@ class templates_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('', templates::documentation('Body only'));
 		$this->assertSame('Body{{{1}}} hidden ', templates::transclusion_text($text));
 	}
+
+	public function test_the_parameters_a_template_takes_are_found_once_in_order()
+	{
+		$text = '<tr><th>{{{1}}}</th><td>{{{2|}}}</td></tr>{{{ name }}} {{{1}}} {{{version|{{{fallback}}}}}}';
+
+		$this->assertSame(array('1', '2', 'name', 'version', 'fallback'), templates::parameters($text));
+		$this->assertSame(array(), templates::parameters('No values here, just {{Other template}}.'));
+	}
+
+	public function test_the_usage_shows_a_placeholder_for_each_value()
+	{
+		$this->assertSame('{{Out of date}}', templates::usage('Out of date', array()));
+		$this->assertSame('{{Row|…|…}}', templates::usage('Row', array('1', '2')));
+		// Unnamed values are counted up to the highest number used, and named ones follow
+		$this->assertSame('{{Box|…|…|…|title=…}}', templates::usage('Box', array('title', '3')));
+		$this->assertSame('{{Extension infobox|name=…|version=…}}', templates::usage('Extension infobox', array('name', 'version')));
+	}
 }

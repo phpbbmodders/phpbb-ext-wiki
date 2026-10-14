@@ -11,7 +11,8 @@ namespace phpbbmodders\wiki\controller;
 
 /**
  * The list of templates: the live version of every article called "Template:Name",
- * A to Z, with its short description and how many articles use it.
+ * A to Z, with its short description, how many articles use it, how to write it and a
+ * preview, under a short guide to using templates.
  */
 class template_list
 {
@@ -100,22 +101,41 @@ class template_list
 		$per_page = max(1, (int) $this->config['topics_per_page']);
 		$start = $this->pagination->validate_start($this->request->variable('start', 0), $per_page, $total);
 
-		$sql = 'SELECT a.article_id, a.article_title, a.article_url, a.article_description, a.article_last_edit
+		$sql = 'SELECT a.article_id, a.article_title, a.article_url, a.article_description, a.article_last_edit, a.article_text, a.bbcode_uid
 			FROM ' . $this->article_table . ' a
 			WHERE ' . $this->templates->live_where('a', \phpbbmodders\wiki\wiki\templates::PREFIX) . '
 			ORDER BY a.article_title ASC, a.article_id ASC';
 		$result = $this->db->sql_query_limit($sql, $per_page, $start);
+		$rows = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+			$rows[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		foreach ($rows as $row)
+		{
+			$name = substr($row['article_url'], strlen(\phpbbmodders\wiki\wiki\templates::PREFIX));
+
+			// The preview is the template's documentation, rendered as on its own page,
+			// where authors show it in use
+			\phpbbmodders\wiki\wiki\files::set_context($row['article_url']);
+			\phpbbmodders\wiki\wiki\categories::reset();
+			list($preview, $source) = $this->templates->page_view($row['article_text'], $row['bbcode_uid']);
+			\phpbbmodders\wiki\wiki\files::set_context(null);
+			\phpbbmodders\wiki\wiki\categories::reset();
+
 			$this->template->assign_block_vars('templates', array(
-				'NAME'			=> substr($row['article_url'], strlen(\phpbbmodders\wiki\wiki\templates::PREFIX)),
+				'NAME'			=> $name,
 				'DESCRIPTION'	=> $row['article_description'],
 				'USED_ON'		=> count($this->links->what_links_here($row['article_url'])),
 				'EDIT_TIME'		=> $this->user->format_date($row['article_last_edit']),
 				'U_TEMPLATE'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
+				'USAGE'			=> htmlspecialchars(\phpbbmodders\wiki\wiki\templates::usage($name, \phpbbmodders\wiki\wiki\templates::parameters($source)), ENT_COMPAT, 'UTF-8'),
+				'PREVIEW'		=> $preview,
+				'S_START'		=> strpos($name, \phpbbmodders\wiki\wiki\templates::START_PREFIX) === 0,
 			));
 		}
-		$this->db->sql_freeresult($result);
 
 		$this->template->assign_block_vars('navlinks', array(
 			'FORUM_NAME'	=> $this->user->lang('WIKI'),
@@ -126,6 +146,7 @@ class template_list
 
 		$this->template->assign_vars(array(
 			'TOTAL_ITEMS'	=> $this->user->lang('TOTAL_ITEMS', $total),
+			'S_AUTH_EDIT'	=> $this->auth->acl_get('u_wiki_edit'),
 		));
 
 		return $this->helper->render('template_list.html', $this->user->lang('WIKI_TEMPLATES'));

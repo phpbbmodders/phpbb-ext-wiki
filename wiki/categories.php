@@ -227,6 +227,28 @@ class categories
 	}
 
 	/**
+	 * The short description of every category that has a page: the description field of
+	 * the live version of its "Category:Name" article.
+	 *
+	 * @return array Normalised category names with their descriptions, as stored
+	 */
+	public function descriptions()
+	{
+		$sql = 'SELECT a.article_url, a.article_description
+			FROM ' . $this->article_table . ' a
+			WHERE ' . $this->templates->live_where('a', self::PREFIX);
+		$result = $this->db->sql_query($sql);
+		$descriptions = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$descriptions[self::normalise(substr($row['article_url'], strlen(self::PREFIX)))] = $row['article_description'];
+		}
+		$this->db->sql_freeresult($result);
+
+		return $descriptions;
+	}
+
+	/**
 	 * Every category with a live article in it, and how many.
 	 *
 	 * @return array Category names with their member counts, A to Z

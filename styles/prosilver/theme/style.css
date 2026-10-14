@@ -150,3 +150,27 @@ pre.wiki-template-source {
 form.wiki-start-from p {
 	margin: 0.4em 0 0.8em;
 }
+
+/* The templates and categories pages: the help box, and the details under each row */
+.wiki-help-box summary,
+.wiki-list-details summary {
+	display: list-item; /* prosilver shows it as a block, which hides the arrow */
+	cursor: pointer;
+}
+.wiki-help-box ul {
+	margin: 0.5em 0 0 2em;
+}
+.wiki-help-box li {
+	margin-bottom: 0.4em;
+}
+.wiki-list-details-row td {
+	padding-top: 0;
+}
+.wiki-list-details p {
+	margin: 0.5em 0;
+	font-size: 1em;
+}
+.wiki-template-preview {
+	padding: 0.5em 0;
+	overflow-x: auto;
+}
