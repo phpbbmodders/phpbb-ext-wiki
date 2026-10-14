@@ -137,8 +137,3 @@ licence rules and decisions:
 The compare page shows raw BBCode with changes marked in red and green.
 Comparing the rendered text would be easier for editors who don't read
 BBCode comfortably.
-
-## Restore an old version
-
-A one-click "Restore this version" in the version history. Today the only
-way is to approve the old version again.

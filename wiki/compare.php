@@ -163,6 +163,7 @@ class compare
 			'ARTICLE_TITLE'			=> $this->data['article_title'],
 			'S_SET_ACTIVE'			=> $this->auth->acl_get('u_wiki_set_active'),
 			'S_DELETE'				=> $this->auth->acl_get('m_wiki_delete'),
+			'S_RESTORE'				=> $this->auth->acl_get('u_wiki_edit'),
 			'S_DELETE_ARTICLE'		=> $this->auth->acl_get('m_wiki_delete_article'),
 			'U_ACTION'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'compare')),
 			'U_DELETE_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'detele_article')),
@@ -219,6 +220,7 @@ class compare
 				'U_VERSION'			=> $this->helper->route('phpbbmodders_wiki_article', array('id' => $this->data['article_id'])),
 				'U_DELETE'			=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'delete', 'id' => $this->data['article_id'])),
 				'U_SET_ACTIVE'		=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'active', 'id' => $this->data['article_id'])),
+				'U_RESTORE'			=> $this->helper->route('phpbbmodders_wiki_article', array('action' => 'restore', 'id' => $this->data['article_id'])),
 			));
 		}
 		$this->db->sql_freeresult($result);

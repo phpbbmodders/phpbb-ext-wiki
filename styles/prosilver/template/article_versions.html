@@ -14,7 +14,7 @@
 						<th class="big">{L_REASON_EDIT}</th>
 						<th class="middle">{L_TIME}</th>
 						<th class="middle">{L_USER}</th>
-						<!-- IF S_DELETE or S_SET_ACTIVE -->
+						<!-- IF S_DELETE or S_SET_ACTIVE or S_RESTORE -->
 						<th>{L_ACTION}</th>
 						<!-- ENDIF -->
 					</tr>
@@ -30,8 +30,11 @@
 						<td>{version_list.EDIT_TIME}</td>
 
 						<td>{version_list.USER}</td>
-						<!-- IF S_DELETE or S_SET_ACTIVE -->
+						<!-- IF S_DELETE or S_SET_ACTIVE or S_RESTORE -->
 						<td>
+							<!-- IF S_RESTORE && not version_list.S_ACTIVE -->
+							<a href="{version_list.U_RESTORE}">[ {L_RESTORE_VERSION} ]</a>
+							<!-- ENDIF -->
 							<!-- IF S_DELETE && not version_list.S_ACTIVE -->
 							<a href="{version_list.U_DELETE}">[ {L_DELETE_VERSION} ]</a>
 							<!-- ENDIF -->
