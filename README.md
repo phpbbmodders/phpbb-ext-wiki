@@ -39,15 +39,19 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 |---|---|
 | [![Edit form](docs/images/wiki-edit.png)](docs/images/wiki-edit.png) | [![Pending articles awaiting approval](docs/images/wiki-pending-articles.png)](docs/images/wiki-pending-articles.png) |
 
-Approving or disapproving a pending edit shows a diff against the currently
-active version:
+Comparing the live version with a pending edit shows, in the readable view,
+what the edit changes, with buttons to approve or disapprove it:
 
-[![Version diff with approve/disapprove actions](docs/images/wiki-compare.png)](docs/images/wiki-compare.png)
+[![Readable compare of a pending edit, with approve and disapprove buttons](docs/images/wiki-compare.png)](docs/images/wiki-compare.png)
 
-The version history page also has a "Moderator controls" dropdown for taking
-an active article offline or deleting it entirely:
+The version history page has a Restore link for each older version, and a
+"Moderator controls" dropdown for taking an article offline, moving it to a new
+name, or deleting it entirely:
 
-[![Moderator controls dropdown: set article inactive, delete article](docs/images/wiki-moderator-controls.png)](docs/images/wiki-moderator-controls.png)
+[![Version history with Restore links, and the moderator controls: set article inactive, move article, delete article](docs/images/wiki-moderator-controls.png)](docs/images/wiki-moderator-controls.png)
+
+More screenshots, including the templates and categories pages and the move
+form, are on the [Screenshots](https://github.com/phpbbmodders/phpbb-ext-wiki/wiki/Screenshots) wiki page.
 
 ## Templates
 
