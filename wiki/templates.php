@@ -624,31 +624,74 @@ class templates
 	{
 		$parts = array();
 		$part = '';
-		$braces = $brackets = 0;
+		$braces = array();
+		$brackets = 0;
 		$length = strlen($text);
-		for ($i = 0; $i < $length; $i++)
+		for ($i = 0; $i < $length;)
 		{
-			$pair = substr($text, $i, 2);
-			if ($pair === '{{' || $pair === '}}' || $pair === '[[' || $pair === ']]')
+			if ($step = self::brace_step($text, $i, $braces))
 			{
-				$braces += ($pair === '{{') - ($pair === '}}');
+				$part .= substr($text, $i, $step);
+				$i += $step;
+				continue;
+			}
+
+			$pair = substr($text, $i, 2);
+			if ($pair === '[[' || $pair === ']]')
+			{
 				$brackets += ($pair === '[[') - ($pair === ']]');
 				$part .= $pair;
-				$i++;
-			}
-			else if ($text[$i] === '|' && $braces <= 0 && $brackets <= 0)
-			{
-				$parts[] = $part;
-				$part = '';
+				$i += 2;
 			}
 			else
 			{
-				$part .= $text[$i];
+				if ($text[$i] === '|' && empty($braces) && $brackets <= 0)
+				{
+					$parts[] = $part;
+					$part = '';
+				}
+				else
+				{
+					$part .= $text[$i];
+				}
+				$i++;
 			}
 		}
 		$parts[] = $part;
 
 		return $parts;
+	}
+
+	/**
+	 * Step over the braces at a position, keeping count of the {{calls}} and {{{parameters}}}
+	 * open there: {{{ opens a parameter and {{ a call, and each closes only with as many
+	 * braces as it opened with, as in call_end(), so a run like }}}}}}}} closes the right ones.
+	 *
+	 * @param string $text
+	 * @param int $i The position
+	 * @param array $stack The open braces (3 or 2 each), changed in place
+	 * @return int How many characters were braces that opened or closed something, or 0
+	 */
+	protected static function brace_step($text, $i, array &$stack)
+	{
+		if (substr($text, $i, 3) === '{{{')
+		{
+			$stack[] = 3;
+
+			return 3;
+		}
+		if (substr($text, $i, 2) === '{{')
+		{
+			$stack[] = 2;
+
+			return 2;
+		}
+		if ($text[$i] === '}' && !empty($stack) && substr($text, $i, end($stack)) === str_repeat('}', end($stack)))
+		{
+			return array_pop($stack);
+		}
+
+		return 0;
 	}
 
 	/**
@@ -659,20 +702,30 @@ class templates
 	 */
 	protected static function split_equals($text)
 	{
-		$braces = $brackets = 0;
+		$braces = array();
+		$brackets = 0;
 		$length = strlen($text);
-		for ($i = 0; $i < $length; $i++)
+		for ($i = 0; $i < $length;)
 		{
-			$pair = substr($text, $i, 2);
-			if ($pair === '{{' || $pair === '}}' || $pair === '[[' || $pair === ']]')
+			if ($step = self::brace_step($text, $i, $braces))
 			{
-				$braces += ($pair === '{{') - ($pair === '}}');
-				$brackets += ($pair === '[[') - ($pair === ']]');
-				$i++;
+				$i += $step;
+				continue;
 			}
-			else if ($text[$i] === '=' && $braces <= 0 && $brackets <= 0)
+
+			$pair = substr($text, $i, 2);
+			if ($pair === '[[' || $pair === ']]')
+			{
+				$brackets += ($pair === '[[') - ($pair === ']]');
+				$i += 2;
+			}
+			else if ($text[$i] === '=' && empty($braces) && $brackets <= 0)
 			{
 				return array(substr($text, 0, $i), substr($text, $i + 1));
+			}
+			else
+			{
+				$i++;
 			}
 		}
 

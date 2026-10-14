@@ -42,6 +42,10 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 				'Template:Wide'		=> '{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}',
 				'Template:Deep'		=> '{{#if: {{{1|}}} | {{Deep|{{{1}}}}} | end}}',
 				'Template:Edge'		=> '[{{{1}}}][{{{n|}}}]',
+				'Template:Show'		=> '[{{{issue|}}}]',
+				// A parameter holding a branch that ends in a run of closing braces, then another call
+				'Template:Pick'		=> '{{#switch: a | {{{k|{{{1|a}}}}}} = hit | #default = miss}}',
+				'Template:Runs'		=> '{{Show|issue={{#if:{{{1|}}}|with: {{{w|{{{1}}}}}}}}{{#if:{{{p|}}}||.}}}}',
 				'Main Page'			=> 'x',
 			);
 
@@ -82,6 +86,17 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('no', $this->run_text('{{#if:   | yes | no}}'));
 		$this->assertSame('', $this->run_text('{{#if: | yes}}'));
 		$this->assertSame('yes', $this->run_text('{{#if: {{lc:A}} | yes | no}}'));
+	}
+
+	public function test_a_run_of_closing_braces_closes_the_parameters_and_calls_it_should()
+	{
+		$this->assertSame('[.]', $this->run_text('{{Runs}}'));
+		$this->assertSame('[with: x.]', $this->run_text('{{Runs|x}}'));
+		$this->assertSame('[with: y.]', $this->run_text('{{Runs|x|w=y}}'));
+		$this->assertSame('[with: y]', $this->run_text('{{Runs|x|w=y|p=1}}'));
+		// The = after a case that ends in a run of braces still separates it from its result
+		$this->assertSame('hit', $this->run_text('{{Pick}}'));
+		$this->assertSame('miss', $this->run_text('{{Pick|z}}'));
 	}
 
 	public function test_text_around_a_call_is_kept()
