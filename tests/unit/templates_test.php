@@ -41,6 +41,17 @@ class templates_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame(array('x' => '{{Y|z}}'), $named);
 	}
 
+	public function test_runs_of_closing_braces_do_not_end_a_parameter_early()
+	{
+		// }}}}}}}} closes {{{1}}}, {{{w| and {{#if:, so the bar after the next call belongs to it
+		list(, $positional, $named) = templates::split_call('Show|issue={{#if:{{{1|}}}|{{{w|{{{1}}}}}}}}{{#if:{{{p|}}}||.}}|2');
+
+		$this->assertSame(array('issue' => '{{#if:{{{1|}}}|{{{w|{{{1}}}}}}}}{{#if:{{{p|}}}||.}}'), $named);
+		$this->assertSame(array(1 => '2'), $positional);
+		$this->assertSame(array('a', '{{{b|{{{c}}}}}}', 'd'), templates::split_pieces('a|{{{b|{{{c}}}}}}|d'));
+		$this->assertSame(array('a', '}} b', 'c'), templates::split_pieces('a|}} b|c'), 'a stray }} closes nothing');
+	}
+
 	public function test_an_equals_sign_after_a_link_does_not_name_a_parameter()
 	{
 		list(, $positional, $named) = templates::split_call('T|[[A]] = B|a=b');
