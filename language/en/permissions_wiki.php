@@ -44,6 +44,7 @@ $lang = array_merge($lang, array(
 	'ACL_U_WIKI_SET_ACTIVE'		=> 'Can change the active version of an article',
 	'ACL_U_WIKI_SET_STICKY'		=> 'Can mark an article as important',
 	'ACL_U_WIKI_SET_REDIRECT'		=> 'Can set up a redirect on an article',
+	'ACL_U_WIKI_MOVE'		=> 'Can move an article to a new name',
 	'ACL_M_WIKI_DELETE'			=> 'Can delete versions of an article',
 	'ACL_M_WIKI_DELETE_ARTICLE'	=> 'Can delete an entire article',
 	'ACL_M_WIKI_VIEW_INACTIVE'		=> 'Can view inactive articles',

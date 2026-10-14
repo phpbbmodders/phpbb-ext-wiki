@@ -55,7 +55,7 @@
 	</div>
 	<p><input type="submit" value="{L_COMPARE}" class="button1" name="submit"></p>
 </form>
-<!-- IF S_SET_ACTIVE or S_DELETE_ARTICLE -->
+<!-- IF S_SET_ACTIVE or S_DELETE_ARTICLE or S_MOVE -->
 <div class="dropdown-container dropdown-container-left dropdown-up dropdown-right dropdown-button-control" id="quickmod">
 	<span title="{L_MODERATOR_CONTROLS}" class="dropdown-trigger button icon-button modtools-icon dropdown-select">{L_MODERATOR_CONTROLS}</span>
 	<div class="dropdown hidden">
@@ -63,6 +63,9 @@
 		<ul class="dropdown-contents">
 			<!-- IF S_SET_ACTIVE -->
 			<li><a href="{U_SET_INACTIV}">{L_SET_INACTIV}</a></li>
+			<!-- ENDIF -->
+			<!-- IF S_MOVE -->
+			<li><a href="{U_MOVE}">{L_WIKI_MOVE_ARTICLE}</a></li>
 			<!-- ENDIF -->
 			<!-- IF S_DELETE_ARTICLE -->
 			<li><a href="{U_DELETE_ARTICLE}">{L_DELETE_ARTICLE}</a></li>

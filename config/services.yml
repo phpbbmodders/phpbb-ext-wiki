@@ -138,8 +138,23 @@ services:
             - '@phpbbmodders.wiki.discussion'
             - '@phpbbmodders.wiki.files'
             - '@phpbbmodders.wiki.watch'
+            - '@phpbbmodders.wiki.move'
             - '%core.root_path%'
             - '%core.php_ext%'
+    phpbbmodders.wiki.move:
+        class: phpbbmodders\wiki\wiki\move
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.links'
+            - '@phpbbmodders.wiki.search_sync'
+            - '%tables.wiki.article%'
+            - '%tables.wiki.file%'
+            - '%tables.wiki.watch%'
     phpbbmodders.wiki.listener:
         class: phpbbmodders\wiki\event\listener
         arguments:

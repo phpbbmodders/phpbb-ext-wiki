@@ -17,26 +17,6 @@ Not built:
   repository below better than code in the extension.
 - Starting from an existing article, or a template that asks for values first.
 
-## Move/rename an article
-
-The URL slug is fixed forever once an article is created — only the title
-can change. There's no way to rename a page's URL while keeping its version
-history attached; today that means manually recreating the article under a
-new URL and losing the connection to its history. Needs a "move" action that
-renames `article_url` across all of an article's versions.
-
-Decided 10/13/2026:
-
-- It gets its own permission, named like the existing ones (`u_wiki_move`),
-  rather than reusing `u_wiki_set_redirect`.
-- A move carries the whole article with it: every version, the uploaded files
-  and the watchers.
-- The move form has a "leave a redirect at the old address" box, ticked by default.
-- Moving a `Template:` page that articles use shows a warning with the number of articles,
-  and asks for a second confirmation before it goes ahead, because every one of them would
-  need fixing by hand if no redirect is left.
-- Links in other articles are not rewritten. The redirect left at the old address covers
-  them, so it has to stay in place for those links to keep working.
 
 ## Categories
 

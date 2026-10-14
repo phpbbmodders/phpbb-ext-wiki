@@ -48,6 +48,9 @@ class main
 	/** @var \phpbbmodders\wiki\wiki\watch */
 	protected $watch;
 
+	/** @var \phpbbmodders\wiki\wiki\move */
+	protected $move;
+
 	/** @var string phpbb_root_path */
 	protected $phpbb_root_path;
 
@@ -69,10 +72,11 @@ class main
 	* @param \phpbbmodders\wiki\wiki\discussion	$discussion				Start discussion object
 	* @param \phpbbmodders\wiki\wiki\files		$files					Uploaded files object
 	* @param \phpbbmodders\wiki\wiki\watch		$watch					Watched articles object
+	* @param \phpbbmodders\wiki\wiki\move		$move					Move article object
 	* @param string							$phpbb_root_path
 	* @param string							$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\move $move, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->helper = $helper;
@@ -86,6 +90,7 @@ class main
 		$this->discussion = $discussion;
 		$this->files = $files;
 		$this->watch = $watch;
+		$this->move = $move;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -155,6 +160,9 @@ class main
 
 			case 'deactivate':
 				return $this->edit->deactivate($article);
+
+			case 'move':
+				return $this->move->page($article);
 
 			case 'restore':
 				return $this->edit->restore($id);

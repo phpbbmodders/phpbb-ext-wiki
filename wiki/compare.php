@@ -217,6 +217,8 @@ class compare
 			'S_DELETE'				=> $this->auth->acl_get('m_wiki_delete'),
 			'S_RESTORE'				=> $this->auth->acl_get('u_wiki_edit'),
 			'S_DELETE_ARTICLE'		=> $this->auth->acl_get('m_wiki_delete_article'),
+			'S_MOVE'				=> $this->auth->acl_get('u_wiki_move'),
+			'U_MOVE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'move')),
 			'U_ACTION'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'compare')),
 			'U_DELETE_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'detele_article')),
 			'U_SET_INACTIV'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'deactivate')),
