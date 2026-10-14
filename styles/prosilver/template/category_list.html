@@ -1,6 +1,16 @@
 <!-- INCLUDE overall_header.html -->
 <h2>{L_WIKI_CATEGORIES}</h2>
 <p>{L_WIKI_CATEGORIES_EXPLAIN}</p>
+
+<details class="panel wiki-help-box">
+	<summary><strong>{L_WIKI_CATEGORIES_HELP}</strong></summary>
+	<ul>
+		<li>{L_WIKI_CATEGORIES_HELP_ADD}</li>
+		<li>{L_WIKI_CATEGORIES_HELP_PAGE}</li>
+		<!-- IF S_AUTH_EDIT --><li>{L_WIKI_CATEGORIES_HELP_DESCRIBE}</li><!-- ENDIF -->
+	</ul>
+</details>
+
 <!-- IF .categories -->
 <div class="forumbg forumbg-table">
 	<div class="inner">
@@ -8,6 +18,7 @@
 			<thead>
 				<tr>
 					<th>{L_WIKI_CATEGORY}</th>
+					<th>{L_WIKI_CATEGORY_DESCRIPTION}</th>
 					<th class="middle">{L_WIKI_CATEGORY_ARTICLES}</th>
 				</tr>
 			</thead>
@@ -15,7 +26,22 @@
 				<!-- BEGIN categories -->
 				<tr class="<!-- IF categories.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 					<td><a href="{categories.U_CATEGORY}"><strong>{categories.NAME}</strong></a></td>
+					<td>{categories.DESCRIPTION}</td>
 					<td>{categories.COUNT}</td>
+				</tr>
+				<tr class="wiki-list-details-row <!-- IF categories.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td colspan="3">
+						<details class="wiki-list-details">
+							<summary>{L_WIKI_CATEGORY_DETAILS}</summary>
+							<p>{categories.WRITE_IN}</p>
+							<!-- IF .categories.members -->
+							<p>{L_WIKI_CATEGORY_MEMBERS}{L_COLON}
+								<!-- BEGIN members --><a href="{categories.members.U_ARTICLE}">{categories.members.TITLE}</a><!-- IF not categories.members.S_LAST_ROW -->, <!-- ENDIF --><!-- END members -->
+								<!-- IF categories.MORE --> {categories.MORE}<!-- ENDIF -->
+							</p>
+							<!-- ENDIF -->
+						</details>
+					</td>
 				</tr>
 				<!-- END categories -->
 			</tbody>

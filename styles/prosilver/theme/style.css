@@ -151,22 +151,22 @@ form.wiki-start-from p {
 	margin: 0.4em 0 0.8em;
 }
 
-/* The templates page: the help box, and the preview under each template */
-.wiki-templates-help summary,
-.wiki-template-details summary {
+/* The templates and categories pages: the help box, and the details under each row */
+.wiki-help-box summary,
+.wiki-list-details summary {
 	display: list-item; /* prosilver shows it as a block, which hides the arrow */
 	cursor: pointer;
 }
-.wiki-templates-help ul {
+.wiki-help-box ul {
 	margin: 0.5em 0 0 2em;
 }
-.wiki-templates-help li {
+.wiki-help-box li {
 	margin-bottom: 0.4em;
 }
-.wiki-template-details-row td {
+.wiki-list-details-row td {
 	padding-top: 0;
 }
-.wiki-template-details p {
+.wiki-list-details p {
 	margin: 0.5em 0;
 	font-size: 1em;
 }

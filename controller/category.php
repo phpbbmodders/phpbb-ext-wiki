@@ -20,6 +20,9 @@ use phpbbmodders\wiki\wiki\categories;
  */
 class category
 {
+	/** How many of a category's articles the list of categories shows under it */
+	const PREVIEW_MEMBERS = 5;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -177,7 +180,8 @@ class category
 	}
 
 	/**
-	 * The list of all categories in use, with how many articles each has.
+	 * The list of all categories in use, with how many articles each has, its description,
+	 * how to put an article in it and its first few articles, under a short guide.
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
@@ -195,13 +199,27 @@ class category
 		$per_page = max(1, (int) $this->config['topics_per_page']);
 		$start = $this->pagination->validate_start($this->request->variable('start', 0), $per_page, $total);
 
+		$descriptions = $this->categories->descriptions();
 		foreach (array_slice($counts, $start, $per_page, true) as $name => $count)
 		{
+			$u_category = $this->helper->route('phpbbmodders_wiki_article', array('article' => categories::PREFIX . $name));
 			$this->template->assign_block_vars('categories', array(
 				'NAME'			=> $name,
 				'COUNT'			=> $count,
-				'U_CATEGORY'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => categories::PREFIX . $name)),
+				'DESCRIPTION'	=> isset($descriptions[categories::normalise($name)]) ? $descriptions[categories::normalise($name)] : '',
+				'U_CATEGORY'	=> $u_category,
+				'WRITE_IN'		=> $this->user->lang('WIKI_CATEGORY_WRITE_IN', htmlspecialchars('[[' . categories::PREFIX . $name . ']]', ENT_COMPAT, 'UTF-8')),
+				'MORE'			=> ($count > self::PREVIEW_MEMBERS) ? $this->user->lang('WIKI_CATEGORY_MORE', $count - self::PREVIEW_MEMBERS, $u_category) : '',
 			));
+
+			// The first few articles in it, as a preview of the category
+			foreach (array_slice($this->categories->members($name), 0, self::PREVIEW_MEMBERS) as $member)
+			{
+				$this->template->assign_block_vars('categories.members', array(
+					'TITLE'		=> $member['article_title'],
+					'U_ARTICLE'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $member['article_url'])),
+				));
+			}
 		}
 
 		$this->template->assign_block_vars('navlinks', array(
@@ -212,6 +230,7 @@ class category
 		$this->pagination->generate_template_pagination($this->helper->route('phpbbmodders_wiki_categories', array()), 'pagination', 'start', $total, $per_page, $start);
 		$this->template->assign_vars(array(
 			'TOTAL_ITEMS'	=> $this->user->lang('TOTAL_ITEMS', $total),
+			'S_AUTH_EDIT'	=> $this->auth->acl_get('u_wiki_edit'),
 		));
 
 		return $this->helper->render('category_list.html', $this->user->lang('WIKI_CATEGORIES'));

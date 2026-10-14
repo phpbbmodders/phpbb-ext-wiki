@@ -2,7 +2,7 @@
 <h2>{L_WIKI_TEMPLATES}</h2>
 <p>{L_WIKI_TEMPLATES_EXPLAIN}</p>
 
-<details class="panel wiki-templates-help">
+<details class="panel wiki-help-box">
 	<summary><strong>{L_WIKI_TEMPLATES_HELP}</strong></summary>
 	<ul>
 		<li>{L_WIKI_TEMPLATES_HELP_USE}</li>
@@ -32,9 +32,9 @@
 					<td>{templates.USED_ON}</td>
 					<td>{templates.EDIT_TIME}</td>
 				</tr>
-				<tr class="wiki-template-details-row <!-- IF templates.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+				<tr class="wiki-list-details-row <!-- IF templates.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 					<td colspan="4">
-						<details class="wiki-template-details">
+						<details class="wiki-list-details">
 							<summary>{L_WIKI_TEMPLATE_DETAILS}</summary>
 							<!-- IF templates.S_START -->
 							<p>{L_WIKI_TEMPLATE_START_NOTE}</p>
