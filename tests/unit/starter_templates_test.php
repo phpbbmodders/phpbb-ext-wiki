@@ -101,6 +101,58 @@ class starter_templates_test extends \PHPUnit\Framework\TestCase
 		);
 	}
 
+	public function test_download_latest_clears_the_changes_the_last_check_found()
+	{
+		$root = sys_get_temp_dir() . '/wiki-starter-' . uniqid() . '/';
+		mkdir($root . 'store', 0777, true);
+
+		// A one-template zip as GitHub would send it, stored without compression
+		$name = 'wiki-templates-main/templates/Small.wiki';
+		$text = self::HEADER . '[size=85]{{{1}}}[/size]';
+		$fields = pack('vvvvvVVVvv', 20, 0, 0, 0, 0, crc32($text), strlen($text), strlen($text), strlen($name), 0);
+		$local = "PK\x03\x04" . $fields . $name . $text;
+		$directory = "PK\x01\x02" . pack('v', 20) . $fields . pack('vvvVV', 0, 0, 0, 0, 0) . $name;
+		$zip = $local . $directory . "PK\x05\x06" . pack('vvvvVVv', 0, 0, 1, 1, strlen($directory), strlen($local), 0);
+
+		$config = new \phpbb\config\config(array('wiki_starter_updates' => 3, 'wiki_starter_notified' => 'abc'));
+		$downloader = $this->createMock(\phpbb\file_downloader::class);
+		$downloader->method('get')->willReturn($zip);
+		$notifications = $this->createMock(\phpbb\notification\manager::class);
+		$notifications->expects($this->once())->method('delete_notifications')
+			->with('phpbbmodders.wiki.notification.type.starter_templates', starter_templates::NOTIFICATION_ITEM);
+
+		$service = new starter_templates(
+			$config,
+			$this->createMock(\phpbb\db\driver\driver_interface::class),
+			$downloader,
+			$this->createMock(\phpbb\filesystem\filesystem_interface::class),
+			$this->createMock(\phpbb\language\language::class),
+			$this->createMock(\phpbb\log\log_interface::class),
+			$notifications,
+			$this->createMock(\phpbbmodders\wiki\wiki\edit::class),
+			'phpbb_wiki_article',
+			'phpbb_wiki_template_install',
+			$root
+		);
+
+		try
+		{
+			$this->assertSame(1, $service->download());
+			$this->assertSame($text, file_get_contents($root . starter_templates::DIRECTORY . 'Small.wiki'));
+			$this->assertFileDoesNotExist($root . starter_templates::DIRECTORY . 'download.zip');
+			$this->assertSame(0, (int) $config['wiki_starter_updates']);
+			$this->assertSame('', (string) $config['wiki_starter_notified']);
+		}
+		finally
+		{
+			array_map('unlink', array_filter(glob($root . starter_templates::DIRECTORY . '{,.}*', GLOB_BRACE) ?: array(), 'is_file'));
+			@rmdir($root . starter_templates::DIRECTORY);
+			@rmdir($root . 'store/phpbbmodders_wiki');
+			@rmdir($root . 'store');
+			@rmdir($root);
+		}
+	}
+
 	public function test_days_between_checks_stay_within_range()
 	{
 		$this->assertSame(starter_templates::CHECK_DAYS_DEFAULT, $this->service(array())->check_days());

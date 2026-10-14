@@ -590,11 +590,28 @@ class starter_templates
 		}
 		try
 		{
-			return $this->take_zip($path);
+			$count = $this->take_zip($path);
 		}
 		finally
 		{
 			@unlink($path);
 		}
+
+		// The folder now holds the repository as it is, so nothing is waiting to be fetched
+		$this->clear_updates();
+
+		return $count;
+	}
+
+	/**
+	 * Forget the changes the last check found, and take back its notification.
+	 *
+	 * @return void
+	 */
+	protected function clear_updates()
+	{
+		$this->config->set('wiki_starter_updates', 0);
+		$this->config->set('wiki_starter_notified', '');
+		$this->notification_manager->delete_notifications('phpbbmodders.wiki.notification.type.starter_templates', self::NOTIFICATION_ITEM);
 	}
 }
