@@ -82,6 +82,18 @@ class starter_templates extends \phpbb\notification\type\base
 	}
 
 	/**
+	 * Where opening the notification goes. A plain & rather than &amp;: phpBB 3.3 sends this
+	 * through redirect(), which decodes &amp;, but phpBB 4.0 puts it straight into the
+	 * redirect, where &amp; would reach the ACP as a parameter called "amp;mode".
+	 *
+	 * @return string
+	 */
+	public function get_redirect_url()
+	{
+		return append_sid("{$this->phpbb_root_path}adm/index.{$this->php_ext}", 'i=-phpbbmodders-wiki-acp-templates_module&mode=settings', false);
+	}
+
+	/**
 	 * No email: the notice is for the board, and the check runs again in a few days anyway.
 	 *
 	 * @return false
