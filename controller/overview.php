@@ -87,11 +87,16 @@ class overview
 		$this->user->add_lang_ext('phpbbmodders/wiki', 'overview');
 		$this->user->add_lang_ext('phpbbmodders/wiki', 'search');
 
+		// Templates have their own list at /wiki/templates, so the reader lists below leave
+		// them out. The pending list keeps them, since template edits still need approving.
+		$not_template = 'article_url ' . $this->db->sql_not_like_expression(\phpbbmodders\wiki\wiki\templates::PREFIX . $this->db->get_any_char());
+
 		// get all article
 
 		$sql = 'SELECT article_title, article_url, article_description, article_views, article_last_edit
 				FROM ' . $this->article_table . '
 				WHERE article_approved=1
+					AND ' . $not_template . '
 				ORDER BY article_id ASC';
 		$result = $this->db->sql_query($sql);
 
@@ -113,6 +118,7 @@ class overview
 		$sql = 'SELECT article_title, article_url, article_description, article_views, article_time_created
 				FROM ' . $this->article_table . '
 				WHERE article_approved=1
+					AND ' . $not_template . '
 				ORDER BY article_time_created DESC';
 		$result = $this->db->sql_query_limit($sql, 5);
 
@@ -134,6 +140,7 @@ class overview
 		$sql = 'SELECT article_title, article_url, article_description, article_views, article_last_edit
 				FROM ' . $this->article_table . '
 				WHERE article_approved=1
+					AND ' . $not_template . '
 				ORDER BY article_views DESC';
 		$result = $this->db->sql_query_limit($sql, 5);
 
@@ -156,6 +163,7 @@ class overview
 				FROM ' . $this->article_table . '
 				WHERE article_approved=1 
 				AND article_sticky=1
+				AND ' . $not_template . '
 				ORDER BY article_last_edit DESC';
 		$result = $this->db->sql_query($sql);
 
