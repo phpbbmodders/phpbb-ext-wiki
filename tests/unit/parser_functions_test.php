@@ -41,6 +41,7 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 				'Template:Mid'		=> '{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}{{Big}}',
 				'Template:Wide'		=> '{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}{{Mid}}',
 				'Template:Deep'		=> '{{#if: {{{1|}}} | {{Deep|{{{1}}}}} | end}}',
+				'Template:Edge'		=> '[{{{1}}}][{{{n|}}}]',
 				'Main Page'			=> 'x',
 			);
 
@@ -241,6 +242,43 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('c', $this->run_text('{{#explode: a,b,c | , | -1}}'));
 		$this->assertSame('', $this->run_text('{{#explode: a,b,c | , | 9}}'));
 		$this->assertSame('b,c', $this->run_text('{{#explode: a,b,c | , | 1 | 2}}'));
+	}
+
+	public function test_an_empty_search_text_is_a_space()
+	{
+		$this->assertSame('a&nbsp;b&nbsp;c', $this->run_text('{{#replace: a b c || &nbsp;}}'));
+		$this->assertSame('a_b_c', $this->run_text('{{#replace: a b c | | _}}'), 'a space written there is trimmed away, which leaves the space too');
+		$this->assertSame('abc', $this->run_text('{{#replace: a b c }}'));
+		$this->assertSame('1', $this->run_text('{{#pos: a b c | }}'));
+		$this->assertSame('3', $this->run_text('{{#rpos: a b c | }}'));
+		$this->assertSame('b', $this->run_text('{{#explode: a b c | | 1}}'));
+		$this->assertSame('a b c', $this->run_text('{{#replace: a b c | &#32; | _}}'), 'as in MediaWiki, the search text is matched as written, not as an entity');
+	}
+
+	/**
+	 * On a board the text of a call reaches the template service with entities as written
+	 * (see templates::expand_all()), so &#32; is not whitespace to the trim and is shown as
+	 * a space once the result is rendered, as on MediaWiki.
+	 */
+	public function test_an_entity_space_survives_the_trim_of_a_result()
+	{
+		$this->assertSame('AandB', $this->run_text('A{{#if: x | and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#if: x |&#32;and}}B'));
+		$this->assertSame('Aand&#32;B', $this->run_text('A{{#if: | x | and&#32;}}B'));
+		$this->assertSame('A&#10;andB', $this->run_text('A{{#if: x |&#10;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#ifeq: 1 | 1 |&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#switch: a | a =&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#switch: z | a = no |&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#switch: z | a = no | #default =&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#ifexpr: 1 > 0 |&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#iferror: x | no |&#32;and}}B'));
+		$this->assertSame('A&#32;andB', $this->run_text('A{{#iferror:&#32;and}}B'));
+	}
+
+	public function test_named_parameters_are_trimmed_and_positional_ones_are_not()
+	{
+		$this->assertSame('[ a ][b]', $this->run_text('{{Edge| a | n = b }}'));
+		$this->assertSame('[ a ][&#32;b]', $this->run_text('{{Edge| a | n = &#32;b }}'));
 	}
 
 	public function test_padding_and_encoding()
