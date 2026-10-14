@@ -222,6 +222,70 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	}
 
 	/**
+	 * Save a starter template as a new, live version of its Template: page, parsed as text
+	 * typed in the edit form is: escaped as phpBB's request escapes it, then parsed with the
+	 * wiki's markup on. Watchers are notified and the search index updated, as for an edit
+	 * that goes live. Views, sticky, the discussion topic and the description of an existing
+	 * page are kept.
+	 *
+	 * @param string $article The page's name, "Template:Name"
+	 * @param string $text The template's text, as written in its file
+	 * @param string $reason The edit reason
+	 * @return int The new version's id
+	 */
+	public function save_starter_template($article, $text, $reason)
+	{
+		$sql = 'SELECT article_views, article_sticky, article_topic_id, article_time_created, article_description
+			FROM ' . $this->article_table . "
+			WHERE article_url = '" . $this->db->sql_escape($article) . "'
+			ORDER BY article_last_edit DESC, article_id DESC";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$newest = $this->db->sql_fetchrow($result) ?: array();
+		$this->db->sql_freeresult($result);
+
+		$typed = $text;
+		(new \phpbb\request\type_cast_helper())->set_var($text, $typed, 'string', true);
+		$uid = $bitfield = '';
+		$flags = 0;
+		\phpbbmodders\wiki\wiki\markup::set_active(true);
+		try
+		{
+			generate_text_for_storage($text, $uid, $bitfield, $flags, true, true, true);
+		}
+		finally
+		{
+			\phpbbmodders\wiki\wiki\markup::set_active(false);
+		}
+
+		$now = time();
+		$sql = 'INSERT INTO ' . $this->article_table . ' ' . $this->db->sql_build_array('INSERT', array(
+			'article_title'			=> $article,
+			'article_url'			=> $article,
+			'article_text'			=> $text,
+			'bbcode_uid'			=> $uid,
+			'bbcode_bitfield'		=> $bitfield,
+			'article_approved'		=> 0,
+			'article_user_id'		=> (int) $this->user->data['user_id'],
+			'article_last_edit'		=> $now,
+			'article_time_created'	=> isset($newest['article_time_created']) ? (int) $newest['article_time_created'] : $now,
+			'article_edit_reason'	=> $reason,
+			'article_topic_id'		=> isset($newest['article_topic_id']) ? (int) $newest['article_topic_id'] : 0,
+			'article_sources'		=> '',
+			'article_sticky'		=> isset($newest['article_sticky']) ? (int) $newest['article_sticky'] : 0,
+			'article_views'			=> isset($newest['article_views']) ? (int) $newest['article_views'] : 0,
+			'article_redirect'		=> '',
+			'article_description'	=> isset($newest['article_description']) ? $newest['article_description'] : '',
+			'article_toc'			=> '',
+		));
+		$this->db->sql_query($sql);
+		$article_id = (int) $this->db->sql_nextid();
+
+		$this->set_active_version($article_id);
+
+		return $article_id;
+	}
+
+	/**
 	 * Set a version of an article as active
 	 *
 	 * @param	string	$id	Id of the version to delete

@@ -96,18 +96,17 @@ limits *who* may edit, not *when*.
 ## Wiki markup: headings, section links, tables and templates
 
 Headings, `[[Article#Section]]` links, HTML tables, templates (`{{Name|parameter}}`) and the
-parser functions (`#if`, `#switch`, `#expr`, `#time`, string functions and others) are built. The
-starter-templates repository is next, in wiki articles only, using s9e's
-allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
+parser functions (`#if`, `#switch`, `#expr`, `#time`, string functions and others) are built, in
+wiki articles only, using s9e's allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
 [`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
 
 ## Starter templates repository
 
 A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
-this wiki can do, kept out of the GPL-2.0 extension, with an ACP button that
-installs them as `Template:` pages. The template system it needs is built. The repository,
-[`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), was created on 10/14/2026 with its licence, README and
-header check, and holds no templates yet. Still to build: the templates themselves, and the ACP
-button. Admins upload its zip in the ACP or copy the files into a folder in `store/`. Plan,
-licence rules and decisions:
+this wiki can do, kept out of the GPL-2.0 extension:
+[`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), with 14
+hatnote, message box and text helper templates. The ACP **Starter templates** page installs
+them (zip upload, download from GitHub, or FTP into `store/`), keeps a board's own edits
+unless the admin ticks them, and can notify admins of new templates. Still to do: simplified
+infobox, citation and navbox templates. Plan, licence rules and decisions:
 [`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).

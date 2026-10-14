@@ -39,6 +39,11 @@ $lang = array_merge($lang, array(
 	'WIKI_ARTICLE_UPDATE'			=> 'An edit of a wiki article is awaiting approval',
 	'WIKI_WATCHED_ARTICLE'			=> 'A wiki article you watch has a new version',
 	'WIKI_WATCHED_ARTICLE_LIVE'		=> 'A new version of the wiki article <strong>%1$s</strong> is now live.',
+	'WIKI_NOTIFICATION_STARTER_TEMPLATES'	=> array(
+		1	=> 'The wiki’s starter templates repository has <strong>1</strong> new or changed template.',
+		2	=> 'The wiki’s starter templates repository has <strong>%d</strong> new or changed templates.',
+	),
+	'WIKI_NOTIFICATION_STARTER_TEMPLATES_OPTION'	=> 'The wiki’s starter templates repository has new or changed templates',
 	'WIKI_TOC'					=> 'Contents',
 	'WIKI_LINK_BUTTON'			=> 'Wiki link: [[Article name]] or [[Article name|link text]]',
 	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',
