@@ -47,7 +47,7 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 			/** @var string|null */
 			public $article = 'Template:Hello';
 
-			protected function source($article)
+			protected function source($article, $follow_redirect = true)
 			{
 				return $this->pages[$article] ?? null;
 			}

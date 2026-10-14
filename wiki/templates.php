@@ -940,19 +940,22 @@ class templates
 	}
 
 	/**
-	 * The text of the live version of a template page, as an editor would see it.
+	 * The text of the live version of a template page, as an editor would see it. A
+	 * template that was moved with a redirect left behind is read from its new name, one
+	 * step only, so the articles that use the old name keep working.
 	 *
 	 * @param string $article The template's article name, with the prefix
+	 * @param bool $follow_redirect Whether to follow a redirect to another template
 	 * @return string|null Null when there is no approved version
 	 */
-	protected function source($article)
+	protected function source($article, $follow_redirect = true)
 	{
 		if (array_key_exists($article, $this->sources))
 		{
 			return $this->sources[$article];
 		}
 
-		$sql = 'SELECT article_text, bbcode_uid
+		$sql = 'SELECT article_text, bbcode_uid, article_redirect
 			FROM ' . $this->article_table . "
 			WHERE article_url = '" . $this->db->sql_escape($article) . "'
 				AND article_approved = 1
@@ -964,6 +967,12 @@ class templates
 		if (!$row)
 		{
 			return $this->sources[$article] = null;
+		}
+
+		$target = htmlspecialchars_decode((string) $row['article_redirect'], ENT_COMPAT);
+		if ($follow_redirect && strpos($target, self::PREFIX) === 0 && $target !== $article)
+		{
+			return $this->sources[$article] = $this->source($target, false);
 		}
 
 		$edit = generate_text_for_edit($row['article_text'], $row['bbcode_uid'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);

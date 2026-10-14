@@ -107,6 +107,10 @@ class listener implements EventSubscriberInterface
 				'lang'		=> 'ACL_U_WIKI_SET_STICKY',
 				'cat'		=> 'wiki'
 			),
+			'u_wiki_move'			=> array(
+				'lang'		=> 'ACL_U_WIKI_MOVE',
+				'cat'		=> 'wiki'
+			),
 			'u_wiki_set_redirect'		=> array(
 				'lang'		=> 'ACL_U_WIKI_SET_REDIRECT',
 				'cat'		=> 'wiki'
