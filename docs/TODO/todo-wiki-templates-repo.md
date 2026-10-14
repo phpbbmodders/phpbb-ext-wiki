@@ -51,6 +51,14 @@ folder in `store/` and creates one
 the attribution on the template page itself. Installing is optional and can be
 repeated; an existing template page is not overwritten without asking.
 
+Idea, not decided (10/14/2026): offering updates. Like Wikipedia's templates, installed
+templates become ordinary wiki pages, and boards will edit them, so a fix made in the
+repository later would not reach a board that installed the set earlier. Installing a newer
+zip could offer to update each template page whose live text is still exactly what the
+previous install created, and leave every page that was edited on the board alone. That
+needs a record of what each install wrote, for example a checksum per page. The update is
+saved as a new version, so it can be compared and undone like any edit.
+
 ## What goes in
 
 Only templates that work as plain wiki text with parameters:
