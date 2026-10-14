@@ -10,9 +10,17 @@
 	</div>
 </div>
 <!-- ENDIF -->
+<!-- IF S_READABLE_POSSIBLE -->
+<p class="wiki-compare-views">
+	<!-- IF S_READABLE --><strong>{L_COMPARE_VIEW_READABLE}</strong><!-- ELSE --><a href="{U_VIEW_READABLE}">{L_COMPARE_VIEW_READABLE}</a><!-- ENDIF -->
+	&bull;
+	<!-- IF S_READABLE --><a href="{U_VIEW_SOURCE}">{L_COMPARE_VIEW_SOURCE}</a><!-- ELSE --><strong>{L_COMPARE_VIEW_SOURCE}</strong><!-- ENDIF -->
+	<!-- IF S_READABLE and DIFF --><br><span class="wiki-compare-explain">{L_COMPARE_READABLE_EXPLAIN}</span><!-- ENDIF -->
+</p>
+<!-- ENDIF -->
 <div class="panel bg1">
 	<div class="inner wiki">
-		<div class="content diff">
+		<div class="content<!-- IF S_READABLE --> wiki-readable-diff<!-- ELSE --> diff<!-- ENDIF -->">
 			<!-- IF DIFF -->
 				{DIFF}
 			<!-- ELSE -->

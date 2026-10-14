@@ -9,7 +9,7 @@ A wiki for phpBB with version history, side-by-side compare, and a moderation qu
 - A wiki at `/wiki`, with an overview page listing its articles.
 - Start an article from the overview page's **New article title** box, or by linking to `/wiki/<article-name>` and following the link.
 - Link to another article by writing `[[Article name]]`, in articles and in forum posts; links to articles that don't exist yet are shown in red and open the editor. Each article lists the articles that link to it under **What links here**. See [Linking between articles](#linking-between-articles).
-- Every edit is saved as a new version; compare any two versions side by side.
+- Every edit is saved as a new version; compare any two versions. The compare page opens in a **Readable** view: the newer version as readers see it, with added text in green and underlined, removed text in red and struck through, and the changed words marked inside a line, list item or table row that changed. **Source** shows the BBCode diff. A `Template:` page is compared as written.
 - **Restore** in the version history brings back an older version by saving its text, title, description, sources and redirect as a new version, so no version is lost. Members who may edit can restore; the restored version goes live straight away for members who may set versions active, and otherwise waits for approval like any edit.
 - Edits can wait for approval: moderators get a **Pending articles** list with Approve and Disapprove. Approving a version older than the live one is blocked, so a stale draft can't overwrite newer content.
 - Moderators can take an article offline or delete it, and articles can be made sticky or set to redirect.

@@ -131,9 +131,3 @@ header check, and holds no templates yet. Still to build: the templates themselv
 button. Admins upload its zip in the ACP or copy the files into a folder in `store/`. Plan,
 licence rules and decisions:
 [`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
-
-## Readable version compare
-
-The compare page shows raw BBCode with changes marked in red and green.
-Comparing the rendered text would be easier for editors who don't read
-BBCode comfortably.
