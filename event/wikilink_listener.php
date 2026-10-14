@@ -114,7 +114,9 @@ class wikilink_listener implements EventSubscriberInterface
 		// parser reads it only while a wiki article is saved (see toggle_wiki_markup()); a sort key
 		// after a bar is accepted and ignored.
 		$category = $configurator->tags->add('WIKICATEGORY');
-		$category->attributes->add('name')->filterChain->append('\phpbbmodders\wiki\wiki\categories::normalise');
+		$category_name = $category->attributes->add('name');
+		$category_name->filterChain->append('\phpbbmodders\wiki\wiki\markup::decode_entities_in_name');
+		$category_name->filterChain->append('\phpbbmodders\wiki\wiki\categories::normalise');
 		$category->template = '<span class="wikicategory" data-wiki-category="{@name}"></span>';
 
 		$configurator->Preg->match(
@@ -126,7 +128,9 @@ class wikilink_listener implements EventSubscriberInterface
 		// It is added first, and WIKILINK leaves "File:" names to it.
 		$file_tag = $configurator->tags->add('WIKIFILE');
 		$file_tag->attributes->add('name');
-		$file_tag->attributes->add('alt')->required = false;
+		$file_alt = $file_tag->attributes->add('alt');
+		$file_alt->required = false;
+		$file_alt->filterChain->append('\phpbbmodders\wiki\wiki\markup::decode_entities');
 		$file_tag->template = '<span class="wikifile" data-wiki-file="{@name}" data-wiki-alt="{@alt}"></span>';
 
 		$configurator->Preg->match(
@@ -139,7 +143,8 @@ class wikilink_listener implements EventSubscriberInterface
 		// table of contents are added when the article is shown (see markup::finish()).
 		$heading = $configurator->tags->add('WIKIHEADING');
 		$heading->attributes->add('marks');
-		$heading->attributes->add('title');
+		// Entities in captured text are decoded here, since the entity plugin never sees it
+		$heading->attributes->add('title')->filterChain->append('\phpbbmodders\wiki\wiki\markup::decode_entities');
 		$heading->template = '<xsl:choose>'
 			. '<xsl:when test="string-length(@marks) = 2"><h2 class="wikiheading"><xsl:value-of select="@title"/></h2></xsl:when>'
 			. '<xsl:when test="string-length(@marks) = 3"><h3 class="wikiheading"><xsl:value-of select="@title"/></h3></xsl:when>'
@@ -173,9 +178,12 @@ class wikilink_listener implements EventSubscriberInterface
 		$configurator->Preg->match(self::template_pattern(), 'WIKITEMPLATE');
 
 		$tag = $configurator->tags->add('WIKILINK');
-		$tag->attributes->add('name')->required = false;
-		$tag->attributes->add('section')->required = false;
-		$tag->attributes->add('text')->required = false;
+		foreach (array('name' => 'decode_entities_in_name', 'section' => 'decode_entities', 'text' => 'decode_entities') as $attribute => $decode)
+		{
+			$link_attribute = $tag->attributes->add($attribute);
+			$link_attribute->required = false;
+			$link_attribute->filterChain->append('\phpbbmodders\wiki\wiki\markup::' . $decode);
+		}
 		$tag->template = '<a class="wikilink" data-wiki-article="{@name}" data-wiki-section="{@section}">'
 			. '<xsl:choose><xsl:when test="@text"><xsl:value-of select="@text"/></xsl:when>'
 			. '<xsl:otherwise><xsl:value-of select="@name"/><xsl:if test="@section">#<xsl:value-of select="@section"/></xsl:if></xsl:otherwise></xsl:choose></a>';
@@ -184,6 +192,12 @@ class wikilink_listener implements EventSubscriberInterface
 			'/\[\[\s*(?!(?:File|Category):)(?=[^\]|])(?<name>' . self::NAME_CLASS . '{0,255}?)\s*(?:#\s*(?<section>[^\[\]|<>"\n]{1,255}?)\s*)?(?:\|\s*(?<text>[^\[\]\n]{1,255}?)\s*)?\]\]/',
 			'WIKILINK'
 		);
+
+		// HTML entities written in an article, such as &nbsp;, &#32; or &mdash;, become
+		// the characters they stand for, as on MediaWiki. The character is output as
+		// text, so &lt; shows as "<" and never becomes markup. The parser reads them
+		// only while a wiki article is saved (see toggle_wiki_markup()).
+		$configurator->HTMLEntities;
 
 		// <table> written as HTML. Only these elements and the colspan and rowspan of a cell
 		// are allowed; s9e refuses scripts, styles and event attributes itself. The parser
@@ -227,6 +241,16 @@ class wikilink_listener implements EventSubscriberInterface
 			{
 				$parser->disableTag($tag);
 			}
+		}
+
+		// Entities, only in text as written in an article (see markup::set_entities())
+		if (\phpbbmodders\wiki\wiki\markup::is_active() && \phpbbmodders\wiki\wiki\markup::entities())
+		{
+			$parser->enableTag('HE');
+		}
+		else
+		{
+			$parser->disableTag('HE');
 		}
 	}
 
