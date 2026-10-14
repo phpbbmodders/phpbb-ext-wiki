@@ -878,7 +878,10 @@ class templates
 			$uid = $bitfield = '';
 			$flags = 0;
 			$was_active = markup::is_active();
+			$was_entities = markup::entities();
 			markup::set_active(true);
+			// Already decoded once on the way here; entities must not be decoded again
+			markup::set_entities(false);
 			try
 			{
 				generate_text_for_storage($documentation, $uid, $bitfield, $flags, true, true, true);
@@ -886,6 +889,7 @@ class templates
 			finally
 			{
 				markup::set_active($was_active);
+				markup::set_entities($was_entities);
 			}
 			$html = generate_text_for_display($documentation, $uid, $bitfield, $flags);
 		}
@@ -1029,7 +1033,10 @@ class templates
 		$text = $open . $text . $close;
 
 		$was_active = markup::is_active();
+		$was_entities = markup::entities();
 		markup::set_active(true);
+		// Template text was decoded once on its way here; entities must not be decoded again
+		markup::set_entities(false);
 		try
 		{
 			generate_text_for_storage($text, $uid, $bitfield, $flags, true, true, true);
@@ -1037,6 +1044,7 @@ class templates
 		finally
 		{
 			markup::set_active($was_active);
+			markup::set_entities($was_entities);
 		}
 
 		// While this text is rendered, what it still holds is part of the article being shown

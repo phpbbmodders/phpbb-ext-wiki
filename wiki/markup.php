@@ -26,6 +26,65 @@ class markup
 	/** @var bool Whether the text parser should read wiki markup right now */
 	protected static $active = false;
 
+	/** @var bool Whether, with wiki markup on, entities such as &nbsp; become characters */
+	protected static $entities = true;
+
+	/**
+	 * Say whether the next parse should turn HTML entities into the characters they
+	 * stand for. It should for text as written in an article; template text has
+	 * already been decoded once on its way to the parser, so it should not.
+	 *
+	 * @param bool $entities
+	 * @return void
+	 */
+	public static function set_entities($entities)
+	{
+		self::$entities = (bool) $entities;
+	}
+
+	/**
+	 * @return bool Whether entities become characters while wiki markup is on
+	 */
+	public static function entities()
+	{
+		return self::$entities;
+	}
+
+	/**
+	 * Attribute filter for text the parser captures in one piece, such as a heading or
+	 * a link's text, which the entity plugin never sees: turns the entities in it into
+	 * their characters, at the same times the plugin does. As in the plugin, an unknown
+	 * entity, or one for a control character, is left as written.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	public static function decode_entities($value)
+	{
+		if (!self::$active || !self::$entities)
+		{
+			return $value;
+		}
+
+		return preg_replace_callback('/&(?:[a-z][a-z0-9]*|#[0-9]+|#x[0-9a-f]+);/i', function ($match) {
+			$char = html_entity_decode($match[0], ENT_HTML5 | ENT_QUOTES, 'UTF-8');
+
+			return ($char === $match[0] || ord($char) < 32) ? $match[0] : $char;
+		}, $value);
+	}
+
+	/**
+	 * decode_entities() for an article's name, where a non-breaking space counts as a
+	 * space, as in MediaWiki's page names.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	public static function decode_entities_in_name($value)
+	{
+		return str_replace("\u{00A0}", ' ', self::decode_entities($value));
+	}
+
 	/**
 	 * Switch wiki markup on for the next parse (an article save or preview), or off.
 	 *

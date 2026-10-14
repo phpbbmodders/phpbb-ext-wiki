@@ -377,4 +377,42 @@ class markup_test extends \PHPUnit\Framework\TestCase
 			'own text, same page'	=> array('[[#History|below]]', 'below'),
 		);
 	}
+
+	public function test_entities_in_captured_text_are_decoded_only_while_wiki_markup_is_on()
+	{
+		$text = 'Head&mdash;ing &nbsp;x &#32;y &lt;b&gt; &amp;lt; &bogus; &#10;';
+		try
+		{
+			// A forum post: left as written
+			markup::set_active(false);
+			$this->assertSame($text, markup::decode_entities($text));
+
+			// Text as written in an article: decoded, unknown and control entities kept
+			markup::set_active(true);
+			$this->assertSame("Head\u{2014}ing \u{00A0}x  y <b> &lt; &bogus; &#10;", markup::decode_entities($text));
+
+			// Template text, already decoded once on its way to the parser: left alone
+			markup::set_entities(false);
+			$this->assertSame($text, markup::decode_entities($text));
+		}
+		finally
+		{
+			markup::set_active(false);
+			markup::set_entities(true);
+		}
+	}
+
+	public function test_a_non_breaking_space_in_an_article_name_is_a_space()
+	{
+		markup::set_active(true);
+		try
+		{
+			$this->assertSame('Main Page', markup::decode_entities_in_name('Main&nbsp;Page'));
+			$this->assertSame("A\u{2014}B", markup::decode_entities_in_name('A&mdash;B'));
+		}
+		finally
+		{
+			markup::set_active(false);
+		}
+	}
 }
