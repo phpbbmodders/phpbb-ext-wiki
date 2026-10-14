@@ -1,6 +1,17 @@
 <!-- INCLUDE overall_header.html -->
 <h2>{L_WIKI_TEMPLATES}</h2>
 <p>{L_WIKI_TEMPLATES_EXPLAIN}</p>
+
+<details class="panel wiki-templates-help">
+	<summary><strong>{L_WIKI_TEMPLATES_HELP}</strong></summary>
+	<ul>
+		<li>{L_WIKI_TEMPLATES_HELP_USE}</li>
+		<li>{L_WIKI_TEMPLATES_HELP_VALUES}</li>
+		<li>{L_WIKI_TEMPLATES_HELP_START}</li>
+		<!-- IF S_AUTH_EDIT --><li>{L_WIKI_TEMPLATES_HELP_MAKE}</li><!-- ENDIF -->
+	</ul>
+</details>
+
 <!-- IF .templates -->
 <div class="forumbg forumbg-table">
 	<div class="inner">
@@ -20,6 +31,23 @@
 					<td>{templates.DESCRIPTION}</td>
 					<td>{templates.USED_ON}</td>
 					<td>{templates.EDIT_TIME}</td>
+				</tr>
+				<tr class="wiki-template-details-row <!-- IF templates.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+					<td colspan="4">
+						<details class="wiki-template-details">
+							<summary>{L_WIKI_TEMPLATE_DETAILS}</summary>
+							<!-- IF templates.S_START -->
+							<p>{L_WIKI_TEMPLATE_START_NOTE}</p>
+							<!-- ELSE -->
+							<p>{L_WIKI_TEMPLATE_WRITE}{L_COLON} <code>{templates.USAGE}</code></p>
+							<!-- ENDIF -->
+							<!-- IF templates.PREVIEW -->
+							<div class="content wiki-template-preview">{templates.PREVIEW}</div>
+							<!-- ELSE -->
+							<p>{L_WIKI_TEMPLATE_NO_PREVIEW}</p>
+							<!-- ENDIF -->
+						</details>
+					</td>
 				</tr>
 				<!-- END templates -->
 			</tbody>

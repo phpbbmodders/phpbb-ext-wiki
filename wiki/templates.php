@@ -894,6 +894,39 @@ class templates
 	}
 
 	/**
+	 * The parameters a template's text uses, in the order they first appear.
+	 *
+	 * @param string $text The template's text, as an article gets it
+	 * @return array Their names: "1", "2" ... for unnamed parameters, the name for named ones
+	 */
+	public static function parameters($text)
+	{
+		preg_match_all('#\{\{\{\s*([^{}|]+?)\s*(?:\||\}\}\})#', $text, $matches);
+
+		return array_values(array_unique($matches[1]));
+	}
+
+	/**
+	 * How to write a call to a template, with a placeholder for each value it takes,
+	 * for example "{{Row|…|…}}" or "{{Out of date|reason=…}}".
+	 *
+	 * @param string $name The template's name, without the prefix
+	 * @param array $parameters Its parameters, from parameters()
+	 * @return string
+	 */
+	public static function usage($name, array $parameters)
+	{
+		$unnamed = array_filter($parameters, 'ctype_digit');
+		$call = $name . str_repeat('|…', $unnamed ? max(array_map('intval', $unnamed)) : 0);
+		foreach (array_diff($parameters, $unnamed) as $parameter)
+		{
+			$call .= '|' . $parameter . '=…';
+		}
+
+		return '{{' . $call . '}}';
+	}
+
+	/**
 	 * The text inside the <noinclude> parts of a template page.
 	 *
 	 * @param string $text The template page's text
