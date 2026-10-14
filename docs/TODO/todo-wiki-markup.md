@@ -15,8 +15,9 @@ and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_p
 (see `event/wikilink_listener.php` and `wiki/markup.php`), and articles saved earlier are converted with
 `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
 `{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
-shown (see `wiki/templates.php`), nested ten deep with a loop check. What is left below is
-the text styles and references (not wanted yet), and the rest of templates.
+shown (see `wiki/templates.php`), nested ten deep with a loop check, with the parser functions (`#if`,
+`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. What is left
+below is the text styles and references (not wanted yet).
 
 ## Scope: wiki articles only
 
@@ -53,14 +54,17 @@ Limits:
 - Quoting an article into a forum post turns wiki-only tags into plain
   text there.
 
-Still to confirm on the test board before building on it.
+Built, in a slightly different form: the wiki-only tags are switched on in
+`core.text_formatter_s9e_parse_before` only while an article is saved or
+previewed (see "Built so far"). The ACP setting for making admins' own BBCodes
+wiki-only is not built.
 
 ## Syntax to add
 
 | Syntax | What it does | Notes |
 |---|---|---|
 | `== Section ==` | Headings | Built; see "Built so far". |
-| `[[Article#Section]]` | Link to a heading in an article | `#` isn't allowed inside `[[ ]]` today, so this shows as plain text. |
+| `[[Article#Section]]` | Link to a heading in an article | Built; see "Built so far". |
 | HTML tables | Tables | Built; see below. |
 
 ## Optional syntax
