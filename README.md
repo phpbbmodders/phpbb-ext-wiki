@@ -90,10 +90,10 @@ An article
   | `{{#time: j F Y, H:i \| date}}` | a date in a format, in UTC: `Y y n m M F d j D l N w z W t L H G h g i s a A U c r e` as in PHP's `date()`, `"quoted text"` and `\c` as written; `date` is anything PHP reads (`2026-10-12`, `@1791500000`, `yesterday`, `+1 week`), and the time now when left out |
   | `{{CURRENTYEAR}}`, `{{CURRENTMONTH}}`, `{{CURRENTMONTHNAME}}`, `{{CURRENTMONTHABBREV}}`, `{{CURRENTDAY}}`, `{{CURRENTDAY2}}`, `{{CURRENTDAYNAME}}`, `{{CURRENTDOW}}`, `{{CURRENTWEEK}}`, `{{CURRENTHOUR}}`, `{{CURRENTTIME}}`, `{{CURRENTTIMESTAMP}}` | the date and time now, in UTC, with English month and day names |
   | `{{#len: text}}` | the number of characters |
-  | `{{#pos: text \| find \| from}}`, `{{#rpos: text \| find}}` | where `find` first or last occurs, counted from 0; `#pos` gives nothing and `#rpos` gives `-1` when it is not there |
+  | `{{#pos: text \| find \| from}}`, `{{#rpos: text \| find}}` | where `find` first or last occurs, counted from 0; `#pos` gives nothing and `#rpos` gives `-1` when it is not there; an empty `find` is a space |
   | `{{#sub: text \| start \| length}}` | part of `text`; a negative `start` counts from the end and a negative `length` leaves that many off the end |
-  | `{{#replace: text \| find \| with}}` | every `find` swapped for `with` |
-  | `{{#explode: text \| separator \| position \| limit}}` | one piece of `text` cut at `separator`, counted from 0 (negative from the end) |
+  | `{{#replace: text \| find \| with}}` | every `find` swapped for `with`; an empty `find` is a space, so `{{#replace: text \|\| &nbsp;}}` keeps `text` on one line |
+  | `{{#explode: text \| separator \| position \| limit}}` | one piece of `text` cut at `separator`, counted from 0 (negative from the end); an empty `separator` is a space |
   | `{{padleft: text \| length \| fill}}`, `{{padright: text \| length \| fill}}` | `text` filled up to `length` with `fill` (default `0`) |
   | `{{urlencode: text}}`, `{{anchorencode: text}}` | `text` as a web address part, and as a heading anchor |
 

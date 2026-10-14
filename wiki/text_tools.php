@@ -23,19 +23,29 @@ class text_tools
 	const TIME_LETTERS = 'dDjlNwzWFmMntLoYyaAgGhHisTPOcrUeI';
 
 	/**
+	 * The text {{#pos:}}, {{#rpos:}}, {{#replace:}} and {{#explode:}} look for. Left
+	 * empty, it is a single space, as in MediaWiki: arguments are trimmed, so a space
+	 * cannot be written there.
+	 *
+	 * @param string $search The search text as given
+	 * @return string
+	 */
+	protected static function search_text($search)
+	{
+		return ($search === '') ? ' ' : $search;
+	}
+
+	/**
 	 * {{#pos:}}: where a text first occurs in another.
 	 *
 	 * @param string $haystack
-	 * @param string $needle
+	 * @param string $needle Empty for a space
 	 * @param int $offset Characters to skip
 	 * @return string The position counted from 0, or "" when it is not there
 	 */
 	public static function pos($haystack, $needle, $offset = 0)
 	{
-		if ($needle === '')
-		{
-			return '';
-		}
+		$needle = self::search_text($needle);
 		$position = mb_strpos($haystack, $needle, max(0, min($offset, mb_strlen($haystack))));
 
 		return ($position === false) ? '' : (string) $position;
@@ -45,12 +55,12 @@ class text_tools
 	 * {{#rpos:}}: where a text last occurs in another.
 	 *
 	 * @param string $haystack
-	 * @param string $needle
+	 * @param string $needle Empty for a space
 	 * @return string The position counted from 0, or "-1" when it is not there
 	 */
 	public static function rpos($haystack, $needle)
 	{
-		$position = ($needle === '') ? false : mb_strrpos($haystack, $needle);
+		$position = mb_strrpos($haystack, self::search_text($needle));
 
 		return ($position === false) ? '-1' : (string) $position;
 	}
@@ -72,18 +82,13 @@ class text_tools
 	 * {{#replace:}}: every occurrence of a text swapped for another.
 	 *
 	 * @param string $text
-	 * @param string $search
+	 * @param string $search Empty for a space
 	 * @param string $replacement
 	 * @return string
 	 */
 	public static function replace($text, $search, $replacement)
 	{
-		if ($search === '')
-		{
-			return $text;
-		}
-
-		$result = str_replace($search, $replacement, $text);
+		$result = str_replace(self::search_text($search), $replacement, $text);
 
 		return (mb_strlen($result) > self::MAX_LENGTH) ? mb_substr($result, 0, self::MAX_LENGTH) : $result;
 	}
@@ -92,18 +97,14 @@ class text_tools
 	 * {{#explode:}}: one piece of a text cut at a delimiter.
 	 *
 	 * @param string $text
-	 * @param string $delimiter
+	 * @param string $delimiter Empty for a space
 	 * @param int $position The piece, counted from 0; negative counts from the end
 	 * @param int|null $limit Cut into at most this many pieces first
 	 * @return string "" when there is no such piece
 	 */
 	public static function explode($text, $delimiter, $position = 0, $limit = null)
 	{
-		if ($delimiter === '')
-		{
-			return '';
-		}
-
+		$delimiter = self::search_text($delimiter);
 		$pieces = ($limit !== null && $limit > 0) ? explode($delimiter, $text, $limit) : explode($delimiter, $text);
 		if ($position < 0)
 		{

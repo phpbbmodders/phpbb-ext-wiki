@@ -62,6 +62,8 @@ class text_tools_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('2', text_tools::pos('ééx', 'x'));
 		$this->assertSame('', text_tools::pos('abc', ''));
 		$this->assertSame('-1', text_tools::rpos('abc', ''));
+		$this->assertSame('1', text_tools::pos('é b', ''));
+		$this->assertSame('3', text_tools::rpos('é b c', ''));
 		$this->assertSame('x', text_tools::sub('éxé', 1, 1));
 	}
 }
