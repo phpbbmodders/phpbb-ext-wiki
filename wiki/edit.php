@@ -129,6 +129,99 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	}
 
 	/**
+	 * Restore an old version: save its text, title, description, sources and redirect as a
+	 * new version, so the history stays as it was. The new version goes live for members
+	 * who may set versions active, and waits for approval for everyone else, as an edit does.
+	 *
+	 * @param	int		$id	Id of the version to restore
+	 * @return	object
+	 */
+	public function restore($id)
+	{
+		if (!$this->auth->acl_get('u_wiki_edit'))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
+		$sql = 'SELECT *
+			FROM ' . $this->article_table . '
+			WHERE article_id = ' . (int) $id;
+		$result = $this->db->sql_query($sql);
+		$old = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+		if (!$old)
+		{
+			trigger_error('NO_ARTICLE');
+		}
+		$article = $old['article_url'];
+
+		if (!confirm_box(true))
+		{
+			confirm_box(false, $this->user->lang('CONFIRM_RESTORE_VERSION', $this->user->format_date($old['article_last_edit'])), build_hidden_fields(array(
+				'id'	=> (int) $id,
+			)));
+			redirect($this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'versions')));
+		}
+
+		// Views, sticky and the discussion topic belong to the article, not to a version,
+		// so they come from its newest version
+		$sql = 'SELECT article_views, article_sticky, article_topic_id, article_time_created
+			FROM ' . $this->article_table . "
+			WHERE article_url = '" . $this->db->sql_escape($article) . "'
+			ORDER BY article_last_edit DESC, article_id DESC";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$newest = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$sql_data = array(
+			'article_title'			=> $old['article_title'],
+			'article_url'			=> $article,
+			'article_text'			=> $old['article_text'],
+			'bbcode_uid'			=> $old['bbcode_uid'],
+			'bbcode_bitfield'		=> $old['bbcode_bitfield'],
+			'article_approved'		=> 0,
+			'article_user_id'		=> (int) $this->user->data['user_id'],
+			'article_last_edit'		=> time(),
+			'article_time_created'	=> (int) $newest['article_time_created'],
+			'article_edit_reason'	=> $this->user->lang('RESTORED_VERSION_REASON', $this->user->format_date($old['article_last_edit'])),
+			'article_topic_id'		=> (int) $newest['article_topic_id'],
+			'article_sources'		=> $old['article_sources'],
+			'article_sticky'		=> (int) $newest['article_sticky'],
+			'article_views'			=> (int) $newest['article_views'],
+			'article_redirect'		=> $old['article_redirect'],
+			'article_description'	=> $old['article_description'],
+			'article_toc'			=> '',
+		);
+		$sql = 'INSERT INTO ' . $this->article_table . ' ' . $this->db->sql_build_array('INSERT', $sql_data);
+		$this->db->sql_query($sql);
+		$article_id = (int) $this->db->sql_nextid();
+
+		if (!empty($this->config['wiki_auto_watch']))
+		{
+			$this->watch->add($this->user->data['user_id'], $article);
+		}
+
+		if ($this->auth->acl_get('u_wiki_set_active'))
+		{
+			$this->set_active_version($article_id);
+			$msg = $this->user->lang('RESTORE_VERSION_SUCCESS');
+		}
+		else
+		{
+			$this->notification_manager->add_notifications('phpbbmodders.wiki.notification.type.article_edit', array(
+				'article_id'		=> $article_id,
+				'article_title'		=> $old['article_title'],
+				'article_url'		=> $article,
+				'user_id'			=> $this->user->data['user_id'],
+			));
+			$msg = $this->user->lang('RESTORE_VERSION_SUCCESS_INACTIVE');
+		}
+
+		$back_url = $this->helper->route('phpbbmodders_wiki_article', array('article' => $article));
+		trigger_error($msg . '<br /><br /><a href="' . $back_url . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
+	}
+
+	/**
 	 * Set a version of an article as active
 	 *
 	 * @param	string	$id	Id of the version to delete

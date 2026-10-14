@@ -156,6 +156,9 @@ class main
 			case 'deactivate':
 				return $this->edit->deactivate($article);
 
+			case 'restore':
+				return $this->edit->restore($id);
+
 			case 'start_discussion':
 				return $this->discussion->start($article);
 
