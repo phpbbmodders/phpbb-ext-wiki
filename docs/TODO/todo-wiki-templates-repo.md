@@ -31,15 +31,17 @@ out how the licences apply to them.
 
 ## Layout
 
-- Repository name to be chosen (for example `phpbbmodders/wiki-templates`), with
-  the CC BY-SA 4.0 text as its `LICENSE` and a README that explains the rules above.
+Built on 10/14/2026 in [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), except the templates themselves:
+
+- The CC BY-SA 4.0 text as its `LICENSE` and a README that explains the rules above.
 - One file per template, named after the Wikipedia template (`Main.wiki`,
   `Ambox.wiki`, ...), so pasted Wikipedia text finds the same names and parameters.
 - A header at the top of each file, inside `<noinclude>`, with the source page
   URL and its history URL, "adapted by phpBB Modders", a list of what was removed
   or changed (for example "no Lua, no `{{#if}}`"), and the licence notice.
 - A CI check that fails when a template is missing its source URL or licence
-  notice.
+  notice (`tools/check_headers.py`, which also requires the history URL and the
+  list of changes).
 
 ## Using it from the wiki
 
@@ -70,8 +72,7 @@ Only templates that work as plain wiki text with parameters:
 
 - The repository is named `phpbbmodders/wiki-templates` and lives under the `phpbbmodders`
   organisation (10/13/2026).
-- It is created on 10/14/2026, now that the template system exists, after the go-ahead
-  (creating a public repository is an outward-facing step).
+- It was created on 10/14/2026, after the go-ahead, now that the template system exists.
 - The templates reach a board by hand, with no download by the extension: the admin uploads
   the repository's zip in the ACP from the browser, or copies the files by FTP into a folder
   in `store/` (folder name to be chosen when it is built). The ACP button then installs from

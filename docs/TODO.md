@@ -125,10 +125,11 @@ allow-list so no unsafe HTML gets through. Full plan, including the syntax not t
 
 A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
 this wiki can do, kept out of the GPL-2.0 extension, with an ACP button that
-installs them as `Template:` pages. The template system it needs is built. To be named
-`phpbbmodders/wiki-templates` under the phpbbmodders organisation (agreed 10/13/2026), and
-created on 10/14/2026 once the go-ahead is given. Admins upload its zip in the ACP or copy the
-files into a folder in `store/`. Plan, licence rules and decisions:
+installs them as `Template:` pages. The template system it needs is built. The repository,
+[`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), was created on 10/14/2026 with its licence, README and
+header check, and holds no templates yet. Still to build: the templates themselves, and the ACP
+button. Admins upload its zip in the ACP or copy the files into a folder in `store/`. Plan,
+licence rules and decisions:
 [`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
 
 ## Readable version compare
