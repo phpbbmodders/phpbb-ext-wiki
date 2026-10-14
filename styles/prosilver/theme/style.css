@@ -38,6 +38,11 @@ a.wikilink-new {
 }
 
 /* Headings and the table of contents written with == Heading == */
+.wiki .wikicenter,
+.content .wikicenter {
+	text-align: center;
+}
+
 .wiki h2.wikiheading,
 .content h2.wikiheading {
 	margin: 1.2em 0 0.5em;
