@@ -73,4 +73,18 @@ class categories_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame(array(), categories::names_outside_includeonly('<includeonly>[[Category:Boxes]]</includeonly>'));
 		$this->assertSame(array(), categories::names_outside_includeonly('No marks'));
 	}
+
+	public function test_sort_keys_are_kept_with_the_first_mark()
+	{
+		$raw = "[[Category:Boxes| Small box ]] [[Category:boxes|other]] [[Category:Plain]]";
+		$this->assertSame(array('Boxes' => 'Small box', 'Plain' => ''), categories::keys_outside_includeonly($raw));
+
+		categories::reset();
+		categories::add('boxes', 'B key');
+		categories::add('Boxes', 'ignored');
+		categories::add('Plain');
+		$this->assertSame(array('Boxes' => 'B key', 'Plain' => ''), categories::found_keys());
+		$this->assertSame(array('Boxes', 'Plain'), categories::found());
+		categories::reset();
+	}
 }

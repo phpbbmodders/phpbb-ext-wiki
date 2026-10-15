@@ -96,6 +96,16 @@ class category
 	 */
 	protected function assign_members($name)
 	{
+		// Categories that are in this one, by sort key or else name
+		foreach ($this->categories->subcategories($name) as $row)
+		{
+			$this->template->assign_block_vars('category_subcategories', array(
+				'NAME'			=> substr($row['article_url'], strlen(categories::PREFIX)),
+				'DESCRIPTION'	=> $row['article_description'],
+				'U_CATEGORY'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
+			));
+		}
+
 		$members = $this->categories->members($name);
 		$total = count($members);
 		$per_page = max(1, (int) $this->config['topics_per_page']);

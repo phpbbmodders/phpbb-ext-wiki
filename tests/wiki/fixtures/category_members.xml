@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_wiki_category_member">
+		<column>article_url</column>
+		<column>category</column>
+		<column>sort_key</column>
+	</table>
+	<table name="phpbb_wiki_article">
+		<column>article_id</column>
+		<column>article_url</column>
+		<column>article_title</column>
+		<column>article_text</column>
+		<column>article_approved</column>
+		<column>article_last_edit</column>
+		<column>article_description</column>
+		<column>article_sources</column>
+		<column>article_redirect</column>
+		<column>article_edit_reason</column>
+		<column>article_toc</column>
+		<row><value>1</value><value>Zebra</value><value>Zebra</value><value></value><value>1</value><value>100</value><value></value><value></value><value></value><value></value><value></value></row>
+		<row><value>2</value><value>Apple</value><value>Apple</value><value></value><value>1</value><value>100</value><value></value><value></value><value></value><value></value><value></value></row>
+		<row><value>3</value><value>Mango</value><value>Mango</value><value></value><value>1</value><value>100</value><value></value><value></value><value></value><value></value><value></value></row>
+		<row><value>4</value><value>Category:Tropical</value><value>Category:Tropical</value><value></value><value>1</value><value>100</value><value>Warm fruit</value><value></value><value></value><value></value><value></value></row>
+		<row><value>5</value><value>Draft</value><value>Draft</value><value></value><value>0</value><value>100</value><value></value><value></value><value></value><value></value><value></value></row>
+	</table>
+</dataset>

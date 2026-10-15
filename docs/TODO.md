@@ -25,17 +25,13 @@ Built: `[[Category:Name]]` in an article puts it in a category, a category page
 (`/wiki/Category:Name`) lists the articles in it, and `/wiki/categories` lists them all. See
 the README.
 
+Also built (10/15/2026): categories added by a template, sub-categories, `[[:Category:Name]]`
+links and sort keys, from a stored membership table that a cron task fills after the update.
+
 Not built:
 
-- A category added by a template (`<includeonly>[[Category:Stubs]]</includeonly>`) shows under
-  the articles that use the template, but those articles are not in the category's member list,
-  which is found from the articles' own text. Listing them needs a table of memberships that is
-  worked out when a version goes live and again for every article that uses a template when the
-  template changes.
-- Sub-categories, `[[:Category:Name]]` (a link to a category without joining it), and sort keys
-  (a sort key after a bar is accepted and ignored).
-- The member list reads every live article that holds a category mark, so it is meant for wikis
-  of moderate size; a membership table would also fix that.
+- Paging the sub-categories of a category separately from its articles, and showing how many
+  articles each sub-category holds.
 
 ## A wiki-style UI, not just reskinned forum templates
 
