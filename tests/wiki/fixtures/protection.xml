@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_wiki_article_protect">
+		<column>article_url</column>
+		<column>group_id</column>
+		<row><value>Main Page</value><value>5</value></row>
+		<row><value>Main Page</value><value>7</value></row>
+	</table>
+	<table name="phpbb_user_group">
+		<column>group_id</column>
+		<column>user_id</column>
+		<column>group_leader</column>
+		<column>user_pending</column>
+		<row><value>5</value><value>10</value><value>0</value><value>0</value></row>
+		<row><value>7</value><value>11</value><value>0</value><value>1</value></row>
+		<row><value>2</value><value>12</value><value>0</value><value>0</value></row>
+	</table>
+</dataset>

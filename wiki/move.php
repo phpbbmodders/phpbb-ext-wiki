@@ -49,6 +49,9 @@ class move
 	/** @var string */
 	protected $file_table;
 
+	/** @var protection */
+	protected $protection;
+
 	/** @var string */
 	protected $watch_table;
 
@@ -64,9 +67,11 @@ class move
 	 * @param string							$article_table
 	 * @param string							$file_table
 	 * @param string							$watch_table
+	 * @param protection						$protection
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, links $links, search_sync $search_sync, $article_table, $file_table, $watch_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, links $links, search_sync $search_sync, $article_table, $file_table, $watch_table, protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->helper = $helper;
@@ -99,7 +104,8 @@ class move
 	 */
 	public function page($article)
 	{
-		if (!$this->auth->acl_get('u_wiki_move'))
+		// Moving changes the article, so its protection applies too
+		if (!$this->auth->acl_get('u_wiki_move') || !$this->protection->allows($article, (int) $this->user->data['user_id']))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -259,6 +265,7 @@ class move
 			'article_title'	=> $title,
 		)) . $where);
 		$this->db->sql_query('UPDATE ' . $this->file_table . ' SET ' . $this->db->sql_build_array('UPDATE', array('article_url' => $new)) . $where);
+		$this->protection->move($old, $new);
 		// A member who also watched the new name keeps one watch, not two
 		$sql = 'SELECT user_id FROM ' . $this->watch_table . " WHERE article_url = '" . $this->db->sql_escape($new) . "'";
 		$result = $this->db->sql_query($sql);

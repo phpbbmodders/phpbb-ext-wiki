@@ -8,6 +8,7 @@ parameters:
     tables.wiki.search_wordmatch: '%core.table_prefix%wiki_src_wrdmtch'
     tables.wiki.template_install: '%core.table_prefix%wiki_template_install'
     tables.wiki.edit_lock: '%core.table_prefix%wiki_edit_lock'
+    tables.wiki.article_protect: '%core.table_prefix%wiki_article_protect'
 
 services:
     _defaults:
@@ -124,6 +125,7 @@ services:
             - '%tables.wiki.article%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.protection'
 
     phpbbmodders.wiki.main:
         class: phpbbmodders\wiki\controller\main
@@ -143,6 +145,7 @@ services:
             - '@phpbbmodders.wiki.move'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.protect'
     phpbbmodders.wiki.move:
         class: phpbbmodders\wiki\wiki\move
         arguments:
@@ -157,6 +160,7 @@ services:
             - '%tables.wiki.article%'
             - '%tables.wiki.file%'
             - '%tables.wiki.watch%'
+            - '@phpbbmodders.wiki.protection'
     phpbbmodders.wiki.listener:
         class: phpbbmodders\wiki\event\listener
         arguments:
@@ -187,6 +191,26 @@ services:
             - '@phpbbmodders.wiki.templates'
             - '@phpbbmodders.wiki.search_sync'
             - '@phpbbmodders.wiki.edit_lock'
+            - '@phpbbmodders.wiki.protection'
+    # Per-article edit protection: which groups may edit an article, and the page that sets it
+    phpbbmodders.wiki.protection:
+        class: phpbbmodders\wiki\wiki\protection
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@group_helper'
+            - '@user'
+            - '%tables.wiki.article_protect%'
+    phpbbmodders.wiki.protect:
+        class: phpbbmodders\wiki\wiki\protect
+        arguments:
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.wiki.protection'
+            - '%tables.wiki.article%'
     # Who has an article's edit form open: the notice on the edit form and the optional lock
     phpbbmodders.wiki.edit_lock:
         class: phpbbmodders\wiki\wiki\edit_lock
@@ -208,6 +232,7 @@ services:
             - '%tables.wiki.article%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.protection'
     phpbbmodders.wiki.delete:
         class: phpbbmodders\wiki\wiki\delete
         arguments:
@@ -220,6 +245,7 @@ services:
             - '@request'
             - '@phpbbmodders.wiki.watch'
             - '@phpbbmodders.wiki.search_sync'
+            - '@phpbbmodders.wiki.protection'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:
@@ -238,6 +264,7 @@ services:
             - '@phpbbmodders.wiki.files'
             - '@phpbbmodders.wiki.watch'
             - '@phpbbmodders.wiki.templates'
+            - '@phpbbmodders.wiki.protection'
     phpbbmodders.wiki.discussion:
         class: phpbbmodders\wiki\wiki\discussion
         arguments:

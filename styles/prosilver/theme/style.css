@@ -314,3 +314,9 @@ form.wiki-start-from p {
 .wiki-edit-notice ul {
 	padding-left: 1.5em;
 }
+
+/* Under a protected article: who may edit it */
+.wiki-protected-note {
+	opacity: 0.8;
+	font-size: 0.95em;
+}

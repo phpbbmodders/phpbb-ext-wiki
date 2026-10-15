@@ -13,6 +13,9 @@ namespace phpbbmodders\wiki\wiki;
 class compare
 {
 
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -85,8 +88,9 @@ class compare
 	* @param string									$phpbb_root_path
 	* @param string									$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
@@ -215,9 +219,11 @@ class compare
 			'ARTICLE_TITLE'			=> $this->data['article_title'],
 			'S_SET_ACTIVE'			=> $this->auth->acl_get('u_wiki_set_active'),
 			'S_DELETE'				=> $this->auth->acl_get('m_wiki_delete'),
-			'S_RESTORE'				=> $this->auth->acl_get('u_wiki_edit'),
+			'S_RESTORE'				=> $this->protection->may_edit($article),
 			'S_DELETE_ARTICLE'		=> $this->auth->acl_get('m_wiki_delete_article'),
-			'S_MOVE'				=> $this->auth->acl_get('u_wiki_move'),
+			'S_MOVE'				=> $this->auth->acl_get('u_wiki_move') && $this->protection->allows($article, (int) $this->user->data['user_id']),
+			'S_PROTECT'				=> $this->protection->can_protect(),
+			'U_PROTECT'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'protect')),
 			'U_MOVE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'move')),
 			'U_ACTION'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'compare')),
 			'U_DELETE_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'detele_article')),

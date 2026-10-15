@@ -1,0 +1,32 @@
+<!-- INCLUDE overall_header.html -->
+<h2>{L_WIKI_PROTECT_ARTICLE}{L_COLON} {ARTICLE_NAME}</h2>
+
+<form id="wiki_protect" method="post" action="{U_ACTION}">
+<div class="panel">
+	<div class="inner">
+		<p>{L_WIKI_PROTECT_EXPLAIN}</p>
+		<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+		<fieldset class="fields1">
+			<dl>
+				<dt><label>{L_WIKI_PROTECT_GROUPS}{L_COLON}</label><br><span>{L_WIKI_PROTECT_GROUPS_EXPLAIN}</span></dt>
+				<dd>
+					<!-- BEGIN protect_groups -->
+					<label for="protect_group_{protect_groups.ID}"><input type="checkbox" name="protect_groups[]" id="protect_group_{protect_groups.ID}" value="{protect_groups.ID}"<!-- IF protect_groups.S_CHECKED --> checked="checked"<!-- ENDIF -->> {protect_groups.NAME}</label><br>
+					<!-- END protect_groups -->
+				</dd>
+			</dl>
+		</fieldset>
+	</div>
+</div>
+
+<div class="panel bg2">
+	<div class="inner">
+		<fieldset class="submit-buttons">
+			<a href="{U_CANCEL}" class="button2">{L_CANCEL}</a>
+			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1">
+			{S_FORM_TOKEN}
+		</fieldset>
+	</div>
+</div>
+</form>
+<!-- INCLUDE overall_footer.html -->

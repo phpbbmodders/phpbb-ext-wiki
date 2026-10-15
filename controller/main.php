@@ -12,6 +12,9 @@ namespace phpbbmodders\wiki\controller;
 
 class main
 {
+	/** @var \phpbbmodders\wiki\wiki\protect */
+	protected $protect;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -76,8 +79,9 @@ class main
 	* @param string							$phpbb_root_path
 	* @param string							$php_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\move $move, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\delete $delete, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\move $move, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\protect $protect)
 	{
+		$this->protect = $protect;
 		$this->auth = $auth;
 		$this->helper = $helper;
 		$this->request = $request;
@@ -169,6 +173,9 @@ class main
 
 			case 'move':
 				return $this->move->page($article);
+
+			case 'protect':
+				return $this->protect->page($article);
 
 			case 'restore':
 				return $this->edit->restore($id);
