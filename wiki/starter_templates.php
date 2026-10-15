@@ -283,8 +283,10 @@ class starter_templates
 		{
 			return 'WIKI_STARTER_BAD_NAME';
 		}
+		// A source page on another wiki, or the repository's own work (a Start template, say),
+		// and the licence either way
 		if (!preg_match('#\A<noinclude>(.*?)</noinclude>#s', $text, $header)
-			|| !preg_match('#^Source: https://\S+/Template:\S+$#m', $header[1])
+			|| !preg_match('#^Source: (?:https://\S+/Template:\S+|phpBB Modders \(own work\))$#m', $header[1])
 			|| !preg_match('#^Licence: CC BY-SA 4\.0, https://creativecommons\.org/licenses/by-sa/4\.0/$#m', $header[1]))
 		{
 			return 'WIKI_STARTER_NO_ATTRIBUTION';

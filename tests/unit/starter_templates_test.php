@@ -26,6 +26,13 @@ class starter_templates_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('', starter_templates::problem('Small', self::HEADER . '[size=85]{{{1}}}[/size]'));
 	}
 
+	public function test_the_repositorys_own_work_is_accepted()
+	{
+		$own = "<noinclude>\nSource: phpBB Modders (own work)\nLicence: CC BY-SA 4.0, https://creativecommons.org/licenses/by-sa/4.0/\n</noinclude>== Overview ==";
+		$this->assertSame('', starter_templates::problem('Start Article', $own));
+		$this->assertSame('WIKI_STARTER_NO_ATTRIBUTION', starter_templates::problem('Start Article', str_replace('phpBB Modders (own work)', 'Somebody', $own)));
+	}
+
 	public function test_a_template_without_source_or_licence_is_refused()
 	{
 		$this->assertSame('WIKI_STARTER_NO_ATTRIBUTION', starter_templates::problem('Small', '[size=85]{{{1}}}[/size]'));
