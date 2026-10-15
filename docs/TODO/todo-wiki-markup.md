@@ -16,8 +16,9 @@ and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_p
 `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
 `{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
 shown (see `wiki/templates.php`), nested ten deep with a loop check, with the parser functions (`#if`,
-`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. What is left
-below is the text styles and references (not wanted yet).
+`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. What is
+left is listed under "Still to do" in "Templates and infoboxes" below, and in "Scope" (making admins' own
+BBCodes wiki-only).
 
 ## Scope: wiki articles only
 
@@ -162,13 +163,14 @@ out. Still to do:
 - Parser functions Wikipedia's templates use that are not here yet: `#titleparts`, `#rel2abs`,
   `#tag`, `formatnum`, `plural`, `gender`, `#invoke` (Lua, not planned), the
   `LOCAL...` and `REVISION...` magic words, and `#time` in the viewer's time zone and language.
-- A cache of rendered articles, cleared when a template changes. Expansion runs on every view.
-  Measured on a MySQL board: about 1 ms for each template call written in an article (a table of
-  400 calls to a template took about 400 ms longer than the same table written out), one extra
-  query for the template pages however many calls there are, and at most 500 calls and 2000
-  functions per article. Add the cache only if articles with hundreds of calls become common.
-- A template call holds other calls in its parameters three levels deep, and a default value holds
-  one level of `{{template}}`; deeper nesting stays text.
+- Deeper nesting: a template call holds other calls in its parameters only three levels deep, and a
+  default value holds only one level of `{{template}}`; anything deeper stays text. Lift both limits,
+  keeping a cap so one article still cannot slow the board down.
+- Only if needed: a cache of rendered articles, cleared when a template changes. Expansion runs on
+  every view. Measured on a MySQL board: about 1 ms for each template call written in an article (a
+  table of 400 calls to a template took about 400 ms longer than the same table written out), one
+  extra query for the template pages however many calls there are, and at most 500 calls and 2000
+  functions per article. Add it only if articles with hundreds of calls become common.
 
 A set of ready-made templates, adapted from Wikipedia's, is in a separate repository:
 [Starter templates repository](archive/archive1.md#starter-templates-repository-completed-10142026) (completed).
@@ -179,5 +181,6 @@ A set of ready-made templates, adapted from Wikipedia's, is in a separate reposi
 - All six heading levels are supported, and `[[Article#Section]]` anchors are built.
 - Existing articles are reparsed with the extension's reparser
   (`php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`).
-- Infoboxes get no default floating-box style in prosilver; each template brings its own
-  table, as the Extension infobox does (10/13/2026).
+- Infoboxes: each template brings its own table, as the Extension infobox does (10/13/2026); a
+  table with `class="infobox"` floats at the right, so `{{Infobox}}` from the starter templates looks
+  like Wikipedia's (10/14/2026, #72).
