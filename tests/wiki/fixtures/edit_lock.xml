@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_wiki_edit_lock">
+		<column>article_url</column>
+		<column>user_id</column>
+		<column>lock_time</column>
+		<column>lock_expires</column>
+		<column>blocked_notified</column>
+	</table>
+</dataset>

@@ -158,3 +158,29 @@ Only templates that work as plain wiki text with parameters:
   on the board are offered unticked (10/14/2026).
 - The check for new templates is a cron task, off by default, with the days between checks
   set by the admin, and notifies admins; it never downloads or installs (10/14/2026).
+
+## Edit-conflict detection and page locking (completed 10/15/2026)
+
+Status: built. The ACP setting **When two people edit an article** chooses Nothing, Notice (the default after updating) or Lock, with **Minutes an editor holds an article** (30 by default, 5 to 240). The edit form records its editor in `wiki_edit_lock`, renewed by a ping every four minutes while it is open and by Preview. In lock mode the first editor to start keeps the article, a moderator (`u_wiki_set_active`) can break the lock from the blocked page, the moderators are notified once per lock, and a save refused because the lock changed hands keeps the editor's text. Tested on the seed-forum phpBB 3.3 and 4.0 boards.
+
+### The plan
+
+
+Before this, nothing warned two people editing the same article at once —
+they'd just end up with two competing pending versions and no idea the
+other happened until they check the pending-approval queue. Even a simple
+"someone else started editing this article at HH:MM" notice on the edit
+form would help; phpBB's own posting flow has similar double-submission
+awareness to look at for the pattern.
+
+Decided 10/13/2026: build both, and let the admin choose in the ACP between the notice
+alone and the lock. When the lock option is on, moderators get a notification when a lock
+blocks someone from editing (not each time a lock is placed), so they can break it if needed.
+
+The lock works like this: opening the edit form locks the
+article for that user for a limited time (for example 30 minutes, renewed
+while they keep editing). Others see who holds the lock and until when,
+and can't save until it's released or expires. Moderators can break a
+lock. Expiry matters, since people often close the browser without
+saving. This is separate from per-article edit protection (in `docs/TODO.md`), which
+limits *who* may edit, not *when*.

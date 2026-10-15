@@ -55,6 +55,17 @@ class main_module
 			$icon = trim($request->variable('wiki_icon', ''));
 			$feed_format = $request->variable('wiki_feed_format', '');
 			$auto_watch = $request->variable('wiki_auto_watch', 0) ? 1 : 0;
+			$edit_conflict = $request->variable('wiki_edit_conflict', '');
+			$lock_minutes = $request->variable('wiki_edit_lock_minutes', 0);
+
+			if (!\phpbbmodders\wiki\wiki\edit_lock::valid_mode($edit_conflict))
+			{
+				trigger_error($language->lang('WIKI_EDIT_CONFLICT_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+			if ($lock_minutes < \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MIN || $lock_minutes > \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MAX)
+			{
+				trigger_error($language->lang('WIKI_EDIT_LOCK_MINUTES_INVALID', \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MIN, \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MAX) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 
 			if (!\phpbbmodders\wiki\wiki\feed::is_valid_setting($feed_format))
 			{
@@ -87,6 +98,8 @@ class main_module
 			$config->set('wiki_icon', $icon);
 			$config->set('wiki_feed_format', $feed_format);
 			$config->set('wiki_auto_watch', $auto_watch);
+			$config->set('wiki_edit_conflict', $edit_conflict);
+			$config->set('wiki_edit_lock_minutes', $lock_minutes);
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
@@ -98,7 +111,18 @@ class main_module
 			$feed_options .= '<option value="' . $value . '"' . ($feed_format === $value ? ' selected="selected"' : '') . '>' . $language->lang($label) . '</option>';
 		}
 
+		$edit_lock = $phpbb_container->get('phpbbmodders.wiki.edit_lock');
+		$edit_conflict_options = '';
+		foreach (array(\phpbbmodders\wiki\wiki\edit_lock::MODE_OFF => 'WIKI_EDIT_CONFLICT_OFF', \phpbbmodders\wiki\wiki\edit_lock::MODE_NOTICE => 'WIKI_EDIT_CONFLICT_NOTICE', \phpbbmodders\wiki\wiki\edit_lock::MODE_LOCK => 'WIKI_EDIT_CONFLICT_LOCK') as $value => $label)
+		{
+			$edit_conflict_options .= '<option value="' . $value . '"' . ($edit_lock->mode() === $value ? ' selected="selected"' : '') . '>' . $language->lang($label) . '</option>';
+		}
+
 		$template->assign_vars(array(
+			'S_WIKI_EDIT_CONFLICT_OPTIONS'	=> $edit_conflict_options,
+			'WIKI_EDIT_LOCK_MINUTES'		=> $edit_lock->minutes(),
+			'WIKI_EDIT_LOCK_MINUTES_MIN'	=> \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MIN,
+			'WIKI_EDIT_LOCK_MINUTES_MAX'	=> \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MAX,
 			'S_WIKI_FEED_OPTIONS'		=> $feed_options,
 			'S_WIKI_AUTO_WATCH'			=> !isset($config['wiki_auto_watch']) || !empty($config['wiki_auto_watch']),
 			'WIKI_ICON'					=> isset($config['wiki_icon']) ? $config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON,

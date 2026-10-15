@@ -7,6 +7,7 @@ parameters:
     tables.wiki.search_wordlist: '%core.table_prefix%wiki_src_wrdlist'
     tables.wiki.search_wordmatch: '%core.table_prefix%wiki_src_wrdmtch'
     tables.wiki.template_install: '%core.table_prefix%wiki_template_install'
+    tables.wiki.edit_lock: '%core.table_prefix%wiki_edit_lock'
 
 services:
     _defaults:
@@ -185,6 +186,14 @@ services:
             - '@phpbbmodders.wiki.watch'
             - '@phpbbmodders.wiki.templates'
             - '@phpbbmodders.wiki.search_sync'
+            - '@phpbbmodders.wiki.edit_lock'
+    # Who has an article's edit form open: the notice on the edit form and the optional lock
+    phpbbmodders.wiki.edit_lock:
+        class: phpbbmodders\wiki\wiki\edit_lock
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '%tables.wiki.edit_lock%'
     phpbbmodders.wiki.compare:
         class: phpbbmodders\wiki\wiki\compare
         arguments:
@@ -294,6 +303,17 @@ services:
             - [set_user_loader, ['@user_loader']]
             - [set_helper, ['@controller.helper']]
             - [set_watch, ['@phpbbmodders.wiki.watch']]
+        tags:
+            - { name: notification.type }
+    phpbbmodders.wiki.notification.type.edit_lock_blocked:
+        class: phpbbmodders\wiki\notification\edit_lock_blocked
+        parent: notification.type.base
+        # Symfony 3.4 (phpBB 3.3.x) does not let a service with a parent take "public" from _defaults.
+        public: true
+        shared: false
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_helper, ['@controller.helper']]
         tags:
             - { name: notification.type }
     phpbbmodders.wiki.notification.type.starter_templates:

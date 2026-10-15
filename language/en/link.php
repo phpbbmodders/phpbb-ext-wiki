@@ -44,6 +44,8 @@ $lang = array_merge($lang, array(
 		2	=> 'The wiki’s starter templates repository has <strong>%d</strong> new or changed templates.',
 	),
 	'WIKI_NOTIFICATION_STARTER_TEMPLATES_OPTION'	=> 'The wiki’s starter templates repository has new or changed templates',
+	'WIKI_EDIT_LOCK_BLOCKED'		=> '<strong>%1$s</strong> could not edit the wiki article <strong>%2$s</strong>, because %3$s holds it.',
+	'WIKI_EDIT_LOCK_BLOCKED_OPTION'	=> 'An edit lock keeps someone out of a wiki article',
 	'WIKI_TOC'					=> 'Contents',
 	'WIKI_LINK_BUTTON'			=> 'Wiki link: [[Article name]] or [[Article name|link text]]',
 	'WIKI_LINK_NEW_ARTICLE'		=> 'This article doesn’t exist yet. Follow the link to create it.',

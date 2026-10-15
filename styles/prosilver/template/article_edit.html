@@ -48,6 +48,15 @@
 	<div class="inner">
 		<h3>{L_EDIT_WIKI}</h3>
 		<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+		<!-- IF .wiki_other_editors -->
+		<div class="wiki-edit-notice">
+			<p>{L_WIKI_EDIT_NOTICE}</p>
+			<ul>
+				<!-- BEGIN wiki_other_editors --><li>{wiki_other_editors.NAME} &ndash; {L_WIKI_EDIT_NOTICE_SINCE} {wiki_other_editors.SINCE}</li><!-- END wiki_other_editors -->
+			</ul>
+		</div>
+		<!-- ENDIF -->
+		<!-- IF S_WIKI_EDIT_LOCK --><p class="wiki-edit-lock">{WIKI_EDIT_LOCK_HELD}</p><!-- ENDIF -->
 		<fieldset class="fields1">
 			<dl style="clear: left;">
 				<dt><label for="title">{L_TITLE}{L_COLON}</label></dt>
@@ -143,4 +152,27 @@
 	</div>
 </div>
 </form>
+<!-- IF U_WIKI_EDIT_LOCK_PING -->
+<script>
+	// While the form is open, tell the board this article is still being edited, so the notice
+	// stays right and a lock does not run out under someone who is still writing
+	(function () {
+		var url = '{U_WIKI_EDIT_LOCK_PING}'.replace(/&amp;/g, '&');
+		window.setInterval(function () {
+			if (!window.fetch) {
+				return;
+			}
+			fetch(url, {credentials: 'same-origin', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+				.then(function (response) { return response.json(); })
+				.then(function (data) {
+					var until = document.getElementById('wiki-edit-lock-until');
+					if (data.ok && until && data.until) {
+						until.textContent = data.until;
+					}
+				})
+				.catch(function () {});
+		}, {WIKI_EDIT_LOCK_PING_MS});
+	})();
+</script>
+<!-- ENDIF -->
 <!-- INCLUDE overall_footer.html -->

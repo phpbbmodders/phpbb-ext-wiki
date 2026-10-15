@@ -73,27 +73,6 @@ permission, and falls back to "any group with `u_wiki_edit`" when no
 restriction is set on a given article, so this is opt-in per article rather
 than a behavior change for existing ones.
 
-## Edit-conflict detection and page locking
-
-Nothing currently warns two people editing the same article at once —
-they'd just end up with two competing pending versions and no idea the
-other happened until they check the pending-approval queue. Even a simple
-"someone else started editing this article at HH:MM" notice on the edit
-form would help; phpBB's own posting flow has similar double-submission
-awareness to look at for the pattern.
-
-Decided 10/13/2026: build both, and let the admin choose in the ACP between the notice
-alone and the lock. When the lock option is on, moderators get a notification when a lock
-blocks someone from editing (not each time a lock is placed), so they can break it if needed.
-
-The lock works like this: opening the edit form locks the
-article for that user for a limited time (for example 30 minutes, renewed
-while they keep editing). Others see who holds the lock and until when,
-and can't save until it's released or expires. Moderators can break a
-lock. Expiry matters, since people often close the browser without
-saving. This is separate from per-article edit protection above, which
-limits *who* may edit, not *when*.
-
 ## Wiki markup: headings, section links, tables and templates
 
 Headings, `[[Article#Section]]` links, HTML tables, templates (`{{Name|parameter}}`) and the
