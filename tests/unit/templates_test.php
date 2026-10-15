@@ -41,6 +41,14 @@ class templates_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame(array('x' => '{{Y|z}}'), $named);
 	}
 
+	public function test_parameter_defaults_list_each_parameter_once_with_its_default()
+	{
+		$text = "Version {{{version|1.0}}} of {{{1}}}, by {{{author}}}. Again {{{version}}}. {{{note|see {{Main|x}}}}}";
+		$this->assertSame(array('version' => '1.0', '1' => '', 'author' => '', 'note' => ''), templates::parameter_defaults($text));
+		$this->assertSame(array(), templates::parameter_defaults('No parameters here.'));
+		$this->assertSame(array('a' => 'later'), templates::parameter_defaults('{{{a}}} {{{a|later}}}'), 'a default written later still counts');
+	}
+
 	public function test_runs_of_closing_braces_do_not_end_a_parameter_early()
 	{
 		// }}}}}}}} closes {{{1}}}, {{{w| and {{#if:, so the bar after the next call belongs to it

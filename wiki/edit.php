@@ -707,13 +707,53 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	protected function offer_start_templates($article)
 	{
 		$options = $this->templates->start_templates();
-		if (empty($options))
+		$chosen = $this->request->variable('start_from', '', true);
+		$copy_from = trim(htmlspecialchars_decode($this->request->variable('copy_from', '', true), ENT_COMPAT));
+		$text = null;
+		$error = '';
+
+		if ($copy_from !== '')
 		{
-			return;
+			// Another article's live text, to edit into this one
+			$text = $this->copy_text($copy_from);
+			if ($text === null)
+			{
+				$error = $this->user->lang('WIKI_START_COPY_NOT_FOUND', htmlspecialchars($copy_from, ENT_COMPAT, 'UTF-8'));
+			}
+		}
+		else if ($chosen !== '')
+		{
+			$source = $this->templates->start_text($chosen);
+			$parameters = ($source === null) ? array() : \phpbbmodders\wiki\wiki\templates::parameter_defaults($source);
+			if ($source !== null && $parameters && !$this->request->is_set('start_values'))
+			{
+				// A Start template that takes values asks for them first
+				$this->ask_start_values($parameters);
+			}
+			else if ($source !== null)
+			{
+				$values = array();
+				foreach ($this->request->variable('start_values', array('' => ''), true) as $name => $value)
+				{
+					$values[htmlspecialchars_decode((string) $name, ENT_COMPAT)] = htmlspecialchars_decode($value, ENT_COMPAT);
+				}
+				$positional = $named = array();
+				foreach (array_keys($parameters) as $name)
+				{
+					$value = isset($values[$name]) ? $values[$name] : '';
+					if (ctype_digit((string) $name))
+					{
+						$positional[(int) $name] = $value;
+					}
+					else
+					{
+						$named[$name] = $value;
+					}
+				}
+				$text = $parameters ? \phpbbmodders\wiki\wiki\templates::substitute($source, $positional, $named) : $source;
+			}
 		}
 
-		$chosen = $this->request->variable('start_from', '', true);
-		$text = ($chosen === '') ? null : $this->templates->start_text($chosen);
 		if ($text !== null)
 		{
 			// The text box takes text escaped as decode_message() leaves it
@@ -725,14 +765,67 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$this->template->assign_block_vars('start_options', array(
 				'NAME'			=> $option['name'],
 				'LABEL'			=> $option['label'],
-				'S_SELECTED'	=> ($text !== null && $option['name'] === \phpbbmodders\wiki\wiki\templates::normalise_name($chosen)),
+				'S_SELECTED'	=> ($chosen !== '' && $option['name'] === \phpbbmodders\wiki\wiki\templates::normalise_name($chosen)),
 			));
 		}
 
 		$this->template->assign_vars(array(
 			'S_START_PICKER'	=> true,
+			'START_COPY_FROM'	=> htmlspecialchars($copy_from, ENT_COMPAT, 'UTF-8'),
+			'START_ERROR'		=> $error,
 			'U_START_ACTION'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)),
 		));
+	}
+
+	/**
+	 * Show the form that asks for a Start template's values, one box per parameter, filled
+	 * with the default the template writes for it.
+	 *
+	 * @param array $parameters Names with their defaults
+	 * @return void
+	 */
+	protected function ask_start_values(array $parameters)
+	{
+		foreach ($parameters as $name => $default)
+		{
+			$this->template->assign_block_vars('start_values', array(
+				'NAME'		=> htmlspecialchars((string) $name, ENT_COMPAT, 'UTF-8'),
+				'LABEL'		=> ctype_digit((string) $name) ? $this->user->lang('WIKI_START_VALUE_NUMBERED', (int) $name) : htmlspecialchars((string) $name, ENT_COMPAT, 'UTF-8'),
+				'DEFAULT'	=> htmlspecialchars($default, ENT_COMPAT, 'UTF-8'),
+			));
+		}
+		$this->template->assign_var('S_START_VALUES', true);
+	}
+
+	/**
+	 * The live text of an article, as an editor would see it, to start a new article from.
+	 *
+	 * @param string $name The article's name, as in its address
+	 * @return string|null Null when it has no live version, or the viewer may not read the wiki
+	 */
+	protected function copy_text($name)
+	{
+		if (!$this->auth->acl_get('u_wiki_view'))
+		{
+			return null;
+		}
+
+		$sql = 'SELECT article_text, bbcode_uid
+			FROM ' . $this->article_table . "
+			WHERE article_url = '" . $this->db->sql_escape($name) . "'
+				AND article_approved = 1
+			ORDER BY article_last_edit DESC, article_id DESC";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+		if (!$row)
+		{
+			return null;
+		}
+
+		$edit = generate_text_for_edit($row['article_text'], $row['bbcode_uid'], OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS);
+
+		return htmlspecialchars_decode($edit['text'], ENT_COMPAT);
 	}
 
 	/**
