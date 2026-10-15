@@ -348,6 +348,27 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('<td>a</td>', $this->render('<table><tr><td class="infobox">a</td></tr></table>'), 'only a table takes the class');
 	}
 
+	public function test_details_becomes_a_box_the_reader_opens_in_a_wiki_article()
+	{
+		$html = $this->render('<details><summary>More</summary>[b]Hidden[/b] [[Main Page]]</details>');
+		$this->assertStringContainsString('<details><summary>More</summary>', $html);
+		$this->assertStringContainsString('class="wikilink"', $html, 'wiki links work inside');
+
+		$this->assertStringContainsString('<details open="open">', $this->render('<details open><summary>S</summary>x</details>'));
+		$this->assertStringContainsString('<details class="navbox">', $this->render('<details class="navbox"><summary>S</summary>x</details>'));
+
+		$html = $this->render('<details class="hidden" onclick="x()" style="color:red" ontoggle="x()"><summary>S</summary>x</details>');
+		$this->assertStringContainsString('<details><summary>', $html, 'no other attribute or class is kept');
+	}
+
+	public function test_details_stays_plain_text_outside_a_wiki_article()
+	{
+		$xml = $this->parse('<details><summary>S</summary>x</details>', false);
+
+		$this->assertStringNotContainsString('<html:details', $xml);
+		$this->assertStringContainsString('&lt;details&gt;', $xml);
+	}
+
 	public function test_center_becomes_a_centred_block_in_a_wiki_article()
 	{
 		$this->assertStringContainsString('<WIKICENTER>', $this->parse('<center>[b]Title[/b]</center>'));

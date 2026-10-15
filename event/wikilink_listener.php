@@ -37,6 +37,12 @@ class wikilink_listener implements EventSubscriberInterface
 	/** Classes a wiki table may have, each styled by the extension: "infobox" floats it to the right. */
 	const TABLE_CLASSES = array('infobox');
 
+	/** HTML elements for a box the reader opens and closes, without JavaScript. */
+	const DETAILS_ELEMENTS = array('details', 'summary');
+
+	/** Classes a <details> box may have: "navbox" is a box of links at the end of an article. */
+	const DETAILS_CLASSES = array('navbox');
+
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -219,6 +225,16 @@ class wikilink_listener implements EventSubscriberInterface
 		// cannot borrow the board's own classes (to hide itself, for example)
 		$html->allowAttribute('table', 'class')->filterChain->append(new \s9e\TextFormatter\Configurator\Items\AttributeFilters\ChoiceFilter(self::TABLE_CLASSES));
 
+		// <details><summary>Title</summary>...</details>: a box the reader opens and closes, which
+		// the browser does by itself. "open" starts it opened; the "navbox" class gives it the look
+		// of Wikipedia's navigation boxes. Any other attribute is dropped, as for tables.
+		foreach (self::DETAILS_ELEMENTS as $element)
+		{
+			$html->allowElement($element);
+		}
+		$html->allowAttribute('details', 'open');
+		$html->allowAttribute('details', 'class')->filterChain->append(new \s9e\TextFormatter\Configurator\Items\AttributeFilters\ChoiceFilter(self::DETAILS_CLASSES));
+
 		// <center>...</center> centres its content, as on MediaWiki. It becomes a <div> with a
 		// class, since s9e lets no style attribute through and <center> is obsolete HTML.
 		$center = $configurator->tags->add('WIKICENTER');
@@ -234,7 +250,7 @@ class wikilink_listener implements EventSubscriberInterface
 	public static function wiki_tags()
 	{
 		$tags = array('WIKIHEADING', 'WIKIMAGIC', 'WIKITEMPLATE', 'WIKICATEGORY', 'WIKICENTER');
-		foreach (self::TABLE_ELEMENTS as $element)
+		foreach (array_merge(self::TABLE_ELEMENTS, self::DETAILS_ELEMENTS) as $element)
 		{
 			$tags[] = 'html:' . $element;
 		}
