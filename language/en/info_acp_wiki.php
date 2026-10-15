@@ -23,6 +23,7 @@ $lang = array_merge($lang, array(
 	'ACP_WIKI_SETTINGS'	=> 'Settings',
 	'ACP_WIKI_SEARCH'		=> 'Search',
 	'ACP_WIKI_STARTER_TEMPLATES'	=> 'Starter templates',
+	'ACP_WIKI_BBCODES'	=> 'BBCodes',
 	'LOG_WIKI_STARTER_CHECK_FAILED'	=> '<strong>Could not check the wiki starter templates repository for new templates</strong><br>» GitHub could not be reached, or did not answer as expected.',
 	'LOG_WIKI_STARTER_INSTALLED'	=> '<strong>Installed wiki starter templates</strong><br>» %s',
 ));

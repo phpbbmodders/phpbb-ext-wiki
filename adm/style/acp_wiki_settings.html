@@ -37,19 +37,6 @@
 		</dl>
 	</fieldset>
 
-	<fieldset>
-		<legend>{L_WIKI_ONLY_BBCODES}</legend>
-		<p>{L_WIKI_ONLY_BBCODES_EXPLAIN}</p>
-		<!-- BEGIN wiki_only_bbcodes -->
-		<dl>
-			<dt><label for="wiki_only_bbcode_{wiki_only_bbcodes.ID}">[{wiki_only_bbcodes.TAG}]</label><!-- IF wiki_only_bbcodes.HELPLINE --><br><span>{wiki_only_bbcodes.HELPLINE}</span><!-- ENDIF --></dt>
-			<dd><label><input type="checkbox" class="radio" id="wiki_only_bbcode_{wiki_only_bbcodes.ID}" name="wiki_only_bbcodes[]" value="{wiki_only_bbcodes.ID}"<!-- IF wiki_only_bbcodes.S_CHECKED --> checked="checked"<!-- ENDIF -->> {L_WIKI_ONLY_BBCODE}</label></dd>
-		</dl>
-		<!-- BEGINELSE -->
-		<p><strong>{L_WIKI_ONLY_BBCODES_NONE}</strong></p>
-		<!-- END wiki_only_bbcodes -->
-	</fieldset>
-
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}">

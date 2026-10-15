@@ -58,7 +58,7 @@ Limits:
 Built, in a slightly different form: the wiki-only tags are switched on in
 `core.text_formatter_s9e_parse_before` only while an article is saved or
 previewed (see "Built so far"). Admins' own BBCodes are ticked under
-**Extensions > Wiki > Settings** and kept by id, so renaming one keeps the
+**Extensions > Wiki > BBCodes** and kept by id, so renaming one keeps the
 choice (see `wiki/wiki_only_bbcodes.php`). Their buttons are left off every
 editor but the wiki's, and a forum post that uses one is refused with
 phpBB's own "You cannot use certain BBCodes" message rather than shown as

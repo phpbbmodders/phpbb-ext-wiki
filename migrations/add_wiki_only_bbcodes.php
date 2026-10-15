@@ -11,16 +11,11 @@
 namespace phpbbmodders\wiki\migrations;
 
 /**
- * The custom BBCodes an admin has made wiki-only (see wiki\wiki_only_bbcodes). None to start
- * with, so every BBCode keeps working where it did.
+ * The custom BBCodes an admin has made wiki-only (see wiki\wiki_only_bbcodes), and the ACP page
+ * choosing them. None to start with, so every BBCode keeps working where it did.
  */
 class add_wiki_only_bbcodes extends \phpbb\db\migration\migration
 {
-	public function effectively_installed()
-	{
-		return isset($this->config['wiki_only_bbcodes']);
-	}
-
 	public static function depends_on()
 	{
 		return array(
@@ -32,6 +27,15 @@ class add_wiki_only_bbcodes extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('wiki_only_bbcodes', '')),
+
+			array('module.add', array(
+				'acp',
+				'ACP_WIKI_TITLE',
+				array(
+					'module_basename'	=> '\phpbbmodders\wiki\acp\bbcodes_module',
+					'modes'				=> array('settings'),
+				),
+			)),
 		);
 	}
 }

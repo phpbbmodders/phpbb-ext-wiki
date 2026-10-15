@@ -11,8 +11,7 @@
 namespace phpbbmodders\wiki\acp;
 
 /**
- * The Wiki settings page: the header link's icon, edit conflicts, the feed, which forum "Start discussion"
- * creates topics in, and which of the admin's own BBCodes work only in the wiki.
+ * The Wiki settings page: the header link's icon, and which forum "Start discussion" creates topics in.
  */
 class main_module
 {
@@ -40,7 +39,6 @@ class main_module
 		}
 
 		$language->add_lang('acp_wiki', 'phpbbmodders/wiki');
-		$wiki_only_bbcodes = $phpbb_container->get('phpbbmodders.wiki.wiki_only_bbcodes');
 
 		$this->tpl_name = 'acp_wiki_settings';
 		$this->page_title = $language->lang('ACP_WIKI_SETTINGS');
@@ -59,7 +57,6 @@ class main_module
 			$auto_watch = $request->variable('wiki_auto_watch', 0) ? 1 : 0;
 			$edit_conflict = $request->variable('wiki_edit_conflict', '');
 			$lock_minutes = $request->variable('wiki_edit_lock_minutes', 0);
-			$wiki_only = $request->variable('wiki_only_bbcodes', array(0));
 
 			if (!\phpbbmodders\wiki\wiki\edit_lock::valid_mode($edit_conflict))
 			{
@@ -103,7 +100,6 @@ class main_module
 			$config->set('wiki_auto_watch', $auto_watch);
 			$config->set('wiki_edit_conflict', $edit_conflict);
 			$config->set('wiki_edit_lock_minutes', $lock_minutes);
-			$wiki_only_bbcodes->save($wiki_only);
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
@@ -120,17 +116,6 @@ class main_module
 		foreach (array(\phpbbmodders\wiki\wiki\edit_lock::MODE_OFF => 'WIKI_EDIT_CONFLICT_OFF', \phpbbmodders\wiki\wiki\edit_lock::MODE_NOTICE => 'WIKI_EDIT_CONFLICT_NOTICE', \phpbbmodders\wiki\wiki\edit_lock::MODE_LOCK => 'WIKI_EDIT_CONFLICT_LOCK') as $value => $label)
 		{
 			$edit_conflict_options .= '<option value="' . $value . '"' . ($edit_lock->mode() === $value ? ' selected="selected"' : '') . '>' . $language->lang($label) . '</option>';
-		}
-
-		$wiki_only = $wiki_only_bbcodes->ids();
-		foreach ($wiki_only_bbcodes->custom_bbcodes() as $row)
-		{
-			$template->assign_block_vars('wiki_only_bbcodes', array(
-				'ID'		=> (int) $row['bbcode_id'],
-				'TAG'		=> rtrim($row['bbcode_tag'], '='),
-				'HELPLINE'	=> $language->is_set($row['bbcode_helpline']) ? $language->lang($row['bbcode_helpline']) : $row['bbcode_helpline'],
-				'S_CHECKED'	=> in_array((int) $row['bbcode_id'], $wiki_only, true),
-			));
 		}
 
 		$template->assign_vars(array(
