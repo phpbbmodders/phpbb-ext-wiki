@@ -104,14 +104,17 @@ class edit_lock_test extends \phpbb_database_test_case
 	public function test_taking_again_keeps_when_the_editor_started()
 	{
 		$lock = $this->lock();
+		// Read the clock once: a second can pass before the checks on a slow runner
+		$started = time() - 600;
+		$old_expiry = time() + 60;
 		$this->db->sql_query('INSERT INTO phpbb_wiki_edit_lock ' . $this->db->sql_build_array('INSERT', array(
-			'article_url' => 'Main Page', 'user_id' => 2, 'lock_time' => time() - 600, 'lock_expires' => time() + 60, 'blocked_notified' => 0,
+			'article_url' => 'Main Page', 'user_id' => 2, 'lock_time' => $started, 'lock_expires' => $old_expiry, 'blocked_notified' => 0,
 		)));
 		$lock->take('Main Page', 2);
 
 		$others = $lock->others('Main Page', 3);
-		$this->assertSame(time() - 600, (int) $others[0]['lock_time'], 'the start time is kept', 2);
-		$this->assertGreaterThan(time() + 60, (int) $others[0]['lock_expires']);
+		$this->assertSame($started, (int) $others[0]['lock_time'], 'the start time is kept');
+		$this->assertGreaterThan($old_expiry, (int) $others[0]['lock_expires']);
 	}
 
 	public function test_a_record_that_ran_out_keeps_nobody_out_and_is_cleared()
