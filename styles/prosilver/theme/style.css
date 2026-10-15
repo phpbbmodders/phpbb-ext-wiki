@@ -326,3 +326,8 @@ form.wiki-start-from p {
 	font-size: 1.35em;
 	cursor: help;
 }
+
+/* The article's Protect button, while the article is protected */
+.wiki-buttons .button.wiki-protect-on .icon {
+	color: #bc2a4d;
+}

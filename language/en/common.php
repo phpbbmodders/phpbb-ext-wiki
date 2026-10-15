@@ -65,6 +65,7 @@ $lang = array_merge($lang, array(
 	'WIKI_EDIT_LOCK_BROKEN'			=> 'The lock was broken. The article can be edited again.',
 	'WIKI_EDIT_LOCK_EDIT_NOW'		=> 'Edit the article',
 	'WIKI_PROTECT_ARTICLE'			=> 'Protect article',
+	'WIKI_PROTECT_CHANGE'			=> 'Protected: change who may edit',
 	'WIKI_PROTECT_EXPLAIN'			=> 'Choose the groups whose members may edit this article. Only they, and members who may protect articles, can then edit it, restore an older version, upload files to it or move it. Members still need the permission to edit articles, and their edits still wait for approval as before. Tick no group to let everyone who may edit articles edit this one again.',
 	'WIKI_PROTECT_GROUPS'			=> 'Groups that may edit',
 	'WIKI_PROTECT_GROUPS_EXPLAIN'	=> 'Members of any ticked group may edit.',
