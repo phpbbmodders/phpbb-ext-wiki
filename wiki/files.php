@@ -35,6 +35,9 @@ class files
 	/** @var string|null URL name of the article being rendered, so [[File:name]] knows whose files to use */
 	protected static $context = null;
 
+	/** @var protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -88,9 +91,11 @@ class files
 	 * @param string							$article_table
 	 * @param string							$phpbb_root_path
 	 * @param string							$php_ext
+	 * @param protection						$protection
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\files\factory $files_factory, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $file_table, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\files\factory $files_factory, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $file_table, $article_table, $phpbb_root_path, $php_ext, protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->cache = $cache;
 		$this->config = $config;
@@ -289,7 +294,8 @@ class files
 			));
 		}
 
-		$can_upload = $this->can_upload();
+		// Uploading changes the article, so its protection applies
+		$can_upload = $this->can_upload() && $this->protection->allows($article_url, (int) $this->user->data['user_id']);
 		if ($can_upload)
 		{
 			add_form_key(self::FORM_KEY);
@@ -327,7 +333,7 @@ class files
 	 */
 	public function upload($article_url)
 	{
-		if (!$this->can_upload())
+		if (!$this->can_upload() || !$this->protection->allows($article_url, (int) $this->user->data['user_id']))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}

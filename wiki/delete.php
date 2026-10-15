@@ -13,6 +13,9 @@ namespace phpbbmodders\wiki\wiki;
 class delete extends \phpbbmodders\wiki\wiki\functions
 {
 
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -53,8 +56,9 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbb\request\request				$request				Request object
 	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\search_sync $search_sync)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->search_sync = $search_sync;
 		$this->files = $files;
 		$this->request = $request;
@@ -133,6 +137,7 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 			$this->db->sql_query($sql);
 			$this->files->delete_all($article);
 			$this->watch->delete_for_article($article);
+			$this->protection->delete_for_article($article);
 			trigger_error($this->user->lang('DELETE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array())  . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}
 		else

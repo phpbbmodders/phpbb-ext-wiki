@@ -64,6 +64,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	/** @var \phpbbmodders\wiki\wiki\edit_lock */
 	protected $edit_lock;
 
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 
 	/**
 	* Constructor
@@ -83,9 +86,11 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\templates			$templates				Wiki templates object
 	* @param \phpbbmodders\wiki\wiki\search_sync			$search_sync			Keeps the search current
 	* @param \phpbbmodders\wiki\wiki\edit_lock			$edit_lock				Who has an article's edit form open
+	* @param \phpbbmodders\wiki\wiki\protection			$protection				Which groups may edit an article
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\edit_lock $edit_lock)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\edit_lock $edit_lock, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->edit_lock = $edit_lock;
 		$this->search_sync = $search_sync;
 		$this->templates = $templates;
@@ -158,6 +163,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		{
 			trigger_error('NO_ARTICLE');
 		}
+		$this->protected_out($old['article_url']);
 		$article = $old['article_url'];
 
 		if (!confirm_box(true))
@@ -343,6 +349,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		{
 			trigger_error('NO_ARTICLE');
 		}
+		$this->protected_out($article);
 
 		// Setup message parser
 		$this->message_parser = $this->setup_parser();
@@ -534,6 +541,20 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		return $this->helper->render('article_edit.html', $this->user->lang('EDIT_WIKI'));
 	}
 	/**
+	 * Stop here when the article is protected and the viewer is not in one of its groups.
+	 *
+	 * @param string $article
+	 * @return void
+	 */
+	protected function protected_out($article)
+	{
+		if (!$this->protection->may_edit($article))
+		{
+			trigger_error($this->user->lang('WIKI_PROTECTED_NO_EDIT', implode(', ', $this->protection->group_names($article))) . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)) . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>');
+		}
+	}
+
+	/**
 	 * Record that this user is editing the article (or extend their time), and show the edit
 	 * form what it needs: the others editing it in notice mode, and the ping that keeps the
 	 * record current while the form is open.
@@ -633,7 +654,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	 */
 	public function ping_lock($article)
 	{
-		if (!$this->auth->acl_get('u_wiki_edit') || !check_link_hash($this->request->variable('hash', ''), 'wiki_edit_lock') || $this->edit_lock->mode() === edit_lock::MODE_OFF)
+		if (!$this->protection->may_edit($article) || !check_link_hash($this->request->variable('hash', ''), 'wiki_edit_lock') || $this->edit_lock->mode() === edit_lock::MODE_OFF)
 		{
 			return new \Symfony\Component\HttpFoundation\JsonResponse(array('ok' => false), 403);
 		}

@@ -55,24 +55,6 @@ wiki content to visually match the rest of the forum, others will want it
 to look like an actual wiki. A real wiki layout wants the table of contents, which now exists, as a sidebar
 or floating box, so the contents box would move too.
 
-## Per-article edit protection
-
-Not built yet. Permissions are board-wide today: `u_wiki_edit` lets a user
-edit *any* article or none of them, so a specific high-traffic or important
-article can't yet be limited to a smaller group, the way MediaWiki protects
-frequently vandalized pages.
-
-Until then, the approval queue already keeps unwanted edits off the live
-site: an edit by someone without `u_wiki_set_active` is saved as a pending
-version and only goes live once a moderator approves it.
-
-Plan: a **group-based** article-level setting naming which phpBB group(s)
-can edit it, set by moderators from the article's moderator controls.
-It's checked in addition to (not instead of) the existing `u_wiki_edit`
-permission, and falls back to "any group with `u_wiki_edit`" when no
-restriction is set on a given article, so this is opt-in per article rather
-than a behavior change for existing ones.
-
 ## Wiki markup: headings, section links, tables and templates
 
 Headings, `[[Article#Section]]` links, HTML tables, templates (`{{Name|parameter}}`) and the

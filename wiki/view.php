@@ -12,6 +12,9 @@ namespace phpbbmodders\wiki\wiki;
 
 class view extends \phpbbmodders\wiki\wiki\functions
 {
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -79,8 +82,9 @@ class view extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\watch				$watch				Watched articles object
 	* @param \phpbbmodders\wiki\wiki\templates			$templates			Wiki templates object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\edit $edit, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\discussion $discussion, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->templates = $templates;
 		$this->discussion = $discussion;
 		$this->files = $files;
@@ -252,7 +256,8 @@ class view extends \phpbbmodders\wiki\wiki\functions
 				'LAST_EDIT'				=> $this->user->format_date($this->data['article_last_edit']),
 				'LAST_EDIT_ISO'			=> date('Y-m-d', $this->data['article_last_edit']),
 				'ARTICLE_USER'			=> \phpbbmodders\wiki\wiki\author::link($this->helper, $this->data['user_id'], $this->data['username'], $this->data['user_colour']),
-				'S_EDIT'				=> ($this->auth->acl_get('u_wiki_edit') && $s_edit_redirect),
+				'S_EDIT'				=> ($this->protection->may_edit($article) && $s_edit_redirect),
+				'WIKI_PROTECTED_NOTE'	=> ($protected_groups = $this->protection->group_names($this->data['article_url'])) ? $this->user->lang('WIKI_PROTECTED_NOTE', implode(', ', $protected_groups)) : '',
 				'U_EDIT'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'edit')),
 				'S_VERSIONS'			=> $this->auth->acl_get('u_wiki_versions'),
 				'U_VERSIONS'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action'	=> 'versions')),

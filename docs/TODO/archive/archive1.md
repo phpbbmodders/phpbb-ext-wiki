@@ -182,5 +182,28 @@ article for that user for a limited time (for example 30 minutes, renewed
 while they keep editing). Others see who holds the lock and until when,
 and can't save until it's released or expires. Moderators can break a
 lock. Expiry matters, since people often close the browser without
-saving. This is separate from per-article edit protection (in `docs/TODO.md`), which
+saving. This is separate from per-article edit protection (below), which
 limits *who* may edit, not *when*.
+
+## Per-article edit protection (completed 10/15/2026)
+
+Status: built. **Protect article** in the moderator controls stores the chosen groups in `wiki_article_protect`. Protection covers saving, restoring, uploading and moving; a note under a protected article names the groups; the permission `u_wiki_protect` goes to moderators (`m_`) and its holders may always edit. Tested on the seed-forum phpBB 3.3 and 4.0 boards.
+
+### The plan
+
+
+Before this, permissions were board-wide: `u_wiki_edit` lets a user
+edit *any* article or none of them, so a specific high-traffic or important
+article can't yet be limited to a smaller group, the way MediaWiki protects
+frequently vandalized pages.
+
+Until then, the approval queue already keeps unwanted edits off the live
+site: an edit by someone without `u_wiki_set_active` is saved as a pending
+version and only goes live once a moderator approves it.
+
+Plan: a **group-based** article-level setting naming which phpBB group(s)
+can edit it, set by moderators from the article's moderator controls.
+It's checked in addition to (not instead of) the existing `u_wiki_edit`
+permission, and falls back to "any group with `u_wiki_edit`" when no
+restriction is set on a given article, so this is opt-in per article rather
+than a behavior change for existing ones.
