@@ -177,6 +177,19 @@ $lang = array_merge($lang, array(
 	),
 	'WIKI_CATEGORY_MEMBERS'			=> 'Articles in this category',
 	'WIKI_CATEGORY_SUBCATEGORIES'	=> 'Sub-categories',
+	'WIKI_CATEGORY_SUBCATEGORIES_TOTAL'	=> array(
+		1	=> '1 sub-category',
+		2	=> '%d sub-categories',
+	),
+	'WIKI_CATEGORY_HOLDS_ARTICLES'	=> array(
+		0	=> 'no articles',
+		1	=> '1 article',
+		2	=> '%d articles',
+	),
+	'WIKI_CATEGORY_HOLDS_SUBCATEGORIES'	=> array(
+		1	=> '1 sub-category',
+		2	=> '%d sub-categories',
+	),
 	'WIKI_CATEGORY_EMPTY'			=> 'No article is in this category yet.',
 	'WIKI_CATEGORY_NO_PAGE'			=> 'This category has no description yet.',
 	'WIKI_CATEGORY_WRITE'			=> 'Write one',

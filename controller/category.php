@@ -96,20 +96,34 @@ class category
 	 */
 	protected function assign_members($name)
 	{
-		// Categories that are in this one, by sort key or else name
-		foreach ($this->categories->subcategories($name) as $row)
+		$per_page = max(1, (int) $this->config['topics_per_page']);
+
+		// Categories that are in this one, by sort key or else name, paged on their own (substart)
+		// so moving through them keeps the page of articles, and the other way round
+		$subcategories = $this->categories->subcategories($name);
+		$sub_total = count($subcategories);
+		$sub_start = $this->pagination->validate_start($this->request->variable('substart', 0), $per_page, $sub_total);
+		$members = $this->categories->members($name);
+		$total = count($members);
+		$start = $this->pagination->validate_start($this->request->variable('start', 0), $per_page, $total);
+
+		$shown = array_slice($subcategories, $sub_start, $per_page);
+		$counts = $this->categories->counts(array_map(function ($row) {
+			return substr($row['article_url'], strlen(categories::PREFIX));
+		}, $shown));
+		foreach ($shown as $row)
 		{
+			$sub_name = categories::normalise(substr($row['article_url'], strlen(categories::PREFIX)));
+			$count = isset($counts[$sub_name]) ? $counts[$sub_name] : array('articles' => 0, 'subcategories' => 0);
 			$this->template->assign_block_vars('category_subcategories', array(
-				'NAME'			=> substr($row['article_url'], strlen(categories::PREFIX)),
+				'NAME'			=> $sub_name,
 				'DESCRIPTION'	=> $row['article_description'],
+				'COUNT'			=> $this->user->lang('WIKI_CATEGORY_HOLDS_ARTICLES', $count['articles'])
+					. ($count['subcategories'] ? ', ' . $this->user->lang('WIKI_CATEGORY_HOLDS_SUBCATEGORIES', $count['subcategories']) : ''),
 				'U_CATEGORY'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
 			));
 		}
-
-		$members = $this->categories->members($name);
-		$total = count($members);
-		$per_page = max(1, (int) $this->config['topics_per_page']);
-		$start = $this->pagination->validate_start($this->request->variable('start', 0), $per_page, $total);
+		$this->pagination->generate_template_pagination($this->helper->route('phpbbmodders_wiki_category', array('name' => $name) + ($start ? array('start' => $start) : array())), 'sub_pagination', 'substart', $sub_total, $per_page, $sub_start);
 
 		foreach (array_slice($members, $start, $per_page) as $row)
 		{
@@ -121,10 +135,11 @@ class category
 			));
 		}
 
-		$this->pagination->generate_template_pagination($this->helper->route('phpbbmodders_wiki_category', array('name' => $name)), 'pagination', 'start', $total, $per_page, $start);
+		$this->pagination->generate_template_pagination($this->helper->route('phpbbmodders_wiki_category', array('name' => $name) + ($sub_start ? array('substart' => $sub_start) : array())), 'pagination', 'start', $total, $per_page, $start);
 		$this->template->assign_vars(array(
-			'S_CATEGORY_PAGE'	=> true,
-			'CATEGORY_TOTAL'	=> $this->user->lang('WIKI_CATEGORY_ARTICLES_TOTAL', $total),
+			'S_CATEGORY_PAGE'			=> true,
+			'CATEGORY_TOTAL'			=> $this->user->lang('WIKI_CATEGORY_ARTICLES_TOTAL', $total),
+			'CATEGORY_SUBCATEGORY_TOTAL'	=> $sub_total ? $this->user->lang('WIKI_CATEGORY_SUBCATEGORIES_TOTAL', $sub_total) : '',
 		));
 	}
 

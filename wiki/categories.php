@@ -279,6 +279,17 @@ class categories
 	}
 
 	/**
+	 * How many articles and sub-categories each of these categories holds.
+	 *
+	 * @param array $categories
+	 * @return array Normalised names with 'articles' and 'subcategories' counts
+	 */
+	public function counts(array $categories)
+	{
+		return $this->category_members->counts($categories);
+	}
+
+	/**
 	 * The short description of every category that has a page: the description field of
 	 * the live version of its "Category:Name" article.
 	 *

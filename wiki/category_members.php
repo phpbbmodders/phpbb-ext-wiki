@@ -276,6 +276,37 @@ class category_members
 	}
 
 	/**
+	 * How many live articles and sub-categories each of these categories holds, read in one
+	 * query, for the counts beside sub-categories.
+	 *
+	 * @param array $categories Category names
+	 * @return array Normalised names with 'articles' and 'subcategories' counts
+	 */
+	public function counts(array $categories)
+	{
+		$names = array_values(array_unique(array_map(array(categories::class, 'normalise'), $categories)));
+		$counts = array_fill_keys($names, array('articles' => 0, 'subcategories' => 0));
+		if (!$names)
+		{
+			return $counts;
+		}
+
+		$sql = 'SELECT m.category, a.article_url
+			FROM ' . $this->member_table . ' m
+			JOIN ' . $this->article_table . ' a ON a.article_url = m.article_url
+			WHERE ' . $this->db->sql_in_set('m.category', $names) . '
+				AND ' . $this->templates->live_where('a', '');
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$counts[$row['category']][strpos($row['article_url'], categories::PREFIX) === 0 ? 'subcategories' : 'articles']++;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $counts;
+	}
+
+	/**
 	 * Every category with a live article in it, and how many (sub-categories included).
 	 *
 	 * @return array Category names with their member counts, A to Z

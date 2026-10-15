@@ -2,9 +2,31 @@
 <h3>{L_WIKI_CATEGORY_SUBCATEGORIES}</h3>
 <ul class="wiki-subcategories">
 	<!-- BEGIN category_subcategories -->
-	<li><a href="{category_subcategories.U_CATEGORY}"><strong>{category_subcategories.NAME}</strong></a><!-- IF category_subcategories.DESCRIPTION --> &ndash; {category_subcategories.DESCRIPTION}<!-- ENDIF --></li>
+	<li><a href="{category_subcategories.U_CATEGORY}"><strong>{category_subcategories.NAME}</strong></a> <span class="wiki-subcategory-count">({category_subcategories.COUNT})</span><!-- IF category_subcategories.DESCRIPTION --> &ndash; {category_subcategories.DESCRIPTION}<!-- ENDIF --></li>
 	<!-- END category_subcategories -->
 </ul>
+<div class="action-bar">
+	<div class="pagination">
+		{CATEGORY_SUBCATEGORY_TOTAL}
+		<!-- IF .sub_pagination -->
+		<ul>
+		<!-- BEGIN sub_pagination -->
+			<!-- IF sub_pagination.S_IS_PREV -->
+			<li class="arrow previous"><a class="button button-icon-only" href="{sub_pagination.PAGE_URL}" rel="prev" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_BEGIN} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_PREVIOUS}</span></a></li>
+			<!-- ELSEIF sub_pagination.S_IS_CURRENT -->
+			<li class="active"><span>{sub_pagination.PAGE_NUMBER}</span></li>
+			<!-- ELSEIF sub_pagination.S_IS_ELLIPSIS -->
+			<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
+			<!-- ELSEIF sub_pagination.S_IS_NEXT -->
+			<li class="arrow next"><a class="button button-icon-only" href="{sub_pagination.PAGE_URL}" rel="next" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_END} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_NEXT}</span></a></li>
+			<!-- ELSE -->
+			<li><a class="button" href="{sub_pagination.PAGE_URL}" role="button">{sub_pagination.PAGE_NUMBER}</a></li>
+			<!-- ENDIF -->
+		<!-- END sub_pagination -->
+		</ul>
+		<!-- ENDIF -->
+	</div>
+</div>
 <!-- ENDIF -->
 <h3>{L_WIKI_CATEGORY_MEMBERS}</h3>
 <!-- IF .category_members -->

@@ -23,13 +23,9 @@ Built: `[[Category:Name]]` in an article puts it in a category, a category page
 (`/wiki/Category:Name`) lists the articles in it, and `/wiki/categories` lists them all. See
 the README.
 
-Also built (10/15/2026): categories added by a template, sub-categories, `[[:Category:Name]]`
-links and sort keys, from a stored membership table that a cron task fills after the update.
-
-Not built:
-
-- Paging the sub-categories of a category separately from its articles, and showing how many
-  articles each sub-category holds.
+Also built (10/15/2026): categories added by a template, sub-categories (paged on their own,
+with how many articles each holds), `[[:Category:Name]]` links and sort keys, from a stored
+membership table that a cron task fills after the update. Nothing more is planned here.
 
 ## A wiki-style UI, not just reskinned forum templates
 
