@@ -138,6 +138,118 @@ class text_tools
 	}
 
 	/**
+	 * {{#titleparts: name | count | first}}: some of the parts of a name split at "/".
+	 * first counts from 1, or from the end when negative; count 0 (or none) takes the rest,
+	 * and a negative count leaves that many parts off the end, as on MediaWiki.
+	 *
+	 * @param string $name
+	 * @param int $count
+	 * @param int $first
+	 * @return string
+	 */
+	public static function titleparts($name, $count = 0, $first = 1)
+	{
+		$parts = explode('/', $name);
+		$total = count($parts);
+		$start = ($first > 0) ? $first - 1 : (($first < 0) ? max(0, $total + $first) : 0);
+		$parts = array_slice($parts, $start);
+		if ($count > 0)
+		{
+			$parts = array_slice($parts, 0, $count);
+		}
+		else if ($count < 0)
+		{
+			$parts = array_slice($parts, 0, max(0, count($parts) + $count));
+		}
+
+		return implode('/', $parts);
+	}
+
+	/**
+	 * {{#rel2abs: path | base}}: a path relative to a page ("./x", "../x", "/x" or a plain
+	 * name) made into a full page name, as on MediaWiki. Too many ".." gives ''.
+	 *
+	 * @param string $path
+	 * @param string $base The page it is relative to
+	 * @return string
+	 */
+	public static function rel2abs($path, $base)
+	{
+		$path = trim($path);
+		if ($path === '' || ($path[0] !== '.' && $path[0] !== '/'))
+		{
+			// An absolute name, kept as it is
+			return trim(preg_replace('#/{2,}#', '/', $path), '/');
+		}
+
+		$parts = explode('/', trim($base, '/'));
+		if ($path[0] === '/')
+		{
+			$path = '.' . $path;
+		}
+		foreach (explode('/', $path) as $piece)
+		{
+			if ($piece === '..')
+			{
+				if (!$parts || (count($parts) === 1 && $parts[0] === ''))
+				{
+					return '';
+				}
+				array_pop($parts);
+			}
+			else if ($piece !== '.' && $piece !== '')
+			{
+				$parts[] = $piece;
+			}
+		}
+
+		return implode('/', array_filter($parts, 'strlen'));
+	}
+
+	/**
+	 * {{formatnum: number}}: a number with commas between the thousands, as English Wikipedia
+	 * writes it, or with "R" the other way: the separators taken out. Text that is not a
+	 * number comes back as it was.
+	 *
+	 * @param string $number
+	 * @param string $raw 'R' to take the separators out
+	 * @return string
+	 */
+	public static function formatnum($number, $raw = '')
+	{
+		$number = trim($number);
+		if (strtoupper(trim($raw)) === 'R')
+		{
+			return str_replace(',', '', $number);
+		}
+		if (!preg_match('/^([+-]?)(\d+)(\.\d+)?$/', $number, $match))
+		{
+			return $number;
+		}
+
+		return $match[1] . strrev(implode(',', str_split(strrev($match[2]), 3))) . (isset($match[3]) ? $match[3] : '');
+	}
+
+	/**
+	 * {{plural: n | one | other}}: the form for a count, by English rules: the first for 1 (or
+	 * -1), the second otherwise. One form only is used whatever the count.
+	 *
+	 * @param string $count The count, commas allowed
+	 * @param array $forms
+	 * @return string
+	 */
+	public static function plural($count, array $forms)
+	{
+		if (!$forms)
+		{
+			return '';
+		}
+		$value = (float) str_replace(',', '', trim($count));
+
+		return (abs($value) == 1 || count($forms) === 1) ? $forms[0] : $forms[1];
+	}
+
+	/**
 	 * {{#time:}}: turn a format written for the wiki into one for PHP's date().
 	 * Letters work as in PHP (Y year, n month, j day, H hour, ...), "quoted text" and
 	 * \c (a backslash and a character) come out as they are, and any other letter does too.
@@ -187,14 +299,14 @@ class text_tools
 	 * @param int $now The time now as a Unix timestamp
 	 * @return string|null Null when the date cannot be read
 	 */
-	public static function time($format, $date, $now)
+	public static function time($format, $date, $now, \DateTimeZone|null $zone = null)
 	{
 		if ($date !== '' && date_parse($date)['error_count'] > 0)
 		{
 			return null;
 		}
 
-		$utc = new \DateTimeZone('UTC');
+		$utc = $zone ?: new \DateTimeZone('UTC');
 		try
 		{
 			$base = (new \DateTimeImmutable('@' . $now))->setTimezone($utc);
@@ -232,7 +344,7 @@ class text_tools
 	 * @param int $now The time now as a Unix timestamp
 	 * @return string|null Null when it is not a date word
 	 */
-	public static function date_word($word, $now)
+	public static function date_word($word, $now, \DateTimeZone|null $zone = null)
 	{
 		static $formats = array(
 			'CURRENTYEAR'		=> 'Y',
@@ -254,7 +366,7 @@ class text_tools
 			return null;
 		}
 
-		return (new \DateTimeImmutable('@' . $now))->setTimezone(new \DateTimeZone('UTC'))->format($formats[$word]);
+		return (new \DateTimeImmutable('@' . $now))->setTimezone($zone ?: new \DateTimeZone('UTC'))->format($formats[$word]);
 	}
 
 	/**

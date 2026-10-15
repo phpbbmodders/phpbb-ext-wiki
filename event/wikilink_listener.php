@@ -102,7 +102,7 @@ class wikilink_listener implements EventSubscriberInterface
 			$inner = '(?:' . $plain . '|\\{\\{(?![{])' . $inner . '\\}\\})*?';
 		}
 
-		return '/(?<![{])\\{\\{(?![{])(?=\\s*(?<name>#[a-z]+(?=\\s*:)|(?:lc|uc|lcfirst|ucfirst|urlencode|anchorencode|padleft|padright)(?=\\s*:)|[^|{}\\[\\]<>"#\\s][^|{}\\[\\]<>"\\n]{0,254}?(?=\\s*(?:\\||\\}\\}))))(?<call>' . $inner . ')\\}\\}(?![}])/';
+		return '/(?<![{])\\{\\{(?![{])(?=\\s*(?<name>#[a-z][a-z0-9]*(?=\\s*:)|(?:lc|uc|lcfirst|ucfirst|urlencode|anchorencode|padleft|padright|formatnum|plural|gender)(?=\\s*:)|[^|{}\\[\\]<>"#\\s][^|{}\\[\\]<>"\\n]{0,254}?(?=\\s*(?:\\||\\}\\}))))(?<call>' . $inner . ')\\}\\}(?![}])/';
 	}
 
 	/**

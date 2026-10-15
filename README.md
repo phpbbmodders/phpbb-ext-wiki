@@ -101,6 +101,9 @@ An article
   | `{{#iferror: test \| error \| ok}}` | `error` when `test` is one of the red messages below (a failed `#expr`, a template loop, an unknown function), otherwise `ok`, or `test` itself when `ok` is left out |
   | `{{#time: j F Y, H:i \| date}}` | a date in a format, in UTC: `Y y n m M F d j D l N w z W t L H G h g i s a A U c r e` as in PHP's `date()`, `"quoted text"` and `\c` as written; `date` is anything PHP reads (`2026-10-12`, `@1791500000`, `yesterday`, `+1 week`), and the time now when left out |
   | `{{CURRENTYEAR}}`, `{{CURRENTMONTH}}`, `{{CURRENTMONTHNAME}}`, `{{CURRENTMONTHABBREV}}`, `{{CURRENTDAY}}`, `{{CURRENTDAY2}}`, `{{CURRENTDAYNAME}}`, `{{CURRENTDOW}}`, `{{CURRENTWEEK}}`, `{{CURRENTHOUR}}`, `{{CURRENTTIME}}`, `{{CURRENTTIMESTAMP}}` | the date and time now, in UTC, with English month and day names |
+  | `{{LOCALYEAR}}`, `{{LOCALTIME}}` and the other `LOCAL...` words | the same, in the board's time zone |
+  | `{{#timel: j F Y, H:i \| date}}` | `#time` in the reader's time zone, with month and day names in the reader's language |
+  | `{{REVISIONID}}`, `{{REVISIONUSER}}`, `{{REVISIONTIMESTAMP}}`, `{{REVISIONYEAR}}`, `{{REVISIONMONTH}}`, `{{REVISIONMONTH1}}`, `{{REVISIONDAY}}`, `{{REVISIONDAY2}}` | the article's current approved version: its number, who saved it and when (UTC); empty before the article is first approved |
   | `{{#len: text}}` | the number of characters |
   | `{{#pos: text \| find \| from}}`, `{{#rpos: text \| find}}` | where `find` first or last occurs, counted from 0; `#pos` gives nothing and `#rpos` gives `-1` when it is not there; an empty `find` is a space |
   | `{{#sub: text \| start \| length}}` | part of `text`; a negative `start` counts from the end and a negative `length` leaves that many off the end |
@@ -108,6 +111,12 @@ An article
   | `{{#explode: text \| separator \| position \| limit}}` | one piece of `text` cut at `separator`, counted from 0 (negative from the end); an empty `separator` is a space |
   | `{{padleft: text \| length \| fill}}`, `{{padright: text \| length \| fill}}` | `text` filled up to `length` with `fill` (default `0`) |
   | `{{urlencode: text}}`, `{{anchorencode: text}}` | `text` as a web address part, and as a heading anchor |
+  | `{{#titleparts: A/B/C \| count \| first}}` | parts of a name split at `/`: `count` parts (all when 0, a negative number leaves that many off the end) from part `first` (1 is the first, negative counts from the end) |
+  | `{{#rel2abs: ../Other \| base}}` | a name worked out from `./`, `../` and `/` against `base`, or the article being shown |
+  | `{{formatnum: 1234567}}`, `{{formatnum: 1,234 \| R}}` | `1,234,567`; `R` takes the commas out again |
+  | `{{plural: count \| one \| many}}` | `one` when `count` is 1 or -1, otherwise `many` |
+  | `{{gender: name \| he \| she \| they}}` | always the third form (or the first when there is only one), as phpBB keeps no gender |
+  | `{{#tag: center \| text \| attribute=value}}` | an HTML tag written out, parsed with the article, so only the HTML articles may use works (tables, `center`, `details` and the others above); anything else shows as text |
 
   A call that cannot be worked out, such as `{{#expr: 1/0}}`, shows a red message where it stands. An unknown `{{#function:}}` does too.
 
