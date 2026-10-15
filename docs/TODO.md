@@ -8,16 +8,14 @@ Built: when someone creates a new article, a **Start from** choice on the edit p
 offers every template whose name starts with `Start ` (for example
 `Template:Start Extension`) and fills the text box with its text. The templates are
 ordinary wiki pages, so they have versions, approval and permissions, and there is no
-separate admin page. See the README.
+separate admin page. See the README. An encyclopedia-style skeleton, `Template:Start Article`
+(Overview, History, See also, References), comes from the starter templates repository,
+[`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), and boards
+install it from the ACP like the other starter templates.
 
 Not built:
 
-- A starter skeleton that comes with the extension (an encyclopedia-style article with
-  `Overview`, `History` and `References` headings). It would fit the starter templates
-  repository, [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates),
-  better than code in the extension.
 - Starting from an existing article, or a template that asks for values first.
-
 
 ## Categories
 
