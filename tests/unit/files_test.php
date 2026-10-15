@@ -69,7 +69,8 @@ class files_test extends \PHPUnit\Framework\TestCase
 			$this->createMock(\phpbb\language\language::class),
 			$this->createMock(\phpbbmodders\wiki\wiki\links::class),
 			$this->createMock(files::class),
-			$this->createMock(\phpbbmodders\wiki\wiki\templates::class)
+			$this->createMock(\phpbbmodders\wiki\wiki\templates::class),
+			$this->createMock(\phpbbmodders\wiki\wiki\wiki_only_bbcodes::class)
 		);
 
 		$configurator = new \s9e\TextFormatter\Configurator;
