@@ -29,6 +29,7 @@ services:
                 - '%core.root_path%'
                 - '%core.php_ext%'
                 - '%tables.wiki.article%'
+                - '@phpbbmodders.wiki.protection'
 
     phpbbmodders.wiki.recent_changes:
         class: phpbbmodders\wiki\controller\recent_changes
@@ -44,6 +45,7 @@ services:
             - '%tables.wiki.article%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.protection'
 
     phpbbmodders.wiki.categories:
         class: phpbbmodders\wiki\wiki\categories
@@ -66,6 +68,7 @@ services:
             - '@phpbbmodders.wiki.categories'
             - '@phpbbmodders.wiki.main'
             - '%tables.wiki.article%'
+            - '@phpbbmodders.wiki.protection'
 
     phpbbmodders.wiki.template_list:
         class: phpbbmodders\wiki\controller\template_list
@@ -445,6 +448,7 @@ services:
             - '%tables.wiki.search_text%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@phpbbmodders.wiki.protection'
 
     phpbbmodders.wiki.search:
         class: phpbbmodders\wiki\controller\search

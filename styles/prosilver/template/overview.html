@@ -49,7 +49,7 @@
 			<li class="row">
 				<dl>
 					<dt><div class="list-inner">
-					<a href="{pending_wiki_article.U_ARTICLE}" class="forumtitle">{pending_wiki_article.ARTICLE_NAME}</a>
+					<a href="{pending_wiki_article.U_ARTICLE}" class="forumtitle">{pending_wiki_article.ARTICLE_NAME}</a><!-- IF pending_wiki_article.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{pending_wiki_article.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{pending_wiki_article.PROTECTED}</span><!-- ENDIF -->
 					<!-- IF pending_wiki_article.S_STALE --><br /><span class="error">{L_PENDING_OLDER_THAN_ACTIVE}</span><!-- ENDIF -->
 				</div>
 					</dt>
@@ -89,7 +89,7 @@
 			<li class="row">
 				<dl>
 					<dt><div class="list-inner">
-					<a href="{sticky_wiki_article.U_ARTICLE}" class="forumtitle">{sticky_wiki_article.ARTICLE_NAME}</a>
+					<a href="{sticky_wiki_article.U_ARTICLE}" class="forumtitle">{sticky_wiki_article.ARTICLE_NAME}</a><!-- IF sticky_wiki_article.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{sticky_wiki_article.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{sticky_wiki_article.PROTECTED}</span><!-- ENDIF -->
 					<br />{sticky_wiki_article.ARTICLE_DESCRIPTION}
 				</div>
 					</dt>
@@ -120,7 +120,7 @@
 			<li class="row">
 				<dl>
 					<dt><div class="list-inner">
-					<a href="{hot_wiki_article.U_ARTICLE}" class="forumtitle">{hot_wiki_article.ARTICLE_NAME}</a>
+					<a href="{hot_wiki_article.U_ARTICLE}" class="forumtitle">{hot_wiki_article.ARTICLE_NAME}</a><!-- IF hot_wiki_article.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{hot_wiki_article.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{hot_wiki_article.PROTECTED}</span><!-- ENDIF -->
 					<br />{hot_wiki_article.ARTICLE_DESCRIPTION}
 				</div>
 					</dt>
@@ -151,7 +151,7 @@
 			<li class="row">
 				<dl>
 					<dt><div class="list-inner">
-					<a href="{latest_wiki_article.U_ARTICLE}" class="forumtitle">{latest_wiki_article.ARTICLE_NAME}</a>
+					<a href="{latest_wiki_article.U_ARTICLE}" class="forumtitle">{latest_wiki_article.ARTICLE_NAME}</a><!-- IF latest_wiki_article.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{latest_wiki_article.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{latest_wiki_article.PROTECTED}</span><!-- ENDIF -->
 					<br />{latest_wiki_article.ARTICLE_DESCRIPTION}
 				</div>
 					</dt>
@@ -182,7 +182,7 @@
 			<li class="row">
 				<dl>
 					<dt><div class="list-inner">
-					<a href="{all_wiki_article.U_ARTICLE}" class="forumtitle">{all_wiki_article.ARTICLE_NAME}</a>
+					<a href="{all_wiki_article.U_ARTICLE}" class="forumtitle">{all_wiki_article.ARTICLE_NAME}</a><!-- IF all_wiki_article.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{all_wiki_article.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{all_wiki_article.PROTECTED}</span><!-- ENDIF -->
 					<br />{all_wiki_article.ARTICLE_DESCRIPTION}
 				</div>
 					</dt>

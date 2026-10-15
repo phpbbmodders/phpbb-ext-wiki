@@ -319,3 +319,10 @@ form.wiki-start-from p {
 .wiki-protected-note {
 	font-size: 1.1em;
 }
+
+/* In the lists: the lock beside a protected article's title */
+.wiki-protected-icon {
+	opacity: 0.85;
+	font-size: 1.35em;
+	cursor: help;
+}

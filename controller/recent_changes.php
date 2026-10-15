@@ -22,6 +22,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class recent_changes
 {
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -68,8 +71,9 @@ class recent_changes
 	 * @param string							$phpbb_root_path
 	 * @param string							$php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
@@ -165,6 +169,7 @@ class recent_changes
 
 			$this->template->assign_block_vars('changes', array(
 				'ARTICLE_TITLE'		=> $row['article_title'],
+				'PROTECTED'			=> $this->protection->list_label($row['article_url']),
 				'EDIT_REASON'		=> $row['article_edit_reason'],
 				'EDIT_TIME'			=> $this->user->format_date($row['article_last_edit']),
 				'USER'				=> \phpbbmodders\wiki\wiki\author::link($this->helper, $row['user_id'], $row['username'], $row['user_colour']),

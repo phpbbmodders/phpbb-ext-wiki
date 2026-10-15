@@ -58,7 +58,7 @@
 	<div class="search post <!-- IF results.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 		<div class="inner">
 			<div class="postbody">
-				<h3><a href="{results.U_ARTICLE}">{results.TITLE}</a></h3>
+				<h3><a href="{results.U_ARTICLE}">{results.TITLE}</a><!-- IF results.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{results.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{results.PROTECTED}</span><!-- ENDIF --></h3>
 				<!-- IF results.DESCRIPTION --><p class="author">{results.DESCRIPTION}</p><!-- ENDIF -->
 				<!-- IF results.SNIPPET --><div class="content">{results.SNIPPET}</div><!-- ENDIF -->
 				<p class="author">{results.DATE}<!-- IF results.AUTHOR --> &bull; {results.AUTHOR}<!-- ENDIF --></p>

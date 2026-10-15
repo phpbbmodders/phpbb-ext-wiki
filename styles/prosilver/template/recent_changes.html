@@ -21,7 +21,7 @@
 				<!-- BEGIN changes -->
 				<tr class="<!-- IF changes.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 					<td>{changes.EDIT_TIME}</td>
-					<td><a href="<!-- IF changes.S_LIVE -->{changes.U_ARTICLE}<!-- ELSE -->{changes.U_VERSION}<!-- ENDIF -->"><strong>{changes.ARTICLE_TITLE}</strong></a></td>
+					<td><a href="<!-- IF changes.S_LIVE -->{changes.U_ARTICLE}<!-- ELSE -->{changes.U_VERSION}<!-- ENDIF -->"><strong>{changes.ARTICLE_TITLE}</strong></a><!-- IF changes.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{changes.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{changes.PROTECTED}</span><!-- ENDIF --></td>
 					<td>{changes.USER}</td>
 					<td>{changes.EDIT_REASON}</td>
 					<td>{changes.STATUS}</td>

@@ -70,7 +70,6 @@ $lang = array_merge($lang, array(
 	'WIKI_PROTECT_GROUPS_EXPLAIN'	=> 'Members of any ticked group may edit.',
 	'WIKI_PROTECT_SAVED'			=> 'The article is protected. Only members of these groups may edit it: %s.',
 	'WIKI_PROTECT_LIFTED'			=> 'The article is no longer protected. Everyone who may edit articles may edit it.',
-	'WIKI_PROTECTED_NOTE'			=> 'Only members of %s can edit this article.',
 	'WIKI_PROTECTED_NO_EDIT'		=> 'This article is protected. Only members of %s can edit it.',
 	'VERSIONS_OF_ARTICLE'			=> 'Version history',
 	'VERSION_COMPARE_HEADLINE'	=> 'Changes from version <a href="%3$s">%1$d</a> to <a href="%4$s">%2$d</a>',

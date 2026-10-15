@@ -12,6 +12,9 @@ namespace phpbbmodders\wiki\controller;
 
 class overview
 {
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -64,8 +67,9 @@ class overview
 	 * @param string							$php_ext
 	 * @param string							$article_table
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, $phpbb_root_path, $php_ext, $article_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\controller\helper $helper, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbbmodders\wiki\wiki\edit $edit, \phpbbmodders\wiki\wiki\compare $compare, \phpbbmodders\wiki\wiki\view $view, $phpbb_root_path, $php_ext, $article_table, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->helper = $helper;
 		$this->db = $db;
@@ -106,6 +110,7 @@ class overview
 		{
 			$this->template->assign_block_vars('all_wiki_article', array(
 					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'PROTECTED'				=> $this->protection->list_label($all_wiki_article['article_url']),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -128,6 +133,7 @@ class overview
 		{
 			$this->template->assign_block_vars('latest_wiki_article', array(
 					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'PROTECTED'				=> $this->protection->list_label($all_wiki_article['article_url']),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -150,6 +156,7 @@ class overview
 		{
 			$this->template->assign_block_vars('hot_wiki_article', array(
 					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'PROTECTED'				=> $this->protection->list_label($all_wiki_article['article_url']),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -173,6 +180,7 @@ class overview
 		{
 			$this->template->assign_block_vars('sticky_wiki_article', array(
 					'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $all_wiki_article['article_url'])),
+					'PROTECTED'				=> $this->protection->list_label($all_wiki_article['article_url']),
 					'ARTICLE_NAME'			=> $all_wiki_article['article_title'],
 					'ARTICLE_DESCRIPTION'	=> $all_wiki_article['article_description'],
 					'ARTICLE_VIEWS'			=> $all_wiki_article['article_views'],
@@ -220,6 +228,7 @@ class overview
 
 				$this->template->assign_block_vars('pending_wiki_article', array(
 						'U_ARTICLE'				=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $pending_wiki_article['article_url'])),
+					'PROTECTED'				=> $this->protection->list_label($pending_wiki_article['article_url']),
 						'ARTICLE_NAME'			=> $pending_wiki_article['article_title'],
 						'ARTICLE_LASTEDIT'		=> $this->user->format_date($pending_wiki_article['article_last_edit']),
 						'S_STALE'				=> $is_stale,
