@@ -58,7 +58,12 @@ $lang = array_merge($lang, array(
 	'WIKI_EDIT_LOCK_MINUTES'			=> 'Minutes an editor holds an article',
 	'WIKI_EDIT_LOCK_MINUTES_EXPLAIN'	=> 'How long the notice names an editor, or the lock lasts, after their last sign of work. It is extended every few minutes while their edit form is open, and when they preview, so it only runs out once they have left.',
 
-	'WIKI_ONLY_BBCODES'			=> 'BBCodes only for the wiki',
+	'WIKI_TEMPLATE_NESTING'			=> 'Template nesting depth',
+	'WIKI_TEMPLATE_NESTING_EXPLAIN'	=> 'How many levels of templates a template call may hold inside it, as in {{A|{{B|{{C}}}}}}. Deeper calls show as plain text. The default, 8, covers most templates copied from Wikipedia. After a change, saved articles are updated in the background over the next few page views.',
+	'WIKI_TEMPLATE_NESTING_INVALID'	=> 'The template nesting depth must be a number from %1$d to %2$d.',
+	'WIKI_REPARSE_PENDING'			=> 'Articles are still being updated for the last change.',
+
+	'WIKI_ONLY_BBCODES'		=> 'BBCodes only for the wiki',
 	'WIKI_ONLY_BBCODES_EXPLAIN'	=> 'Tick a custom BBCode to use it only in wiki articles. It then stops working in posts, private messages and signatures, and its button shows only in the wiki editor. Text saved before you tick it keeps its formatting until it is edited. Custom BBCodes are the ones added on the <a href="%s">Posting » BBCodes</a> page of the ACP.',
 	'WIKI_ONLY_BBCODE'			=> 'Only in wiki articles',
 	'WIKI_ONLY_BBCODES_NONE'	=> 'This board has no custom BBCodes yet. Add them on the <a href="%s">Posting » BBCodes</a> page of the ACP.',

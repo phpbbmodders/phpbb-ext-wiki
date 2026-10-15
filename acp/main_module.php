@@ -11,7 +11,8 @@
 namespace phpbbmodders\wiki\acp;
 
 /**
- * The Wiki settings page: the header link's icon, and which forum "Start discussion" creates topics in.
+ * The Wiki settings page: the header link's icon, edit conflicts, the feed, how deep template calls
+ * may nest, and which forum "Start discussion" creates topics in.
  */
 class main_module
 {
@@ -57,7 +58,12 @@ class main_module
 			$auto_watch = $request->variable('wiki_auto_watch', 0) ? 1 : 0;
 			$edit_conflict = $request->variable('wiki_edit_conflict', '');
 			$lock_minutes = $request->variable('wiki_edit_lock_minutes', 0);
+			$nesting = $request->variable('wiki_template_nesting', 0);
 
+			if ($nesting < \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MIN || $nesting > \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MAX)
+			{
+				trigger_error($language->lang('WIKI_TEMPLATE_NESTING_INVALID', \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MIN, \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MAX) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 			if (!\phpbbmodders\wiki\wiki\edit_lock::valid_mode($edit_conflict))
 			{
 				trigger_error($language->lang('WIKI_EDIT_CONFLICT_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
@@ -101,6 +107,15 @@ class main_module
 			$config->set('wiki_edit_conflict', $edit_conflict);
 			$config->set('wiki_edit_lock_minutes', $lock_minutes);
 
+			// A new depth changes how articles are read: rebuild the parser, and reparse the
+			// saved articles in the background so they follow it
+			if ($nesting !== $phpbb_container->get('phpbbmodders.wiki.templates')->nesting())
+			{
+				$config->set('wiki_template_nesting', $nesting);
+				$phpbb_container->get('text_formatter.cache')->invalidate();
+				$phpbb_container->get('phpbbmodders.wiki.article_reparse')->queue();
+			}
+
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
 
@@ -123,6 +138,10 @@ class main_module
 			'WIKI_EDIT_LOCK_MINUTES'		=> $edit_lock->minutes(),
 			'WIKI_EDIT_LOCK_MINUTES_MIN'	=> \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MIN,
 			'WIKI_EDIT_LOCK_MINUTES_MAX'	=> \phpbbmodders\wiki\wiki\edit_lock::MINUTES_MAX,
+			'WIKI_TEMPLATE_NESTING'			=> $phpbb_container->get('phpbbmodders.wiki.templates')->nesting(),
+			'WIKI_TEMPLATE_NESTING_MIN'		=> \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MIN,
+			'WIKI_TEMPLATE_NESTING_MAX'		=> \phpbbmodders\wiki\wiki\templates::CALL_NESTING_MAX,
+			'S_WIKI_REPARSE_PENDING'		=> $phpbb_container->get('phpbbmodders.wiki.article_reparse')->pending(),
 			'S_WIKI_FEED_OPTIONS'		=> $feed_options,
 			'S_WIKI_AUTO_WATCH'			=> !isset($config['wiki_auto_watch']) || !empty($config['wiki_auto_watch']),
 			'WIKI_ICON'					=> isset($config['wiki_icon']) ? $config['wiki_icon'] : \phpbbmodders\wiki\wiki\icon::DEFAULT_ICON,

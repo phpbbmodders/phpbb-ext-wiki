@@ -218,6 +218,20 @@ services:
             - [set_name, [cron.task.phpbbmodders.wiki.category_members_build]]
         tags:
             - { name: cron.task }
+    # Reparsing the saved articles after the way markup is read has changed
+    phpbbmodders.wiki.article_reparse:
+        class: phpbbmodders\wiki\wiki\article_reparse
+        arguments:
+            - '@config'
+            - '@phpbbmodders.wiki.text_reparser.article_text'
+    phpbbmodders.wiki.cron.task.article_reparse:
+        class: phpbbmodders\wiki\cron\task\article_reparse
+        arguments:
+            - '@phpbbmodders.wiki.article_reparse'
+        calls:
+            - [set_name, [cron.task.phpbbmodders.wiki.article_reparse]]
+        tags:
+            - { name: cron.task }
     # Per-article edit protection: which groups may edit an article, and the page that sets it
     phpbbmodders.wiki.protection:
         class: phpbbmodders\wiki\wiki\protection

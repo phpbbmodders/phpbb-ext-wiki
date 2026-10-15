@@ -135,14 +135,16 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertFalse(markup::is_active());
 	}
 
-	private function parse(string $text, bool $wiki_markup = true): string
+	private function parse(string $text, bool $wiki_markup = true, ?int $nesting = null): string
 	{
+		$templates = $this->createMock(\phpbbmodders\wiki\wiki\templates::class);
+		$templates->method('nesting')->willReturn($nesting ?? \phpbbmodders\wiki\wiki\templates::CALL_NESTING);
 		$listener = new \phpbbmodders\wiki\event\wikilink_listener(
 			$this->createMock(\phpbb\controller\helper::class),
 			$this->createMock(\phpbb\language\language::class),
 			$this->createMock(\phpbbmodders\wiki\wiki\links::class),
 			$this->createMock(\phpbbmodders\wiki\wiki\files::class),
-			$this->createMock(\phpbbmodders\wiki\wiki\templates::class),
+			$templates,
 			$this->createMock(\phpbbmodders\wiki\wiki\wiki_only_bbcodes::class)
 		);
 
@@ -279,6 +281,34 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('call="#expr: 2 + 3"', $xml);
 		$this->assertStringContainsString('name="lc"', $xml);
 		$this->assertStringContainsString('name="PAGENAME"', $xml);
+	}
+
+	public function test_a_call_holds_others_eight_levels_deep()
+	{
+		// {{L0|{{L1|...{{Ln|x}}...}}}}: a call with n levels of calls inside it
+		$nested = function (int $levels): string {
+			$text = 'x';
+			for ($level = $levels; $level >= 0; $level--)
+			{
+				$text = '{{L' . $level . '|' . $text . '}}';
+			}
+
+			return $text;
+		};
+
+		$xml = $this->parse($nested(8));
+		$this->assertSame(1, substr_count($xml, '<WIKITEMPLATE'), $xml);
+		$this->assertStringContainsString('name="L0"', $xml);
+
+		// One level deeper, it all stays text as written
+		$xml = $this->parse($nested(9));
+		$this->assertStringNotContainsString('<WIKITEMPLATE', $xml);
+		$this->assertStringContainsString($nested(9), $xml);
+
+		// The board's setting moves the limit
+		$this->assertStringContainsString('name="L0"', $this->parse($nested(9), true, 9));
+		$this->assertStringNotContainsString('<WIKITEMPLATE', $this->parse($nested(4), true, 3));
+		$this->assertStringContainsString('name="L0"', $this->parse($nested(3), true, 3));
 	}
 
 	public function test_a_parameter_inside_a_call_does_not_end_it()

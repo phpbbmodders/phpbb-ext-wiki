@@ -163,13 +163,15 @@ string functions `#len`, `#pos`, `#rpos`, `#sub`, `#replace` and `#explode`, `#t
 `NAMESPACE` and `SITENAME`, and the `CURRENT...`, `LOCAL...` and `REVISION...` words (see `wiki/templates.php`,
 `wiki/expression.php` and `wiki/text_tools.php`). Calls are worked out as text, before the article
 is parsed, so a parameter can be another call and only the chosen branch of a function is worked
-out. Still to do:
+out. A call written in an article, and a parameter's default value, may hold other calls 8 levels
+deep, set from 3 to 20 under Extensions > Wiki > Settings (the pattern costs under 1 ms on large
+articles even at 20); deeper calls stay text. After a change, and after the update that brought it,
+a cron task reparses the saved articles a batch at a time (see `wiki/article_reparse.php`): a
+migration cannot, as the wiki's listeners are not loaded while the extension is enabled, and a
+reparse then strips every article's wiki markup. Still to do:
 
 - Not planned: `#invoke` (Lua modules). `plural` uses the English rule and `gender` always gives the
   neutral form, since phpBB keeps no gender.
-- Deeper nesting: a template call holds other calls in its parameters only three levels deep, and a
-  default value holds only one level of `{{template}}`; anything deeper stays text. Lift both limits,
-  keeping a cap so one article still cannot slow the board down.
 - Only if needed: a cache of rendered articles, cleared when a template changes. Expansion runs on
   every view. Measured on a MySQL board: about 1 ms for each template call written in an article (a
   table of 400 calls to a template took about 400 ms longer than the same table written out), one
