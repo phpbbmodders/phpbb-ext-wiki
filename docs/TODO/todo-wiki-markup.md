@@ -170,8 +170,8 @@ out. Still to do:
 - A template call holds other calls in its parameters three levels deep, and a default value holds
   one level of `{{template}}`; deeper nesting stays text.
 
-A set of ready-made templates, adapted from Wikipedia's, is planned as a separate
-repository: [Starter templates repository](todo-wiki-templates-repo.md).
+A set of ready-made templates, adapted from Wikipedia's, is in a separate repository:
+[Starter templates repository](archive/archive1.md#starter-templates-repository-completed-10142026) (completed).
 
 ## Decided
 

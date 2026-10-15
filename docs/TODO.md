@@ -13,8 +13,9 @@ separate admin page. See the README.
 Not built:
 
 - A starter skeleton that comes with the extension (an encyclopedia-style article with
-  `Overview`, `History` and `References` headings). It would fit the starter-templates
-  repository below better than code in the extension.
+  `Overview`, `History` and `References` headings). It would fit the starter templates
+  repository, [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates),
+  better than code in the extension.
 - Starting from an existing article, or a template that asks for values first.
 
 
@@ -99,14 +100,3 @@ Headings, `[[Article#Section]]` links, HTML tables, templates (`{{Name|parameter
 parser functions (`#if`, `#switch`, `#expr`, `#time`, string functions and others) are built, in
 wiki articles only, using s9e's allow-list so no unsafe HTML gets through. Full plan, including the syntax not to add:
 [`docs/TODO/todo-wiki-markup.md`](TODO/todo-wiki-markup.md).
-
-## Starter templates repository
-
-A separate CC BY-SA 4.0 repository of templates adapted from Wikipedia's for what
-this wiki can do, kept out of the GPL-2.0 extension:
-[`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), with 14
-hatnote, message box and text helper templates. The ACP **Starter templates** page installs
-them (zip upload, download from GitHub, or FTP into `store/`), keeps a board's own edits
-unless the admin ticks them, and can notify admins of new templates. Still to do: simplified
-infobox, citation and navbox templates. Plan, licence rules and decisions:
-[`docs/TODO/todo-wiki-templates-repo.md`](TODO/todo-wiki-templates-repo.md).
