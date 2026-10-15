@@ -9,7 +9,7 @@
 					{L_ARTICLE_HAS_NEW} <a href="{U_NEW_VERSION}">{L_SET_ACTIVE}</a>
 				</p>
 			<!-- ENDIF -->
-			<!-- IF S_EDIT or S_VERSIONS or U_TOPIC or U_START_DISCUSSION or S_WIKI_CAN_WATCH -->
+			<!-- IF S_EDIT or S_VERSIONS or U_TOPIC or U_START_DISCUSSION or S_WIKI_CAN_WATCH or S_WIKI_CAN_PROTECT -->
 			<ul class="post-buttons wiki-buttons">
 				<!-- IF S_EDIT -->
 				<li>
@@ -24,6 +24,11 @@
 				<!-- IF S_VERSIONS -->
 				<li>
 					<a href="{U_VERSIONS}" title="{L_VERSIONS_WIKI}" class="button button-icon-only"><i class="icon o-icon o-icon-font fas fa-history fa-fw" aria-hidden="true"></i><span>{L_VERSIONS_WIKI}</span></a>
+				</li>
+				<!-- ENDIF -->
+				<!-- IF S_WIKI_CAN_PROTECT -->
+				<li>
+					<a href="{U_WIKI_PROTECT}" title="<!-- IF S_WIKI_PROTECTED -->{L_WIKI_PROTECT_CHANGE}<!-- ELSE -->{L_WIKI_PROTECT_ARTICLE}<!-- ENDIF -->" class="button button-icon-only<!-- IF S_WIKI_PROTECTED --> wiki-protect-on<!-- ENDIF -->"><i class="icon o-icon o-icon-font fas <!-- IF S_WIKI_PROTECTED -->fa-lock<!-- ELSE -->fa-unlock<!-- ENDIF --> fa-fw" aria-hidden="true"></i><span><!-- IF S_WIKI_PROTECTED -->{L_WIKI_PROTECT_CHANGE}<!-- ELSE -->{L_WIKI_PROTECT_ARTICLE}<!-- ENDIF --></span></a>
 				</li>
 				<!-- ENDIF -->
 				<!-- IF S_WIKI_CAN_WATCH -->

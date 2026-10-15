@@ -12,7 +12,7 @@
 			<tbody>
 				<!-- BEGIN category_members -->
 				<tr class="<!-- IF category_members.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-					<td><a href="{category_members.U_ARTICLE}"><strong>{category_members.TITLE}</strong></a></td>
+					<td><a href="{category_members.U_ARTICLE}"><strong>{category_members.TITLE}</strong></a><!-- IF category_members.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{category_members.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{category_members.PROTECTED}</span><!-- ENDIF --></td>
 					<td>{category_members.DESCRIPTION}</td>
 				</tr>
 				<!-- END category_members -->

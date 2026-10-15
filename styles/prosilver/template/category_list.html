@@ -36,7 +36,7 @@
 							<p>{categories.WRITE_IN}</p>
 							<!-- IF .categories.members -->
 							<p>{L_WIKI_CATEGORY_MEMBERS}{L_COLON}
-								<!-- BEGIN members --><a href="{categories.members.U_ARTICLE}">{categories.members.TITLE}</a><!-- IF not categories.members.S_LAST_ROW -->, <!-- ENDIF --><!-- END members -->
+								<!-- BEGIN members --><a href="{categories.members.U_ARTICLE}">{categories.members.TITLE}</a><!-- IF categories.members.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{categories.members.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{categories.members.PROTECTED}</span><!-- ENDIF --><!-- IF not categories.members.S_LAST_ROW -->, <!-- ENDIF --><!-- END members -->
 								<!-- IF categories.MORE --> {categories.MORE}<!-- ENDIF -->
 							</p>
 							<!-- ENDIF -->

@@ -23,6 +23,9 @@ class category
 	/** How many of a category's articles the list of categories shows under it */
 	const PREVIEW_MEMBERS = 5;
 
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -69,8 +72,9 @@ class category
 	 * @param \phpbbmodders\wiki\controller\main	$main
 	 * @param string								$article_table
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, categories $categories, \phpbbmodders\wiki\controller\main $main, $article_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, categories $categories, \phpbbmodders\wiki\controller\main $main, $article_table, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
@@ -101,6 +105,7 @@ class category
 		{
 			$this->template->assign_block_vars('category_members', array(
 				'TITLE'			=> $row['article_title'],
+				'PROTECTED'		=> $this->protection->list_label($row['article_url']),
 				'DESCRIPTION'	=> $row['article_description'],
 				'U_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
 			));
@@ -217,6 +222,7 @@ class category
 			{
 				$this->template->assign_block_vars('categories.members', array(
 					'TITLE'		=> $member['article_title'],
+					'PROTECTED'	=> $this->protection->list_label($member['article_url']),
 					'U_ARTICLE'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $member['article_url'])),
 				));
 			}

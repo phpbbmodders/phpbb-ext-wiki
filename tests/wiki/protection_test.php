@@ -53,7 +53,13 @@ class protection_test extends \phpbb_database_test_case
 		$user = $this->createMock(\phpbb\user::class);
 		$user->data = array('user_id' => $user_id);
 
-		return new protection($auth, $this->db, $this->createMock(\phpbb\group\helper::class), $user, $table_prefix . 'wiki_article_protect');
+		$user->method('lang')->willReturnCallback(function ($key, ...$args) {
+			return $key . ':' . implode('|', $args);
+		});
+		$group_helper = $this->createMock(\phpbb\group\helper::class);
+		$group_helper->method('get_name')->willReturnArgument(0);
+
+		return new protection($auth, $this->db, $group_helper, $user, $table_prefix . 'wiki_article_protect');
 	}
 
 	public function test_an_unprotected_article_is_open_to_editors_only()
@@ -87,6 +93,16 @@ class protection_test extends \phpbb_database_test_case
 		$protection->set('Main Page', array());
 		$this->assertSame(array(), $this->protection(11)->groups('Main Page'));
 		$this->assertTrue($this->protection(11)->may_edit('Main Page'));
+	}
+
+	public function test_lists_label_protected_articles_with_their_groups()
+	{
+		$protection = $this->protection(12);
+		$this->assertSame('WIKI_PROTECTED_NOTE:Authors, Wiki editors', $protection->list_label('Main Page'), 'groups A to Z');
+		$this->assertSame('', $protection->list_label('Other Page'));
+
+		$protection->set('Other Page', array(7));
+		$this->assertSame('WIKI_PROTECTED_NOTE:Authors', $protection->list_label('Other Page'), 'a change shows at once');
 	}
 
 	public function test_protection_moves_with_the_article_and_goes_with_it()

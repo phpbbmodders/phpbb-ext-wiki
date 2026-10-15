@@ -10,7 +10,7 @@
 					<dl class="row-item">
 						<dt>
 							<div class="list-inner">
-								<a href="{wiki_matches.U_ARTICLE}" class="topictitle">{wiki_matches.TITLE}</a>
+								<a href="{wiki_matches.U_ARTICLE}" class="topictitle">{wiki_matches.TITLE}</a><!-- IF wiki_matches.PROTECTED --> <i class="icon o-icon o-icon-font fas fa-lock fa-fw wiki-protected-icon" title="{wiki_matches.PROTECTED}" aria-hidden="true"></i><span class="sr-only">{wiki_matches.PROTECTED}</span><!-- ENDIF -->
 								<!-- IF wiki_matches.DESCRIPTION --><br />{wiki_matches.DESCRIPTION}<!-- ENDIF -->
 								<!-- IF wiki_matches.SNIPPET --><br /><span>{wiki_matches.SNIPPET}</span><!-- ENDIF -->
 								<br />{wiki_matches.AUTHOR} &raquo; {wiki_matches.DATE}

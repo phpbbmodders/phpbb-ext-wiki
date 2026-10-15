@@ -37,6 +37,9 @@ class protection
 	/** @var array Group ids per article, as read in this request */
 	protected $cache = array();
 
+	/** @var array|null Every protected article with its group names, for the lists */
+	protected $labels = null;
+
 	/**
 	 * @param \phpbb\auth\auth					$auth
 	 * @param \phpbb\db\driver\driver_interface	$db
@@ -158,6 +161,7 @@ class protection
 		$this->db->sql_transaction('commit');
 
 		$this->cache[$article] = $group_ids;
+		$this->labels = null;
 	}
 
 	/**
@@ -172,6 +176,7 @@ class protection
 		$this->db->sql_query('UPDATE ' . $this->protect_table . ' SET ' . $this->db->sql_build_array('UPDATE', array('article_url' => $new)) . "
 			WHERE article_url = '" . $this->db->sql_escape($old) . "'");
 		unset($this->cache[$old], $this->cache[$new]);
+		$this->labels = null;
 	}
 
 	/**
@@ -205,6 +210,39 @@ class protection
 		natcasesort($groups);
 
 		return $groups;
+	}
+
+	/**
+	 * The text for a protected article in a list (the overview, Recent changes, search
+	 * results, category pages), naming who may edit it; '' when it is not protected.
+	 * Every protected article is read once per request, as there are only a few.
+	 *
+	 * @param string $article
+	 * @return string
+	 */
+	public function list_label($article)
+	{
+		if ($this->labels === null)
+		{
+			$this->labels = array();
+			$sql = 'SELECT p.article_url, g.group_name
+				FROM ' . $this->protect_table . ' p
+				JOIN ' . GROUPS_TABLE . ' g ON g.group_id = p.group_id';
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$this->labels[$row['article_url']][] = $this->group_helper->get_name($row['group_name']);
+			}
+			$this->db->sql_freeresult($result);
+		}
+		if (empty($this->labels[$article]))
+		{
+			return '';
+		}
+		$names = $this->labels[$article];
+		natcasesort($names);
+
+		return $this->user->lang('WIKI_PROTECTED_NOTE', implode(', ', $names));
 	}
 
 	/**

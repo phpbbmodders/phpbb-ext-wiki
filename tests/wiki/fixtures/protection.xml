@@ -6,6 +6,13 @@
 		<row><value>Main Page</value><value>5</value></row>
 		<row><value>Main Page</value><value>7</value></row>
 	</table>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_name</column>
+		<column>group_desc</column>
+		<row><value>5</value><value>Wiki editors</value><value></value></row>
+		<row><value>7</value><value>Authors</value><value></value></row>
+	</table>
 	<table name="phpbb_user_group">
 		<column>group_id</column>
 		<column>user_id</column>

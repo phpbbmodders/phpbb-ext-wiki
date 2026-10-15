@@ -20,6 +20,9 @@ class search_results
 	/** Longest stretch of text shown for a result, in characters */
 	const SNIPPET_LENGTH = 300;
 
+	/** @var \phpbbmodders\wiki\wiki\protection */
+	protected $protection;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -54,8 +57,9 @@ class search_results
 	 * @param string													$phpbb_root_path
 	 * @param string													$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, \phpbbmodders\wiki\search\wiki_search_backend_factory $factory, $article_table, $search_text_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, \phpbbmodders\wiki\search\wiki_search_backend_factory $factory, $article_table, $search_text_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\protection $protection)
 	{
+		$this->protection = $protection;
 		$this->db = $db;
 		$this->helper = $helper;
 		$this->user = $user;
@@ -181,6 +185,7 @@ class search_results
 				'DATE'			=> $this->user->format_date($row['article_date']),
 				'AUTHOR'		=> htmlspecialchars($row['author'], ENT_COMPAT, 'UTF-8'),
 				'U_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
+				'PROTECTED'		=> $this->protection->list_label($row['article_url']),
 			);
 		}
 
