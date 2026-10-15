@@ -334,6 +334,20 @@ class markup_test extends \PHPUnit\Framework\TestCase
 		$this->assertStringNotContainsString('<script', $html);
 	}
 
+	public function test_a_table_keeps_the_infobox_class_and_no_other()
+	{
+		$html = $this->render('<table class="infobox"><tr><td>a</td></tr></table>');
+		$this->assertStringContainsString('<table class="infobox">', $html);
+
+		foreach (array('hidden', 'infobox hidden', 'INFOBOX x', '" onclick="x') as $class)
+		{
+			$html = $this->render('<table class="' . $class . '"><tr><td>a</td></tr></table>');
+			$this->assertStringContainsString('<table>', $html, $class);
+			$this->assertStringNotContainsString('class=', $html, $class);
+		}
+		$this->assertStringContainsString('<td>a</td>', $this->render('<table><tr><td class="infobox">a</td></tr></table>'), 'only a table takes the class');
+	}
+
 	public function test_center_becomes_a_centred_block_in_a_wiki_article()
 	{
 		$this->assertStringContainsString('<WIKICENTER>', $this->parse('<center>[b]Title[/b]</center>'));
