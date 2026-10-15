@@ -16,9 +16,9 @@ and `WIKIMAGIC` tags and the `html:` table tags on in `core.text_formatter_s9e_p
 `php bin/phpbbcli.php reparser:reparse phpbbmodders_wiki_article`. Templates are built too, in their first form: `{{Name}}`, `{{Name|a|b}}`, `{{Name|key=value}}`,
 `{{{param}}}` and `{{{param|default}}}`, `<noinclude>` and `<includeonly>`, expanded when an article is
 shown (see `wiki/templates.php`), nested ten deep with a loop check, with the parser functions (`#if`,
-`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. What is
-left is listed under "Still to do" in "Templates and infoboxes" below, and in "Scope" (making admins' own
-BBCodes wiki-only).
+`#switch`, `#expr`, `#time`, string functions and others) and categories (`[[Category:Name]]`) on top. Admins can
+make their own BBCodes wiki-only too (see "Scope"). What is left is listed under "Still to do" in
+"Templates and infoboxes" below.
 
 ## Scope: wiki articles only
 
@@ -57,8 +57,12 @@ Limits:
 
 Built, in a slightly different form: the wiki-only tags are switched on in
 `core.text_formatter_s9e_parse_before` only while an article is saved or
-previewed (see "Built so far"). The ACP setting for making admins' own BBCodes
-wiki-only is not built.
+previewed (see "Built so far"). Admins' own BBCodes are ticked under
+**Extensions > Wiki > Settings** and kept by id, so renaming one keeps the
+choice (see `wiki/wiki_only_bbcodes.php`). Their buttons are left off every
+editor but the wiki's, and a forum post that uses one is refused with
+phpBB's own "You cannot use certain BBCodes" message rather than shown as
+plain text.
 
 ## Syntax to add
 

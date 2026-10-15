@@ -58,15 +58,20 @@ class wikilink_listener implements EventSubscriberInterface
 	/** @var \phpbbmodders\wiki\wiki\templates */
 	protected $templates;
 
+	/** @var \phpbbmodders\wiki\wiki\wiki_only_bbcodes */
+	protected $wiki_only_bbcodes;
+
 	/**
 	 * @param \phpbb\controller\helper			$helper		Controller helper object
 	 * @param \phpbb\language\language			$language	Language object
 	 * @param \phpbbmodders\wiki\wiki\links		$links		Wiki links service
 	 * @param \phpbbmodders\wiki\wiki\files		$files		Wiki files service
 	 * @param \phpbbmodders\wiki\wiki\templates	$templates	Wiki templates service
+	 * @param \phpbbmodders\wiki\wiki\wiki_only_bbcodes	$wiki_only_bbcodes	The admin's BBCodes kept to the wiki
 	 */
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\templates $templates)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbbmodders\wiki\wiki\links $links, \phpbbmodders\wiki\wiki\files $files, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\wiki_only_bbcodes $wiki_only_bbcodes)
 	{
+		$this->wiki_only_bbcodes = $wiki_only_bbcodes;
 		$this->templates = $templates;
 		$this->files = $files;
 		$this->helper = $helper;
@@ -83,6 +88,7 @@ class wikilink_listener implements EventSubscriberInterface
 			'core.text_formatter_s9e_configure_after'	=> 'configure_wikilink',
 			'core.text_formatter_s9e_parse_before'		=> 'toggle_wiki_markup',
 			'core.text_formatter_s9e_render_after'		=> 'link_wikilinks',
+			'core.display_custom_bbcodes_modify_sql'	=> 'hide_wiki_only_buttons',
 		);
 	}
 
@@ -264,8 +270,8 @@ class wikilink_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Point rendered wiki links at their articles, and mark the ones whose
-	 * article doesn't exist yet.
+	 * Let the parser read the wiki's own tags, and the BBCodes the admin made wiki-only, only
+	 * while a wiki article is saved.
 	 *
 	 * @param \phpbb\event\data $event The event object
 	 * @return void
@@ -274,7 +280,7 @@ class wikilink_listener implements EventSubscriberInterface
 	{
 		$parser = $event['parser']->get_parser();
 
-		foreach (self::wiki_tags() as $tag)
+		foreach (array_merge(self::wiki_tags(), $this->wiki_only_bbcodes->tag_names()) as $tag)
 		{
 			if (\phpbbmodders\wiki\wiki\markup::is_active())
 			{
@@ -297,6 +303,32 @@ class wikilink_listener implements EventSubscriberInterface
 		}
 	}
 
+	/**
+	 * Leave the wiki-only BBCodes' buttons off every editor but the wiki's.
+	 *
+	 * @param \phpbb\event\data $event The event object
+	 * @return void
+	 */
+	public function hide_wiki_only_buttons($event)
+	{
+		$ids = $this->wiki_only_bbcodes->ids();
+		if (!$ids || \phpbbmodders\wiki\wiki\markup::is_active())
+		{
+			return;
+		}
+
+		$sql_ary = $event['sql_ary'];
+		$sql_ary['WHERE'] = '(' . $sql_ary['WHERE'] . ') AND b.bbcode_id NOT IN (' . implode(', ', $ids) . ')';
+		$event['sql_ary'] = $sql_ary;
+	}
+
+	/**
+	 * Point rendered wiki links at their articles, and mark the ones whose
+	 * article doesn't exist yet.
+	 *
+	 * @param \phpbb\event\data $event The event object
+	 * @return void
+	 */
 	public function link_wikilinks($event)
 	{
 		$html = $event['html'];

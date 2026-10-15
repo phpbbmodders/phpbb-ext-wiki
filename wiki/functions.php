@@ -147,7 +147,16 @@ class functions
 	protected function display_edit_form($preview = false)
 	{
 		generate_smilies('inline', 0);
-		display_custom_bbcodes();
+		// With wiki markup on, the BBCodes the admin made wiki-only keep their buttons here
+		\phpbbmodders\wiki\wiki\markup::set_active(true);
+		try
+		{
+			display_custom_bbcodes();
+		}
+		finally
+		{
+			\phpbbmodders\wiki\wiki\markup::set_active(false);
+		}
 		add_form_key('article');
 
 		$this->template->assign_vars(array(

@@ -318,6 +318,13 @@ services:
             - '@language'
             - '%tables.wiki.article%'
             - '@user'
+    # The custom BBCodes an admin has made wiki-only
+    phpbbmodders.wiki.wiki_only_bbcodes:
+        class: phpbbmodders\wiki\wiki\wiki_only_bbcodes
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '%tables.bbcodes%'
     phpbbmodders.wiki.wikilink_listener:
         class: phpbbmodders\wiki\event\wikilink_listener
         arguments:
@@ -326,6 +333,7 @@ services:
             - '@phpbbmodders.wiki.links'
             - '@phpbbmodders.wiki.files'
             - '@phpbbmodders.wiki.templates'
+            - '@phpbbmodders.wiki.wiki_only_bbcodes'
         tags:
             - { name: event.listener }
 

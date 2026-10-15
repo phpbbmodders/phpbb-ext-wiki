@@ -57,6 +57,11 @@ $lang = array_merge($lang, array(
 	'WIKI_EDIT_CONFLICT_INVALID'		=> 'The choice for when two people edit an article is not one of the choices.',
 	'WIKI_EDIT_LOCK_MINUTES'			=> 'Minutes an editor holds an article',
 	'WIKI_EDIT_LOCK_MINUTES_EXPLAIN'	=> 'How long the notice names an editor, or the lock lasts, after their last sign of work. It is extended every few minutes while their edit form is open, and when they preview, so it only runs out once they have left.',
+
+	'WIKI_ONLY_BBCODES'			=> 'BBCodes only for the wiki',
+	'WIKI_ONLY_BBCODES_EXPLAIN'	=> 'BBCodes you have added under Posting, BBCodes. A ticked one works only in wiki articles: it is turned off in posts, private messages and signatures, and its button shows only in the wiki editor. Text already saved with it stays as it is until it is edited.',
+	'WIKI_ONLY_BBCODE'			=> 'Only in wiki articles',
+	'WIKI_ONLY_BBCODES_NONE'	=> 'This board has no BBCodes of its own yet.',
 	'WIKI_EDIT_LOCK_MINUTES_INVALID'	=> 'Minutes an editor holds an article must be a number from %1$d to %2$d.',
 
 	'ACP_WIKI_STARTER_TEMPLATES_EXPLAIN'	=> 'Starter templates are ready-made templates for the wiki, adapted from Wikipedia and other wikis, from the <a href="https://github.com/phpbbmodders/wiki-templates">phpbbmodders/wiki-templates</a> repository. They are shared under the <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> licence; each one says where it comes from at the top of its page. Get the templates first, then choose which to install. Nothing is installed until you press Install.',
