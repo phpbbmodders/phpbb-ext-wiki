@@ -1,3 +1,11 @@
+<!-- IF .category_subcategories -->
+<h3>{L_WIKI_CATEGORY_SUBCATEGORIES}</h3>
+<ul class="wiki-subcategories">
+	<!-- BEGIN category_subcategories -->
+	<li><a href="{category_subcategories.U_CATEGORY}"><strong>{category_subcategories.NAME}</strong></a><!-- IF category_subcategories.DESCRIPTION --> &ndash; {category_subcategories.DESCRIPTION}<!-- ENDIF --></li>
+	<!-- END category_subcategories -->
+</ul>
+<!-- ENDIF -->
 <h3>{L_WIKI_CATEGORY_MEMBERS}</h3>
 <!-- IF .category_members -->
 <div class="forumbg forumbg-table">

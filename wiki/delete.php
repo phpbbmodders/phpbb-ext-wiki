@@ -13,6 +13,9 @@ namespace phpbbmodders\wiki\wiki;
 class delete extends \phpbbmodders\wiki\wiki\functions
 {
 
+	/** @var \phpbbmodders\wiki\wiki\links */
+	protected $links;
+
 	/** @var \phpbbmodders\wiki\wiki\protection */
 	protected $protection;
 
@@ -56,8 +59,10 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbb\request\request				$request				Request object
 	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\protection $protection)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\user $user, $article_table, \phpbbmodders\wiki\wiki\files $files, \phpbb\request\request $request, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\protection $protection, \phpbbmodders\wiki\wiki\category_members $category_members, \phpbbmodders\wiki\wiki\links $links)
 	{
+		$this->category_members = $category_members;
+		$this->links = $links;
 		$this->protection = $protection;
 		$this->search_sync = $search_sync;
 		$this->files = $files;
@@ -131,6 +136,8 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 
 			// Out of the search first, while its versions can still be found
 			$this->search_sync->remove($article);
+			// A template's users, read while its versions still exist, lose what it gave them
+			$template_users = (strpos($article, \phpbbmodders\wiki\wiki\templates::PREFIX) === 0) ? array_column($this->links->what_links_here($article), 'article_url') : array();
 
 			$sql = 'DELETE FROM ' . $this->article_table . "
 				WHERE article_url = '" . $this->db->sql_escape($article) . "'";
@@ -138,6 +145,7 @@ class delete extends \phpbbmodders\wiki\wiki\functions
 			$this->files->delete_all($article);
 			$this->watch->delete_for_article($article);
 			$this->protection->delete_for_article($article);
+			$this->category_members->remove($article, $template_users);
 			trigger_error($this->user->lang('DELETE_ARTICLE_SUCCESS') . '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_index', array())  . '">' . $this->user->lang('BACK_TO_WIKI') . '</a>');
 		}
 		else

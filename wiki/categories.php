@@ -16,8 +16,9 @@ namespace phpbbmodders\wiki\wiki;
  * are collected while an article is shown, to list under it, and the members of a
  * category are the live articles whose stored text holds the tag.
  *
- * A category added by a template shows under the article that uses the template, but
- * the member list of the category only knows what is written in the articles themselves.
+ * The member lists come from category_members once its table is built, which knows the
+ * categories templates add, sub-categories and sort keys; until then they are read from
+ * what is written in the articles themselves.
  */
 class categories
 {
@@ -26,6 +27,9 @@ class categories
 
 	/** @var array Names found in the text rendered since reset(), in order */
 	protected static $found = array();
+
+	/** @var array The sort key each of those was written with, '' for none */
+	protected static $keys = array();
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -36,13 +40,18 @@ class categories
 	/** @var string */
 	protected $article_table;
 
+	/** @var category_members */
+	protected $category_members;
+
 	/**
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbbmodders\wiki\wiki\templates	$templates		Wiki templates service, for the live-version query
 	 * @param string								$article_table	Wiki article table
+	 * @param category_members						$category_members	Stored memberships
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbbmodders\wiki\wiki\templates $templates, $article_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbbmodders\wiki\wiki\templates $templates, $article_table, category_members $category_members)
 	{
+		$this->category_members = $category_members;
 		$this->db = $db;
 		$this->templates = $templates;
 		$this->article_table = $article_table;
@@ -71,21 +80,35 @@ class categories
 	public static function reset()
 	{
 		self::$found = array();
+		self::$keys = array();
 	}
 
 	/**
-	 * Note that rendered text puts the article in a category.
+	 * Note that rendered text puts the article in a category. The first sort key written for
+	 * a category counts, as on MediaWiki.
 	 *
 	 * @param string $name The category's name
+	 * @param string $key The sort key after the bar, '' for none
 	 * @return void
 	 */
-	public static function add($name)
+	public static function add($name, $key = '')
 	{
 		$name = self::normalise($name);
 		if ($name !== '' && !in_array($name, self::$found, true))
 		{
 			self::$found[] = $name;
+			self::$keys[$name] = trim((string) $key);
 		}
+	}
+
+	/**
+	 * The sort keys of the categories found since reset(): names with their keys.
+	 *
+	 * @return array
+	 */
+	public static function found_keys()
+	{
+		return self::$keys;
 	}
 
 	/**
@@ -147,19 +170,30 @@ class categories
 	 */
 	public static function names_outside_includeonly($raw)
 	{
+		return array_keys(self::keys_outside_includeonly($raw));
+	}
+
+	/**
+	 * The categories a template page puts itself in, with their sort keys.
+	 *
+	 * @param string $raw The template page's text as it is written
+	 * @return array Normalised names, in order, with the first sort key written for each ('' for none)
+	 */
+	public static function keys_outside_includeonly($raw)
+	{
 		$raw = preg_replace('#<includeonly>.*?</includeonly>#is', '', $raw);
-		if (!preg_match_all('/\[\[\s*Category:\s*([^\[\]|\n]+?)\s*(?:\|[^\[\]\n]*)?\]\]/i', $raw, $matches))
+		if (!preg_match_all('/\[\[\s*Category:\s*([^\[\]|\n]+?)\s*(?:\|\s*([^\[\]\n]*?)\s*)?\]\]/i', $raw, $matches, PREG_SET_ORDER))
 		{
 			return array();
 		}
 
 		$names = array();
-		foreach ($matches[1] as $name)
+		foreach ($matches as $match)
 		{
-			$name = self::normalise($name);
-			if ($name !== '' && !in_array($name, $names, true))
+			$name = self::normalise($match[1]);
+			if ($name !== '' && !isset($names[$name]))
 			{
-				$names[] = $name;
+				$names[$name] = isset($match[2]) ? trim($match[2]) : '';
 			}
 		}
 
@@ -186,24 +220,30 @@ class categories
 	}
 
 	/**
-	 * Whether any live article is in a category.
+	 * Whether any live article, or sub-category, is in a category.
 	 *
 	 * @param string $category
 	 * @return bool
 	 */
 	public function has_members($category)
 	{
-		return count($this->members($category)) > 0;
+		return count($this->members($category)) > 0 || count($this->subcategories($category)) > 0;
 	}
 
 	/**
-	 * Every live article in a category, A to Z.
+	 * Every live article in a category, by sort key or else title (A to Z before the stored
+	 * memberships are built), sub-categories left out.
 	 *
 	 * @param string $category
 	 * @return array Rows with article_url, article_title and article_description
 	 */
 	public function members($category)
 	{
+		if ($this->category_members->built())
+		{
+			return $this->category_members->members($category)['articles'];
+		}
+
 		$normal = self::normalise($category);
 		$sql = 'SELECT a.article_url, a.article_title, a.article_description, a.article_text, a.bbcode_uid
 			FROM ' . $this->article_table . ' a
@@ -224,6 +264,18 @@ class categories
 		$this->db->sql_freeresult($result);
 
 		return $members;
+	}
+
+	/**
+	 * The sub-categories of a category: category pages that are themselves in it, by sort
+	 * key or else title. Known once the stored memberships are built.
+	 *
+	 * @param string $category
+	 * @return array Rows with article_url, article_title and article_description
+	 */
+	public function subcategories($category)
+	{
+		return $this->category_members->built() ? $this->category_members->members($category)['subcategories'] : array();
 	}
 
 	/**
@@ -255,6 +307,11 @@ class categories
 	 */
 	public function in_use()
 	{
+		if ($this->category_members->built())
+		{
+			return $this->category_members->in_use();
+		}
+
 		$sql = 'SELECT a.article_url, a.article_text, a.bbcode_uid
 			FROM ' . $this->article_table . ' a
 			WHERE ' . $this->templates->live_where('a', '') . '

@@ -226,8 +226,17 @@ class markup_test extends \PHPUnit\Framework\TestCase
 
 		$this->assertSame(3, substr_count($xml, '<WIKICATEGORY'), $xml);
 		$this->assertStringContainsString('<WIKICATEGORY name="Old extensions">', $xml);
-		$this->assertSame(2, substr_count($xml, '<WIKICATEGORY name="Boxes">'), $xml);
+		$this->assertStringContainsString('<WIKICATEGORY key="sort key" name="Boxes">', $xml, 'the sort key is kept');
+		$this->assertStringContainsString('<WIKICATEGORY name="Boxes">', $xml);
 		$this->assertStringNotContainsString('<WIKILINK', $xml, 'a category is not a link');
+	}
+
+	public function test_a_colon_makes_a_category_a_plain_link()
+	{
+		$xml = $this->parse('See [[:Category:Boxes]] and [[:Category:Boxes|all boxes]].');
+
+		$this->assertStringNotContainsString('<WIKICATEGORY', $xml, 'the article is not put in the category');
+		$this->assertSame(2, substr_count($xml, '<WIKILINK name="Category:Boxes"'), $xml);
 	}
 
 	public function test_a_category_mark_stays_text_outside_a_wiki_article_and_when_empty()
@@ -239,6 +248,7 @@ class markup_test extends \PHPUnit\Framework\TestCase
 	public function test_a_category_mark_renders_as_an_empty_marker()
 	{
 		$this->assertSame('a <span class="wikicategory" data-wiki-category="Boxes"></span> b', $this->render('a [[Category:boxes]] b'));
+		$this->assertSame('<span class="wikicategory" data-wiki-category="Boxes" data-wiki-sort="Small"></span>', $this->render('[[Category:boxes|Small]]'), 'a sort key goes with it');
 	}
 
 	public function test_template_calls_become_tags_with_their_name_and_call()

@@ -176,6 +176,7 @@ $lang = array_merge($lang, array(
 		2	=> '%d articles',
 	),
 	'WIKI_CATEGORY_MEMBERS'			=> 'Articles in this category',
+	'WIKI_CATEGORY_SUBCATEGORIES'	=> 'Sub-categories',
 	'WIKI_CATEGORY_EMPTY'			=> 'No article is in this category yet.',
 	'WIKI_CATEGORY_NO_PAGE'			=> 'This category has no description yet.',
 	'WIKI_CATEGORY_WRITE'			=> 'Write one',

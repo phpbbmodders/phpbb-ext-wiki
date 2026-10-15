@@ -9,6 +9,7 @@ parameters:
     tables.wiki.template_install: '%core.table_prefix%wiki_template_install'
     tables.wiki.edit_lock: '%core.table_prefix%wiki_edit_lock'
     tables.wiki.article_protect: '%core.table_prefix%wiki_article_protect'
+    tables.wiki.category_member: '%core.table_prefix%wiki_category_member'
 
 services:
     _defaults:
@@ -53,6 +54,7 @@ services:
             - '@dbal.conn'
             - '@phpbbmodders.wiki.templates'
             - '%tables.wiki.article%'
+            - '@phpbbmodders.wiki.category_members'
 
     phpbbmodders.wiki.category:
         class: phpbbmodders\wiki\controller\category
@@ -164,6 +166,7 @@ services:
             - '%tables.wiki.file%'
             - '%tables.wiki.watch%'
             - '@phpbbmodders.wiki.protection'
+            - '@phpbbmodders.wiki.category_members'
     phpbbmodders.wiki.listener:
         class: phpbbmodders\wiki\event\listener
         arguments:
@@ -195,6 +198,26 @@ services:
             - '@phpbbmodders.wiki.search_sync'
             - '@phpbbmodders.wiki.edit_lock'
             - '@phpbbmodders.wiki.protection'
+            - '@phpbbmodders.wiki.category_members'
+    # Which articles are in which category, kept current as articles go live, and the cron
+    # task that fills it for the articles a board already has
+    phpbbmodders.wiki.category_members:
+        class: phpbbmodders\wiki\wiki\category_members
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@phpbbmodders.wiki.links'
+            - '@phpbbmodders.wiki.templates'
+            - '%tables.wiki.article%'
+            - '%tables.wiki.category_member%'
+    phpbbmodders.wiki.cron.task.category_members_build:
+        class: phpbbmodders\wiki\cron\task\category_members_build
+        arguments:
+            - '@phpbbmodders.wiki.category_members'
+        calls:
+            - [set_name, [cron.task.phpbbmodders.wiki.category_members_build]]
+        tags:
+            - { name: cron.task }
     # Per-article edit protection: which groups may edit an article, and the page that sets it
     phpbbmodders.wiki.protection:
         class: phpbbmodders\wiki\wiki\protection
@@ -249,6 +272,8 @@ services:
             - '@phpbbmodders.wiki.watch'
             - '@phpbbmodders.wiki.search_sync'
             - '@phpbbmodders.wiki.protection'
+            - '@phpbbmodders.wiki.category_members'
+            - '@phpbbmodders.wiki.links'
     phpbbmodders.wiki.view:
         class: phpbbmodders\wiki\wiki\view
         arguments:

@@ -87,9 +87,11 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\search_sync			$search_sync			Keeps the search current
 	* @param \phpbbmodders\wiki\wiki\edit_lock			$edit_lock				Who has an article's edit form open
 	* @param \phpbbmodders\wiki\wiki\protection			$protection				Which groups may edit an article
+	* @param \phpbbmodders\wiki\wiki\category_members	$category_members		Which articles are in which category
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\edit_lock $edit_lock, \phpbbmodders\wiki\wiki\protection $protection)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\edit_lock $edit_lock, \phpbbmodders\wiki\wiki\protection $protection, \phpbbmodders\wiki\wiki\category_members $category_members)
 	{
+		$this->category_members = $category_members;
 		$this->protection = $protection;
 		$this->edit_lock = $edit_lock;
 		$this->search_sync = $search_sync;

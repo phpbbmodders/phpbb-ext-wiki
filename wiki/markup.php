@@ -86,6 +86,18 @@ class markup
 	}
 
 	/**
+	 * A link written [[:Category:Name]] (or [[:File:...]]) goes to that page: the colon only
+	 * keeps the link from being read as a category mark, so it is taken off the name.
+	 *
+	 * @param string $value The link's target as written
+	 * @return string
+	 */
+	public static function strip_link_colon($value)
+	{
+		return (strpos($value, ':') === 0) ? ltrim(substr($value, 1)) : $value;
+	}
+
+	/**
 	 * Switch wiki markup on for the next parse (an article save or preview), or off.
 	 *
 	 * @param bool $active

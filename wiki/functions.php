@@ -15,8 +15,11 @@ class functions
 	/** @var \phpbbmodders\wiki\wiki\search_sync|null Keeps the search current; set by the classes that change articles */
 	protected $search_sync = null;
 
+	/** @var \phpbbmodders\wiki\wiki\category_members|null Keeps the category lists current; set with search_sync */
+	protected $category_members = null;
+
 	/**
-	 * Tell the search that the live version of an article may have changed.
+	 * Tell the search and the category lists that the live version of an article may have changed.
 	 *
 	 * @param string $article_url
 	 * @return void
@@ -26,6 +29,10 @@ class functions
 		if ($this->search_sync !== null)
 		{
 			$this->search_sync->sync($article_url);
+		}
+		if ($this->category_members !== null)
+		{
+			$this->category_members->update($article_url);
 		}
 	}
 

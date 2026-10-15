@@ -119,17 +119,20 @@ class wikilink_listener implements EventSubscriberInterface
 			return;
 		}
 
-		// [[Category:Name]] puts the article in a category and shows nothing where it stands. The
-		// parser reads it only while a wiki article is saved (see toggle_wiki_markup()); a sort key
-		// after a bar is accepted and ignored.
+		// [[Category:Name]] puts the article in a category and shows nothing where it stands, and
+		// [[Category:Name|Key]] files it under Key in that category's list. The parser reads it
+		// only while a wiki article is saved (see toggle_wiki_markup()).
 		$category = $configurator->tags->add('WIKICATEGORY');
 		$category_name = $category->attributes->add('name');
 		$category_name->filterChain->append('\phpbbmodders\wiki\wiki\markup::decode_entities_in_name');
 		$category_name->filterChain->append('\phpbbmodders\wiki\wiki\categories::normalise');
-		$category->template = '<span class="wikicategory" data-wiki-category="{@name}"></span>';
+		$category_key = $category->attributes->add('key');
+		$category_key->required = false;
+		$category_key->filterChain->append('\phpbbmodders\wiki\wiki\markup::decode_entities');
+		$category->template = '<span class="wikicategory" data-wiki-category="{@name}"><xsl:if test="@key"><xsl:attribute name="data-wiki-sort"><xsl:value-of select="@key"/></xsl:attribute></xsl:if></span>';
 
 		$configurator->Preg->match(
-			'/\[\[\s*Category:\s*(?=[^\s\]|])(?<name>' . self::NAME_CLASS . '{1,255}?)\s*(?:\|[^\[\]\n]*)?\]\]/i',
+			'/\[\[\s*Category:\s*(?=[^\s\]|])(?<name>' . self::NAME_CLASS . '{1,255}?)\s*(?:\|\s*(?<key>[^\[\]\n]{0,255}?)\s*)?\]\]/i',
 			'WIKICATEGORY'
 		);
 
@@ -193,6 +196,8 @@ class wikilink_listener implements EventSubscriberInterface
 			$link_attribute->required = false;
 			$link_attribute->filterChain->append('\phpbbmodders\wiki\wiki\markup::' . $decode);
 		}
+		// [[:Category:Name]] links to a category's page without putting the article in it
+		$tag->attributes['name']->filterChain->append('\phpbbmodders\wiki\wiki\markup::strip_link_colon');
 		$tag->template = '<a class="wikilink" data-wiki-article="{@name}" data-wiki-section="{@section}">'
 			. '<xsl:choose><xsl:when test="@text"><xsl:value-of select="@text"/></xsl:when>'
 			. '<xsl:otherwise><xsl:value-of select="@name"/><xsl:if test="@section">#<xsl:value-of select="@section"/></xsl:if></xsl:otherwise></xsl:choose></a>';
@@ -311,15 +316,16 @@ class wikilink_listener implements EventSubscriberInterface
 
 		if (strpos($html, 'class="wikicategory"') !== false)
 		{
-			// Note the categories, for the article's page to list, and take the marks out
-			if (preg_match_all('/<span class="wikicategory" data-wiki-category="([^"]*)"><\/span>/', $html, $marks))
+			// Note the categories (and their sort keys), for the article's page to list and the
+			// category lists to file it under, and take the marks out
+			if (preg_match_all('/<span class="wikicategory" data-wiki-category="([^"]*)"(?: data-wiki-sort="([^"]*)")?><\/span>/', $html, $marks, PREG_SET_ORDER))
 			{
-				foreach ($marks[1] as $mark)
+				foreach ($marks as $mark)
 				{
-					\phpbbmodders\wiki\wiki\categories::add(htmlspecialchars_decode($mark, ENT_QUOTES));
+					\phpbbmodders\wiki\wiki\categories::add(htmlspecialchars_decode($mark[1], ENT_QUOTES), isset($mark[2]) ? htmlspecialchars_decode($mark[2], ENT_QUOTES) : '');
 				}
 			}
-			$html = preg_replace('/<span class="wikicategory" data-wiki-category="[^"]*"><\/span>/', '', $html);
+			$html = preg_replace('/<span class="wikicategory" data-wiki-category="[^"]*"(?: data-wiki-sort="[^"]*")?><\/span>/', '', $html);
 			$event['html'] = $html;
 		}
 

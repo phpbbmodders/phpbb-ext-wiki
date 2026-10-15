@@ -52,6 +52,9 @@ class move
 	/** @var protection */
 	protected $protection;
 
+	/** @var category_members */
+	protected $category_members;
+
 	/** @var string */
 	protected $watch_table;
 
@@ -68,9 +71,11 @@ class move
 	 * @param string							$file_table
 	 * @param string							$watch_table
 	 * @param protection						$protection
+	 * @param category_members					$category_members
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, links $links, search_sync $search_sync, $article_table, $file_table, $watch_table, protection $protection)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, links $links, search_sync $search_sync, $article_table, $file_table, $watch_table, protection $protection, category_members $category_members)
 	{
+		$this->category_members = $category_members;
 		$this->protection = $protection;
 		$this->auth = $auth;
 		$this->db = $db;
@@ -310,5 +315,9 @@ class move
 		// and the redirect left behind are brought up to date
 		$this->search_sync->sync($new);
 		$this->search_sync->sync($old);
+		// The article's categories go with it; a template's users are worked out again, as
+		// they now reach it through the redirect
+		$this->category_members->update($new);
+		$this->category_members->update($old);
 	}
 }
