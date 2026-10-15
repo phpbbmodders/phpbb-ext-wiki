@@ -168,6 +168,8 @@ a.wikilink-new {
 /* <details><summary>Title</summary>...</details>: a box the reader opens and closes */
 .wiki .content details,
 .content.wiki-preview details {
+	/* Beside a floated infobox the box narrows to fit, instead of running its border under it */
+	display: flow-root;
 	margin: 0.8em 0;
 	border: 1px solid #ccc;
 	padding: 0 0.6em;
