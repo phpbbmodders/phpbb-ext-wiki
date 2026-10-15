@@ -331,3 +331,9 @@ form.wiki-start-from p {
 .wiki-buttons .button.wiki-protect-on .icon {
 	color: #bc2a4d;
 }
+
+/* On a category page: how much each sub-category holds */
+.wiki-subcategory-count {
+	opacity: 0.8;
+	font-size: 0.95em;
+}

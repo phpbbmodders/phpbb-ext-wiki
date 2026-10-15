@@ -84,6 +84,28 @@ class category_members_test extends \phpbb_database_test_case
 		$this->assertSame(array('Fruit' => 4, 'Tropical' => 1), $members->in_use());
 	}
 
+	public function test_counts_give_articles_and_sub_categories_apart()
+	{
+		$members = $this->members(array(
+			'Mango'				=> array('Tropical' => ''),
+			'Apple'				=> array('Tropical' => ''),
+			'Category:Tropical'	=> array('Fruit' => ''),
+			'Zebra'				=> array('Fruit' => ''),
+			'Draft'				=> array('Tropical' => ''),
+		));
+		foreach (array('Mango', 'Apple', 'Category:Tropical', 'Zebra', 'Draft') as $article)
+		{
+			$members->update($article);
+		}
+
+		$this->assertSame(array(
+			'Tropical'	=> array('articles' => 2, 'subcategories' => 0),
+			'Fruit'		=> array('articles' => 1, 'subcategories' => 1),
+			'Empty'		=> array('articles' => 0, 'subcategories' => 0),
+		), $members->counts(array('tropical', 'Fruit', 'Empty')), 'a version that is not live does not count');
+		$this->assertSame(array(), $members->counts(array()));
+	}
+
 	public function test_an_article_that_is_not_live_is_not_listed()
 	{
 		$members = $this->members(array('Draft' => array('Fruit' => '')));
