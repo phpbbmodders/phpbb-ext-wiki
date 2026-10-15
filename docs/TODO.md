@@ -13,9 +13,8 @@ separate admin page. See the README. An encyclopedia-style skeleton, `Template:S
 [`phpbbmodders/wiki-templates`](https://github.com/phpbbmodders/wiki-templates), and boards
 install it from the ACP like the other starter templates.
 
-Not built:
-
-- Starting from an existing article, or a template that asks for values first.
+Also built (10/15/2026): a Start template with `{{{parameters}}}` asks for their values first,
+and a new article can start as a copy of another article's live text. Nothing more is planned here.
 
 ## Categories
 

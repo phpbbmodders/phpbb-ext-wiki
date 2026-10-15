@@ -951,6 +951,37 @@ class templates
 	}
 
 	/**
+	 * The parameters a text uses, with the default written for each: for the form that asks
+	 * for a Start template's values. A default that holds other calls is not offered.
+	 *
+	 * @param string $text
+	 * @return array Names, in the order first written, with their defaults ('' for none)
+	 */
+	public static function parameter_defaults($text)
+	{
+		$defaults = array();
+		preg_match_all('#\{\{\{\s*([^{}|]+?)\s*(?:\|([^{}]*))?\}\}\}#', $text, $matches, PREG_SET_ORDER);
+		foreach ($matches as $match)
+		{
+			$name = $match[1];
+			if (!isset($defaults[$name]) || ($defaults[$name] === '' && isset($match[2])))
+			{
+				$defaults[$name] = isset($match[2]) ? trim($match[2]) : '';
+			}
+		}
+		// Parameters whose default holds a call are still asked for, without a default
+		foreach (self::parameters($text) as $name)
+		{
+			if (!isset($defaults[$name]))
+			{
+				$defaults[$name] = '';
+			}
+		}
+
+		return $defaults;
+	}
+
+	/**
 	 * The parameters a template's text uses, in the order they first appear.
 	 *
 	 * @param string $text The template's text, as an article gets it

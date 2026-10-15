@@ -29,7 +29,9 @@
 
 <!-- IF S_START_PICKER -->
 <form method="get" action="{U_START_ACTION}" class="wiki-start-from">
+	<!-- IF START_ERROR --><p class="error">{START_ERROR}</p><!-- ENDIF -->
 	<p>
+		<!-- IF .start_options -->
 		<label for="start_from">{L_WIKI_START_FROM}{L_COLON}</label>
 		<select name="start_from" id="start_from">
 			<option value="">{L_WIKI_START_BLANK}</option>
@@ -37,10 +39,31 @@
 			<option value="{start_options.NAME}"<!-- IF start_options.S_SELECTED --> selected="selected"<!-- ENDIF -->>{start_options.LABEL}</option>
 			<!-- END start_options -->
 		</select>
+		<!-- ENDIF -->
+		<label for="copy_from"><!-- IF .start_options -->{L_WIKI_START_COPY_OR}<!-- ELSE -->{L_WIKI_START_COPY}<!-- ENDIF -->{L_COLON}</label>
+		<input type="text" name="copy_from" id="copy_from" value="{START_COPY_FROM}" size="25" maxlength="255" class="inputbox autowidth" placeholder="{L_WIKI_START_COPY_PLACEHOLDER}">
 		<input type="hidden" name="action" value="edit">
 		<input type="submit" value="{L_WIKI_START_USE}" class="button2">
 	</p>
 </form>
+<!-- IF S_START_VALUES -->
+<form method="get" action="{U_START_ACTION}" class="wiki-start-from wiki-start-values">
+	<p>{L_WIKI_START_VALUES_EXPLAIN}</p>
+	<fieldset class="fields1">
+		<!-- BEGIN start_values -->
+		<dl>
+			<dt><label for="start_value_{start_values.S_ROW_COUNT}">{start_values.LABEL}{L_COLON}</label></dt>
+			<dd><input type="text" name="start_values[{start_values.NAME}]" id="start_value_{start_values.S_ROW_COUNT}" value="{start_values.DEFAULT}" size="45" class="inputbox autowidth"></dd>
+		</dl>
+		<!-- END start_values -->
+	</fieldset>
+	<p>
+		<!-- BEGIN start_options --><!-- IF start_options.S_SELECTED --><input type="hidden" name="start_from" value="{start_options.NAME}"><!-- ENDIF --><!-- END start_options -->
+		<input type="hidden" name="action" value="edit">
+		<input type="submit" value="{L_WIKI_START_FILL}" class="button1">
+	</p>
+</form>
+<!-- ENDIF -->
 <!-- ENDIF -->
 
 <form id="postform" method="post" action="{U_ACTION}">
