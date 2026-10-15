@@ -122,6 +122,11 @@ class move
 			trigger_error('NO_ARTICLE');
 		}
 
+		if ($this->request->is_set_post('cancel'))
+		{
+			redirect($this->helper->route('phpbbmodders_wiki_article', array('article' => $article)));
+		}
+
 		add_form_key('wiki_move');
 		// The request escapes HTML. Names are stored as written, titles escaped, as an edit stores them.
 		$new_name = $this->request->is_set_post('new_name') ? trim(htmlspecialchars_decode($this->request->variable('new_name', '', true), ENT_COMPAT)) : $article;
@@ -179,7 +184,6 @@ class move
 			'S_LEAVE_REDIRECT'	=> $leave_redirect,
 			'TEMPLATE_USED_BY'	=> $used_by ? $this->user->lang('WIKI_MOVE_TEMPLATE_WARNING', $used_by) : '',
 			'U_ACTION'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'move')),
-			'U_CANCEL'			=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)),
 		));
 
 		return $this->helper->render('article_move.html', $this->user->lang('WIKI_MOVE_ARTICLE'));
