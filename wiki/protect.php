@@ -88,6 +88,11 @@ class protect
 		$choosable = $this->protection->choosable_groups();
 		$error = '';
 
+		if ($this->request->is_set_post('cancel'))
+		{
+			redirect($u_article);
+		}
+
 		add_form_key(self::FORM_KEY);
 		if ($this->request->is_set_post('submit'))
 		{
@@ -123,7 +128,6 @@ class protect
 			'ERROR'			=> $error,
 			'ARTICLE_NAME'	=> htmlspecialchars($article, ENT_COMPAT, 'UTF-8'),
 			'U_ACTION'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'protect')),
-			'U_CANCEL'		=> $u_article,
 		));
 
 		return $this->helper->render('article_protect.html', $this->user->lang('WIKI_PROTECT_ARTICLE'));
