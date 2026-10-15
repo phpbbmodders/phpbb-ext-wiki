@@ -34,6 +34,9 @@ class wikilink_listener implements EventSubscriberInterface
 	/** HTML elements a wiki article may use to write a table. */
 	const TABLE_ELEMENTS = array('table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td');
 
+	/** Classes a wiki table may have, each styled by the extension: "infobox" floats it to the right. */
+	const TABLE_CLASSES = array('infobox');
+
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
@@ -212,6 +215,9 @@ class wikilink_listener implements EventSubscriberInterface
 			$html->allowAttribute($cell, 'colspan');
 			$html->allowAttribute($cell, 'rowspan');
 		}
+		// <table class="infobox">, as on Wikipedia. Only the listed classes are kept, so a table
+		// cannot borrow the board's own classes (to hide itself, for example)
+		$html->allowAttribute('table', 'class')->filterChain->append(new \s9e\TextFormatter\Configurator\Items\AttributeFilters\ChoiceFilter(self::TABLE_CLASSES));
 
 		// <center>...</center> centres its content, as on MediaWiki. It becomes a <div> with a
 		// class, since s9e lets no style attribute through and <center> is obsolete HTML.
