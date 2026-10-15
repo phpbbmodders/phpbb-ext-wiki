@@ -95,7 +95,7 @@ class templates
 	 * @param string								$article_table	Wiki article table
 	 * @param \phpbb\user|null					$user			The reader, for #timel
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table, ?\phpbb\user $user = null)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table, \phpbb\user|null $user = null)
 	{
 		$this->user = $user;
 		$this->config = $config;

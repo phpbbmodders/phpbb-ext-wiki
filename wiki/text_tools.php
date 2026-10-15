@@ -299,7 +299,7 @@ class text_tools
 	 * @param int $now The time now as a Unix timestamp
 	 * @return string|null Null when the date cannot be read
 	 */
-	public static function time($format, $date, $now, ?\DateTimeZone $zone = null)
+	public static function time($format, $date, $now, \DateTimeZone|null $zone = null)
 	{
 		if ($date !== '' && date_parse($date)['error_count'] > 0)
 		{
@@ -344,7 +344,7 @@ class text_tools
 	 * @param int $now The time now as a Unix timestamp
 	 * @return string|null Null when it is not a date word
 	 */
-	public static function date_word($word, $now, ?\DateTimeZone $zone = null)
+	public static function date_word($word, $now, \DateTimeZone|null $zone = null)
 	{
 		static $formats = array(
 			'CURRENTYEAR'		=> 'Y',
