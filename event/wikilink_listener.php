@@ -28,8 +28,6 @@ class wikilink_listener implements EventSubscriberInterface
 
 	const NAME_PATTERN = self::NAME_CLASS . '{1,255}';
 
-	/** How many {{templates}} deep a template call may hold others in its parameters. */
-	const TEMPLATE_NESTING = 3;
 
 	/** HTML elements a wiki article may use to write a table. */
 	const TABLE_ELEMENTS = array('table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td');
@@ -96,14 +94,15 @@ class wikilink_listener implements EventSubscriberInterface
 	 * The pattern for {{Name|parameters}}. s9e cannot read a recursive pattern, so
 	 * templates inside the braces are matched down to a fixed depth.
 	 *
+	 * @param int $nesting How many levels of calls a call may hold
 	 * @return string
 	 */
-	protected static function template_pattern()
+	protected static function template_pattern($nesting)
 	{
 		// Anything but a brace, a {{{parameter}}}, or a brace on its own
 		$plain = '[^{}]++|\\{\\{\\{[^{}]*+\\}\\}\\}|\\{(?![{])|\\}(?![}])';
 		$inner = '(?:' . $plain . ')*?';
-		for ($level = 0; $level < self::TEMPLATE_NESTING; $level++)
+		for ($level = 0; $level < \phpbbmodders\wiki\wiki\templates::nesting_in_range($nesting); $level++)
 		{
 			$inner = '(?:' . $plain . '|\\{\\{(?![{])' . $inner . '\\}\\})*?';
 		}
@@ -193,7 +192,8 @@ class wikilink_listener implements EventSubscriberInterface
 		// be, so a template can give a table row
 		$template->template = '<template class="wikitemplate" data-wiki-template="{@name}" data-wiki-call="{@call}"></template>';
 
-		$configurator->Preg->match(self::template_pattern(), 'WIKITEMPLATE');
+		// The board's nesting setting; changing it rebuilds this configuration
+		$configurator->Preg->match(self::template_pattern($this->templates->nesting()), 'WIKITEMPLATE');
 
 		$tag = $configurator->tags->add('WIKILINK');
 		foreach (array('name' => 'decode_entities_in_name', 'section' => 'decode_entities', 'text' => 'decode_entities') as $attribute => $decode)

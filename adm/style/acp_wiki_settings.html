@@ -28,6 +28,10 @@
 			<dd><input id="wiki_edit_lock_minutes" type="number" min="{WIKI_EDIT_LOCK_MINUTES_MIN}" max="{WIKI_EDIT_LOCK_MINUTES_MAX}" name="wiki_edit_lock_minutes" value="{WIKI_EDIT_LOCK_MINUTES}"></dd>
 		</dl>
 		<dl>
+			<dt><label for="wiki_template_nesting">{L_WIKI_TEMPLATE_NESTING}{L_COLON}</label><br><span>{L_WIKI_TEMPLATE_NESTING_EXPLAIN}</span><!-- IF S_WIKI_REPARSE_PENDING --><br><span><strong>{L_WIKI_REPARSE_PENDING}</strong></span><!-- ENDIF --></dt>
+			<dd><input id="wiki_template_nesting" type="number" min="{WIKI_TEMPLATE_NESTING_MIN}" max="{WIKI_TEMPLATE_NESTING_MAX}" name="wiki_template_nesting" value="{WIKI_TEMPLATE_NESTING}"></dd>
+		</dl>
+		<dl>
 			<dt><label for="wiki_feed_format">{L_WIKI_FEED_FORMAT}{L_COLON}</label><br><span>{L_WIKI_FEED_FORMAT_EXPLAIN}</span></dt>
 			<dd><select id="wiki_feed_format" name="wiki_feed_format">{S_WIKI_FEED_OPTIONS}</select></dd>
 		</dl>

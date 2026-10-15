@@ -89,6 +89,30 @@ class templates_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('{{Other|x}}', templates::substitute('{{{a|{{Other|x}}}}}', array(), array()));
 	}
 
+	public function test_a_default_can_hold_calls_eight_levels_deep()
+	{
+		$deep = '{{A|{{B|{{C|{{D|{{E|{{F|{{G|{{H|x}}}}}}}}}}}}}}}}';
+		$this->assertSame($deep, templates::substitute('{{{a|' . $deep . '}}}', array(), array()));
+		$this->assertSame('{{#if:  | {{X|{{Y|1}}}} }}', templates::substitute('{{{a|{{#if: {{{b|}}} | {{X|{{Y|1}}}} }}}}}', array(), array()), 'a parameter inside the default is filled in first');
+		$this->assertSame('given', templates::substitute('{{{a|' . $deep . '}}}', array(), array('a' => 'given')));
+
+		$too_deep = '{{{a|{{A|' . $deep . '}}}}}';
+		$this->assertSame($too_deep, templates::substitute($too_deep, array(), array()), 'nine levels stay as written');
+
+		// The board's setting moves the limit either way
+		$this->assertSame('{{A|' . $deep . '}}', templates::substitute($too_deep, array(), array(), 9));
+		$this->assertSame('{{{a|' . $deep . '}}}', templates::substitute('{{{a|' . $deep . '}}}', array(), array(), 3));
+	}
+
+	public function test_the_nesting_setting_is_kept_in_range()
+	{
+		$this->assertSame(8, templates::nesting_in_range(null), 'no setting yet: the default');
+		$this->assertSame(8, templates::nesting_in_range('0'));
+		$this->assertSame(3, templates::nesting_in_range(2));
+		$this->assertSame(12, templates::nesting_in_range('12'));
+		$this->assertSame(20, templates::nesting_in_range(99));
+	}
+
 	public function test_parameter_values_are_not_read_as_parameters_again()
 	{
 		$this->assertSame('{{{two}}}', templates::substitute('{{{one}}}', array(), array('one' => '{{{two}}}')));

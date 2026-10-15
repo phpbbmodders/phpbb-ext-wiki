@@ -750,7 +750,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 						$named[$name] = $value;
 					}
 				}
-				$text = $parameters ? \phpbbmodders\wiki\wiki\templates::substitute($source, $positional, $named) : $source;
+				$text = $parameters ? \phpbbmodders\wiki\wiki\templates::substitute($source, $positional, $named, $this->templates->nesting()) : $source;
 			}
 		}
 

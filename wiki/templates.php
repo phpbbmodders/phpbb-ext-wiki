@@ -25,6 +25,18 @@ class templates
 	/** Templates inside templates stop here. */
 	const MAX_DEPTH = 10;
 
+	/**
+	 * How many levels of {{calls}} a call written in the text, or a parameter's default
+	 * value, may hold inside it, unless the board's setting wiki_template_nesting says
+	 * otherwise. Deeper calls stay text. The patterns that find calls cannot count braces
+	 * to any depth, so they are built to this depth.
+	 */
+	const CALL_NESTING = 8;
+
+	/** The lowest and highest nesting the setting allows. */
+	const CALL_NESTING_MIN = 3;
+	const CALL_NESTING_MAX = 20;
+
 	/** Most templates expanded for one article, so a template calling itself twice cannot run away. */
 	const MAX_EXPANSIONS = 500;
 
@@ -352,7 +364,7 @@ class templates
 		// The parameters are worked out first, then put in, then the template's own calls
 		$positional = array_map(array($this, 'expand_text'), $positional);
 		$named = array_map(array($this, 'expand_text'), $named);
-		$text = self::substitute(self::transclusion_text($source), $positional, $named);
+		$text = self::substitute(self::transclusion_text($source), $positional, $named, $this->nesting());
 
 		$this->stack[] = $article;
 		$this->level++;
@@ -984,10 +996,16 @@ class templates
 	 * @param array $named Parameters by name
 	 * @return string
 	 */
-	public static function substitute($text, array $positional, array $named)
+	public static function substitute($text, array $positional, array $named, $nesting = self::CALL_NESTING)
 	{
-		// The innermost {{{ }}} first, so a default can hold another parameter
-		$pattern = '/\{\{\{\s*([^{}|]*?)\s*(?:\|((?:[^{}]|\{\{(?!\{)[^{}]*\}\})*))?\}\}\}/';
+		// The innermost {{{ }}} first, so a default can hold another parameter. A default may
+		// hold {{calls}}, nested $nesting deep.
+		$call = '\{\{(?!\{)[^{}]*+\}\}';
+		for ($level = 1; $level < self::nesting_in_range($nesting); $level++)
+		{
+			$call = '\{\{(?!\{)(?:[^{}]++|' . $call . ')*+\}\}';
+		}
+		$pattern = '/\{\{\{\s*([^{}|]*?)\s*(?:\|((?:[^{}]++|' . $call . ')*+))?\}\}\}/';
 		$replace = function ($match) use ($positional, $named) {
 			$key = $match[1];
 			if (ctype_digit($key) && isset($positional[(int) $key]))
@@ -1027,6 +1045,30 @@ class templates
 		$text = preg_replace('#<noinclude>.*?</noinclude>#is', '', $text);
 
 		return preg_replace('#</?includeonly>#i', '', $text);
+	}
+
+	/**
+	 * @return int How many levels of calls a call may hold, from the board's setting
+	 */
+	public function nesting()
+	{
+		return self::nesting_in_range(isset($this->config['wiki_template_nesting']) ? $this->config['wiki_template_nesting'] : self::CALL_NESTING);
+	}
+
+	/**
+	 * @param mixed $value A nesting depth as set
+	 * @return int The depth to use: the default when it is not a positive number, otherwise
+	 *             kept between CALL_NESTING_MIN and CALL_NESTING_MAX
+	 */
+	public static function nesting_in_range($value)
+	{
+		$value = (int) $value;
+		if ($value < 1)
+		{
+			return self::CALL_NESTING;
+		}
+
+		return max(self::CALL_NESTING_MIN, min(self::CALL_NESTING_MAX, $value));
 	}
 
 	/**
