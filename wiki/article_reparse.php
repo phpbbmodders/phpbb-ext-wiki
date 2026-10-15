@@ -15,7 +15,8 @@ namespace phpbbmodders\wiki\wiki;
  * wiki reads its markup has changed (an update, or a new template nesting depth). It runs from
  * a cron task on ordinary page views, where the wiki's own markup is loaded; a migration
  * cannot do it, as the wiki's listeners are not loaded while the extension is being enabled,
- * and a reparse then would turn every heading and template back into plain text.
+ * and a reparse then would turn every heading and template back into plain text. When it is
+ * done, the category memberships are worked out again, as calls read differently can change them.
  *
  * The config value wiki_reparse_next holds the highest row id still to reparse, 0 when none.
  */
@@ -78,6 +79,13 @@ class article_reparse
 		$this->reparser->reparse_range($start, $end);
 
 		// Only move on if nothing queued the whole list again meanwhile
-		$this->config->set_atomic(self::CONFIG, $end, $start - 1);
+		if ($this->config->set_atomic(self::CONFIG, $end, $start - 1) && $start === 1)
+		{
+			// Done. A call that is read now, or no longer, can add or drop a category, so the
+			// category memberships are worked out again by their own cron task (see
+			// category_members::build_batch()); until then the category lists read the articles.
+			$this->config->set('wiki_category_members_cursor', '');
+			$this->config->set('wiki_category_members_built', 0);
+		}
 	}
 }
