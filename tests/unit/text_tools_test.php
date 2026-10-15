@@ -66,4 +66,51 @@ class text_tools_test extends \PHPUnit\Framework\TestCase
 		$this->assertSame('3', text_tools::rpos('é b c', ''));
 		$this->assertSame('x', text_tools::sub('éxé', 1, 1));
 	}
+
+	public function test_titleparts_takes_parts_of_a_name()
+	{
+		$this->assertSame('A/B/C', text_tools::titleparts('A/B/C'));
+		$this->assertSame('A/B', text_tools::titleparts('A/B/C', 2));
+		$this->assertSame('B', text_tools::titleparts('A/B/C', 1, 2));
+		$this->assertSame('C', text_tools::titleparts('A/B/C', 0, -1));
+		$this->assertSame('A', text_tools::titleparts('A/B/C', -2));
+		$this->assertSame('', text_tools::titleparts('A/B/C', 1, 5));
+	}
+
+	public function test_rel2abs_works_out_a_path()
+	{
+		$this->assertSame('A/B/C', text_tools::rel2abs('./C', 'A/B'));
+		$this->assertSame('A/C', text_tools::rel2abs('../C', 'A/B'));
+		$this->assertSame('A/B/C', text_tools::rel2abs('/C', 'A/B'));
+		$this->assertSame('X/Y', text_tools::rel2abs('X/Y', 'A/B'));
+		$this->assertSame('A', text_tools::rel2abs('..', 'A/B'));
+		$this->assertSame('', text_tools::rel2abs('../../..', 'A/B'));
+	}
+
+	public function test_formatnum_adds_and_removes_separators()
+	{
+		$this->assertSame('1,234,567', text_tools::formatnum('1234567'));
+		$this->assertSame('-1,234.5', text_tools::formatnum('-1234.5'));
+		$this->assertSame('999', text_tools::formatnum('999'));
+		$this->assertSame('1234567', text_tools::formatnum('1,234,567', 'R'));
+		$this->assertSame('abc', text_tools::formatnum('abc'));
+	}
+
+	public function test_plural_picks_the_english_form()
+	{
+		$this->assertSame('item', text_tools::plural('1', array('item', 'items')));
+		$this->assertSame('item', text_tools::plural('-1', array('item', 'items')));
+		$this->assertSame('items', text_tools::plural('2', array('item', 'items')));
+		$this->assertSame('items', text_tools::plural('0', array('item', 'items')));
+		$this->assertSame('item', text_tools::plural('5', array('item')));
+		$this->assertSame('items', text_tools::plural('1,000', array('item', 'items')));
+	}
+
+	public function test_date_words_can_take_a_time_zone()
+	{
+		$now = gmmktime(23, 30, 0, 3, 7, 2026);
+
+		$this->assertSame('7', text_tools::date_word('CURRENTDAY', $now));
+		$this->assertSame('8', text_tools::date_word('CURRENTDAY', $now, new \DateTimeZone('Europe/Berlin')));
+	}
 }

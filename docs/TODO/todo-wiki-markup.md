@@ -152,17 +152,17 @@ like *Version*, *Author* and *Requires* that each article fills in.
 
 Built so far: the syntax and parameters described above, the `Template:` pages, expansion on
 display, the loop and depth limits, **What links here** for templates, and the parser functions
-`#if`, `#ifeq`, `#switch`, `#ifexist`, `#expr`, `#ifexpr`, `#iferror`, `#time`, the string functions
-`#len`, `#pos`, `#rpos`, `#sub`, `#replace` and `#explode`, `lc`, `uc`, `lcfirst`, `ucfirst`,
-`padleft`, `padright`, `urlencode`, `anchorencode`, the magic words `PAGENAME`, `FULLPAGENAME`,
-`NAMESPACE` and `SITENAME`, and the `CURRENT...` date words (see `wiki/templates.php`,
+`#if`, `#ifeq`, `#switch`, `#ifexist`, `#expr`, `#ifexpr`, `#iferror`, `#time`, `#timel`, the
+string functions `#len`, `#pos`, `#rpos`, `#sub`, `#replace` and `#explode`, `#titleparts`,
+`#rel2abs`, `#tag`, `lc`, `uc`, `lcfirst`, `ucfirst`, `padleft`, `padright`, `urlencode`,
+`anchorencode`, `formatnum`, `plural`, `gender`, the magic words `PAGENAME`, `FULLPAGENAME`,
+`NAMESPACE` and `SITENAME`, and the `CURRENT...`, `LOCAL...` and `REVISION...` words (see `wiki/templates.php`,
 `wiki/expression.php` and `wiki/text_tools.php`). Calls are worked out as text, before the article
 is parsed, so a parameter can be another call and only the chosen branch of a function is worked
 out. Still to do:
 
-- Parser functions Wikipedia's templates use that are not here yet: `#titleparts`, `#rel2abs`,
-  `#tag`, `formatnum`, `plural`, `gender`, `#invoke` (Lua, not planned), the
-  `LOCAL...` and `REVISION...` magic words, and `#time` in the viewer's time zone and language.
+- Not planned: `#invoke` (Lua modules). `plural` uses the English rule and `gender` always gives the
+  neutral form, since phpBB keeps no gender.
 - Deeper nesting: a template call holds other calls in its parameters only three levels deep, and a
   default value holds only one level of `{{template}}`; anything deeper stays text. Lift both limits,
   keeping a cap so one article still cannot slow the board down.

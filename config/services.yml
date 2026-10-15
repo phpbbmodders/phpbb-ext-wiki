@@ -317,6 +317,7 @@ services:
             - '@dbal.conn'
             - '@language'
             - '%tables.wiki.article%'
+            - '@user'
     phpbbmodders.wiki.wikilink_listener:
         class: phpbbmodders\wiki\event\wikilink_listener
         arguments:

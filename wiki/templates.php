@@ -82,14 +82,22 @@ class templates
 	/** @var array Raw template text by article name, for this request */
 	protected $sources = array();
 
+	/** @var \phpbb\user|null The reader, for #timel; none in the tests that leave it out */
+	protected $user;
+
+	/** @var array The live version of each article read for the REVISION words, this request */
+	protected $revisions = array();
+
 	/**
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\language\language			$language		Language object
 	 * @param string								$article_table	Wiki article table
+	 * @param \phpbb\user|null					$user			The reader, for #timel
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table, ?\phpbb\user $user = null)
 	{
+		$this->user = $user;
 		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
@@ -289,13 +297,17 @@ class templates
 	protected function evaluate_call($inner)
 	{
 		$trimmed = ltrim($inner);
-		if (preg_match('/^#([a-z]+)\s*:(.*)$/is', $trimmed, $match))
+		if (preg_match('/^#([a-z][a-z0-9]*)\s*:(.*)$/is', $trimmed, $match))
 		{
 			return $this->parser_function(strtolower($match[1]), self::split_pieces($match[2]));
 		}
 		if (preg_match('/^(lc|uc|lcfirst|ucfirst|urlencode|anchorencode)\s*:(.*)$/is', $trimmed, $match))
 		{
 			return $this->text_function(strtolower($match[1]), trim($this->expand_text($match[2])));
+		}
+		if (preg_match('/^(formatnum|plural|gender)\s*:(.*)$/is', $trimmed, $match))
+		{
+			return $this->colon_function(strtolower($match[1]), self::split_pieces($match[2]));
 		}
 		if (preg_match('/^(padleft|padright)\s*:(.*)$/is', $trimmed, $match))
 		{
@@ -436,6 +448,18 @@ class templates
 
 			case 'explode':
 				return text_tools::explode($arg(0), $arg(1), (int) $arg(2), ($arg(3) === '') ? null : (int) $arg(3));
+
+			case 'titleparts':
+				return text_tools::titleparts($arg(0), (int) $arg(1), ($arg(2) === '') ? 1 : (int) $arg(2));
+
+			case 'rel2abs':
+				return text_tools::rel2abs($arg(0), (isset($args[1]) && $arg(1) !== '') ? $arg(1) : (string) $this->current_article());
+
+			case 'tag':
+				return $this->tag_function($arg(0), isset($args[1]) ? $arg(1) : null, array_slice($args, 2));
+
+			case 'timel':
+				return $this->local_time($arg(0), $arg(1));
 		}
 
 		return $this->error($this->language->lang('WIKI_TEMPLATE_UNKNOWN_FUNCTION', '#' . $function));
@@ -532,6 +556,148 @@ class templates
 	}
 
 	/**
+	 * {{formatnum:...}}, {{plural:...}} and {{gender:...}}.
+	 *
+	 * @param string $function
+	 * @param array $pieces The parts after the colon, as written
+	 * @return string
+	 */
+	protected function colon_function($function, array $pieces)
+	{
+		$pieces = array_map(function ($piece) {
+			return trim($this->expand_text($piece));
+		}, $pieces);
+
+		switch ($function)
+		{
+			case 'formatnum':
+				return text_tools::formatnum($pieces[0], isset($pieces[1]) ? $pieces[1] : '');
+
+			case 'plural':
+				return text_tools::plural($pieces[0], array_slice($pieces, 1));
+
+			default:
+				// gender: phpBB keeps no gender, so the neutral form (the third), or else the first,
+				// as MediaWiki gives for a member who has not said
+				return isset($pieces[3]) ? $pieces[3] : (isset($pieces[1]) ? $pieces[1] : '');
+		}
+	}
+
+	/**
+	 * {{#tag: name | content | attribute=value ...}}: an HTML tag written out. It is parsed with
+	 * the article afterwards, so only what the wiki allows written by hand works (tables,
+	 * <center>, <details>); anything else stays text.
+	 *
+	 * @param string $name
+	 * @param string|null $content Null for an empty tag
+	 * @param array $attributes Pieces of the form key=value, as written
+	 * @return string
+	 */
+	protected function tag_function($name, $content, array $attributes)
+	{
+		$name = strtolower(trim($name));
+		if (!preg_match('/^[a-z][a-z0-9]*$/', $name))
+		{
+			return $this->error($this->language->lang('WIKI_TEMPLATE_UNKNOWN_FUNCTION', '#tag:' . $name));
+		}
+
+		$html = '<' . $name;
+		foreach ($attributes as $attribute)
+		{
+			$pair = self::split_equals($this->expand_text($attribute));
+			if ($pair !== null && preg_match('/^[a-z][a-z0-9-]*$/i', trim($pair[0])))
+			{
+				$value = trim(trim($pair[1]), '"\'');
+				$html .= ' ' . strtolower(trim($pair[0])) . '="' . str_replace('"', '&quot;', $value) . '"';
+			}
+		}
+
+		return $html . '>' . (($content === null) ? '' : $content) . '</' . $name . '>';
+	}
+
+	/**
+	 * {{#timel:...}}: like #time, in the reader's time zone, with month and day names in the
+	 * reader's language. Without a reader (as in some tests) it is #time.
+	 *
+	 * @param string $format
+	 * @param string $date
+	 * @return string
+	 */
+	protected function local_time($format, $date)
+	{
+		$zone = ($this->user !== null && isset($this->user->timezone) && $this->user->timezone instanceof \DateTimeZone) ? $this->user->timezone : new \DateTimeZone('UTC');
+		$time = text_tools::time($format, $date, $this->now(), $zone);
+		if ($time === null)
+		{
+			return $this->error($this->language->lang('WIKI_TIME_INVALID'));
+		}
+		$names = $this->language->lang_raw('datetime');
+
+		return is_array($names) ? strtr($time, $names) : $time;
+	}
+
+	/**
+	 * The REVISION words: the live version of the article being shown.
+	 *
+	 * @param string $word
+	 * @return string|null Null when it is not one of them
+	 */
+	protected function revision_word($word)
+	{
+		static $formats = array(
+			'REVISIONDAY'		=> 'j',
+			'REVISIONDAY2'		=> 'd',
+			'REVISIONMONTH'		=> 'm',
+			'REVISIONMONTH1'	=> 'n',
+			'REVISIONYEAR'		=> 'Y',
+			'REVISIONTIMESTAMP'	=> 'YmdHis',
+		);
+		if (!isset($formats[$word]) && $word !== 'REVISIONID' && $word !== 'REVISIONUSER')
+		{
+			return null;
+		}
+
+		$row = $this->live_revision((string) $this->current_article());
+		if (!$row)
+		{
+			return '';
+		}
+
+		switch ($word)
+		{
+			case 'REVISIONID':
+				return (string) $row['article_id'];
+			case 'REVISIONUSER':
+				return (string) $row['username'];
+		}
+
+		return (new \DateTimeImmutable('@' . (int) $row['article_last_edit']))->setTimezone(new \DateTimeZone('UTC'))->format($formats[$word]);
+	}
+
+	/**
+	 * The live version of an article, read once per request.
+	 *
+	 * @param string $article
+	 * @return array The row (article_id, article_last_edit, username), empty when there is none
+	 */
+	protected function live_revision($article)
+	{
+		if (!isset($this->revisions[$article]))
+		{
+			$sql = 'SELECT a.article_id, a.article_last_edit, u.username
+				FROM ' . $this->article_table . ' a
+				LEFT JOIN ' . USERS_TABLE . ' u ON u.user_id = a.article_user_id
+				WHERE ' . $this->live_where('a', '') . "
+					AND a.article_url = '" . $this->db->sql_escape($article) . "'";
+			$result = $this->db->sql_query_limit($sql, 1);
+			$this->revisions[$article] = $this->db->sql_fetchrow($result) ?: array();
+			$this->db->sql_freeresult($result);
+		}
+
+		return $this->revisions[$article];
+	}
+
+	/**
 	 * {{PAGENAME}}, {{FULLPAGENAME}}, {{NAMESPACE}}, {{SITENAME}} and the date words such as
 	 * {{CURRENTYEAR}}.
 	 *
@@ -553,6 +719,26 @@ class templates
 				return $in_namespace ? ltrim(substr($full, strlen(self::PREFIX))) : $full;
 			case 'SITENAME':
 				return (string) $this->config['sitename'];
+		}
+
+		$revision = $this->revision_word($word);
+		if ($revision !== null)
+		{
+			return $revision;
+		}
+		// LOCAL... is the CURRENT... word in the board's time zone
+		if (strpos($word, 'LOCAL') === 0)
+		{
+			try
+			{
+				$zone = new \DateTimeZone(!empty($this->config['board_timezone']) ? $this->config['board_timezone'] : 'UTC');
+			}
+			catch (\Exception $e)
+			{
+				$zone = new \DateTimeZone('UTC');
+			}
+
+			return text_tools::date_word('CURRENT' . substr($word, 5), $this->now(), $zone);
 		}
 
 		return text_tools::date_word($word, $this->now());

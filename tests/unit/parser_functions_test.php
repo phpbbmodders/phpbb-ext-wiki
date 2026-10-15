@@ -19,6 +19,12 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 	/** @var \phpbbmodders\wiki\wiki\templates */
 	protected $templates;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	protected function setUp(): void
 	{
 		$language = $this->createMock(\phpbb\language\language::class);
@@ -26,7 +32,9 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 			return $key . ($args ? '(' . implode(',', $args) . ')' : '');
 		});
 
-		$config = new \phpbb\config\config(array('sitename' => 'Test Board'));
+		$config = new \phpbb\config\config(array('sitename' => 'Test Board', 'board_timezone' => 'Pacific/Auckland'));
+		$this->language = $language;
+		$this->config = $config;
 
 		$this->templates = new class($config, $this->createMock(\phpbb\db\driver\driver_interface::class), $language, 'phpbb_wiki_article') extends \phpbbmodders\wiki\wiki\templates {
 			/** @var array Template page text by article name */
@@ -65,6 +73,14 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 			protected function current_article()
 			{
 				return $this->article;
+			}
+
+			/** @var array The live version the REVISION words read */
+			public $revision = array('article_id' => 42, 'article_last_edit' => 1772892309, 'username' => 'Editor');
+
+			protected function live_revision($article)
+			{
+				return $this->revision;
 			}
 
 			/** Saturday 7 March 2026, 14:05:09 UTC */
@@ -383,5 +399,63 @@ class parser_functions_test extends \PHPUnit\Framework\TestCase
 		$out = $this->run_text(str_repeat('{{#if: x | a }}', 3000));
 
 		$this->assertStringContainsString('WIKI_TEMPLATE_TOO_DEEP', $out);
+	}
+
+	public function test_titleparts_and_rel2abs()
+	{
+		$this->templates->article = 'Guide/Install/Linux';
+
+		$this->assertSame('Guide/Install', $this->run_text('{{#titleparts: Guide/Install/Linux | 2 }}'));
+		$this->assertSame('Install', $this->run_text('{{#titleparts: Guide/Install/Linux | 1 | 2 }}'));
+		$this->assertSame('Guide/Install/Windows', $this->run_text('{{#rel2abs: ../Windows }}'));
+		$this->assertSame('Other/Page', $this->run_text('{{#rel2abs: ../Page | Other/X }}'));
+	}
+
+	public function test_formatnum_plural_and_gender()
+	{
+		$this->assertSame('1,234', $this->run_text('{{formatnum: 1234 }}'));
+		$this->assertSame('1234', $this->run_text('{{formatnum: 1,234 | R }}'));
+		$this->assertSame('3 pages', $this->run_text('3 {{plural: 3 | page | pages }}'));
+		$this->assertSame('1 page', $this->run_text('1 {{plural: {{#expr: 2 - 1}} | page | pages }}'));
+		$this->assertSame('they', $this->run_text('{{gender: Someone | he | she | they }}'));
+		$this->assertSame('he', $this->run_text('{{gender: Someone | he }}'));
+	}
+
+	public function test_tag_writes_an_html_tag()
+	{
+		$this->assertSame('<center>Hi</center>', $this->run_text('{{#tag: center | Hi }}'));
+		$this->assertSame('<td colspan="2">x</td>', $this->run_text('{{#tag: td | x | colspan = 2 }}'));
+		$this->assertSame('<span title="a &quot;b">x</span>', $this->run_text('{{#tag: span | x | title=a "b}}'));
+		$this->assertSame('<br></br>', $this->run_text('{{#tag: br }}'));
+		$this->assertStringContainsString('WIKI_TEMPLATE_UNKNOWN_FUNCTION', $this->run_text('{{#tag: bad name | x }}'));
+	}
+
+	public function test_local_and_revision_words()
+	{
+		// 14:05 UTC on 7 March is 03:05 on 8 March in Auckland (daylight time)
+		$this->assertSame('8', $this->run_text('{{LOCALDAY}}'));
+		$this->assertSame('7', $this->run_text('{{CURRENTDAY}}'));
+		$this->assertSame('03', $this->run_text('{{LOCALHOUR}}'));
+
+		$this->assertSame('42', $this->run_text('{{REVISIONID}}'));
+		$this->assertSame('Editor', $this->run_text('{{REVISIONUSER}}'));
+		$this->assertSame('2026', $this->run_text('{{REVISIONYEAR}}'));
+		$this->assertSame('20260307140509', $this->run_text('{{REVISIONTIMESTAMP}}'));
+
+		$this->templates->revision = array();
+		$this->assertSame('', $this->run_text('{{REVISIONID}}'), 'an article not saved yet');
+	}
+
+	public function test_timel_uses_the_readers_zone_and_language()
+	{
+		$this->language->method('lang_raw')->willReturn(array('Saturday' => 'Samstag', 'Sunday' => 'Sonntag', 'March' => 'März'));
+		$user = $this->createMock(\phpbb\user::class);
+		$user->timezone = new \DateTimeZone('Asia/Tokyo');
+		$class = get_class($this->templates);
+		$templates = new $class($this->config, $this->createMock(\phpbb\db\driver\driver_interface::class), $this->language, 'phpbb_wiki_article', $user);
+
+		// 14:05 UTC is 23:05 in Tokyo, the same Saturday
+		$this->assertSame('Samstag 23:05, 7 März', $templates->expand_text('{{#timel: l H:i, j F | now}}'));
+		$this->assertSame('Saturday 14:05', $templates->expand_text('{{#time: l H:i | now}}'), '#time stays in UTC and English');
 	}
 }
