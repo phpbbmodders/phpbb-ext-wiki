@@ -296,3 +296,21 @@ form.wiki-start-from p {
 .wiki-compare-explain {
 	font-size: 0.9em;
 }
+
+/* On the edit form: who else has it open, and how long this editor holds the lock */
+.wiki-edit-notice,
+.wiki-edit-lock {
+	border: 1px solid #ccc;
+	background-color: rgba(255, 200, 0, 0.12);
+	padding: 0.4em 0.8em;
+	margin: 0.5em 0;
+}
+
+.wiki-edit-notice p,
+.wiki-edit-notice ul {
+	margin: 0;
+}
+
+.wiki-edit-notice ul {
+	padding-left: 1.5em;
+}

@@ -61,6 +61,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	/** @var array option */
 	protected $option;
 
+	/** @var \phpbbmodders\wiki\wiki\edit_lock */
+	protected $edit_lock;
+
 
 	/**
 	* Constructor
@@ -79,9 +82,11 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 	* @param \phpbbmodders\wiki\wiki\watch				$watch					Watched articles object
 	* @param \phpbbmodders\wiki\wiki\templates			$templates				Wiki templates object
 	* @param \phpbbmodders\wiki\wiki\search_sync			$search_sync			Keeps the search current
+	* @param \phpbbmodders\wiki\wiki\edit_lock			$edit_lock				Who has an article's edit form open
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\notification\manager $notification_manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $article_table, $phpbb_root_path, $php_ext, \phpbbmodders\wiki\wiki\watch $watch, \phpbbmodders\wiki\wiki\templates $templates, \phpbbmodders\wiki\wiki\search_sync $search_sync, \phpbbmodders\wiki\wiki\edit_lock $edit_lock)
 	{
+		$this->edit_lock = $edit_lock;
 		$this->search_sync = $search_sync;
 		$this->templates = $templates;
 		$this->watch = $watch;
@@ -356,6 +361,14 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		$preview = $this->request->is_set_post('preview');
 		$submit = $this->request->is_set_post('submit');
 		$error = array();
+
+		// When the board locks articles, someone else may hold this one
+		$user_id = (int) $this->user->data['user_id'];
+		$holder = $this->edit_lock->holder($article, $user_id);
+		if ($holder !== null && !$preview && !$submit)
+		{
+			$this->locked_out($article, $holder);
+		}
 		if ($preview || $submit)
 		{
 			$this->data['article_title']		= $this->request->variable('title', '', true);
@@ -402,6 +415,18 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			}
 
 			$this->message_parser->message = $this->data['article_text'];
+
+			// The lock was taken while this editor had the form open: keep their text, do not save
+			if ($holder !== null)
+			{
+				$error[] = $this->user->lang('WIKI_EDIT_LOCKED_SAVE', $this->holder_name($holder), $this->user->format_date($holder['lock_expires']));
+				$this->notify_locked_out($article, $holder);
+			}
+		}
+
+		if ($holder === null)
+		{
+			$this->track_editing($article, $user_id);
 		}
 
 		if (sizeof($error))
@@ -467,6 +492,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 				' . $this->db->sql_build_array('INSERT', $sql_data);
 			$this->db->sql_query($sql);
 			$article_id = $this->db->sql_nextid();
+			$this->edit_lock->release($article, $user_id);
 
 			// Saving an edit also watches the article, when the board does that
 			if (!empty($this->config['wiki_auto_watch']))
@@ -507,6 +533,147 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		}
 		return $this->helper->render('article_edit.html', $this->user->lang('EDIT_WIKI'));
 	}
+	/**
+	 * Record that this user is editing the article (or extend their time), and show the edit
+	 * form what it needs: the others editing it in notice mode, and the ping that keeps the
+	 * record current while the form is open.
+	 *
+	 * @param string $article
+	 * @param int $user_id
+	 * @return void
+	 */
+	protected function track_editing($article, $user_id)
+	{
+		$mode = $this->edit_lock->mode();
+		// Guests share one user id, so they are not recorded
+		if ($mode === edit_lock::MODE_OFF || $user_id === ANONYMOUS)
+		{
+			return;
+		}
+
+		$expires = $this->edit_lock->take($article, $user_id);
+		if ($mode === edit_lock::MODE_NOTICE)
+		{
+			foreach ($this->edit_lock->others($article, $user_id) as $other)
+			{
+				$this->template->assign_block_vars('wiki_other_editors', array(
+					'NAME'	=> $this->holder_name($other),
+					'SINCE'	=> $this->user->format_date($other['lock_time']),
+				));
+			}
+		}
+
+		$this->template->assign_vars(array(
+			'S_WIKI_EDIT_LOCK'			=> $mode === edit_lock::MODE_LOCK,
+			'WIKI_EDIT_LOCK_HELD'		=> $this->user->lang('WIKI_EDIT_LOCK_HELD', '<span id="wiki-edit-lock-until">' . $this->user->format_date($expires) . '</span>'),
+			'U_WIKI_EDIT_LOCK_PING'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'edit_lock', 'hash' => generate_link_hash('wiki_edit_lock'))),
+			'WIKI_EDIT_LOCK_PING_MS'	=> edit_lock::PING_SECONDS * 1000,
+		));
+	}
+
+	/**
+	 * Someone else holds the article: say who and until when instead of showing the form, with
+	 * the button to break the lock for moderators, and tell the moderators once per lock.
+	 *
+	 * @param string $article
+	 * @param array $holder A row from edit_lock::others()
+	 * @return void
+	 */
+	protected function locked_out($article, array $holder)
+	{
+		$this->notify_locked_out($article, $holder);
+
+		$message = $this->user->lang('WIKI_EDIT_LOCKED', $this->holder_name($holder), $this->user->format_date($holder['lock_expires']));
+		if ($this->auth->acl_get('u_wiki_set_active'))
+		{
+			$message .= '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'break_lock')) . '">' . $this->user->lang('WIKI_EDIT_LOCK_BREAK') . '</a>';
+		}
+		$message .= '<br /><br /><a href="' . $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)) . '">' . $this->user->lang('BACK_TO_ARTICLE') . '</a>';
+		trigger_error($message);
+	}
+
+	/**
+	 * Tell the moderators that a lock kept this user out, the first time it does.
+	 *
+	 * @param string $article
+	 * @param array $holder
+	 * @return void
+	 */
+	protected function notify_locked_out($article, array $holder)
+	{
+		if (!$this->edit_lock->mark_blocked_notified($article, (int) $holder['user_id']))
+		{
+			return;
+		}
+		$this->notification_manager->add_notifications('phpbbmodders.wiki.notification.type.edit_lock_blocked', array(
+			'article_url'	=> $article,
+			'article_title'	=> $this->data['article_title'] !== '' ? $this->data['article_title'] : $article,
+			'user_id'		=> (int) $this->user->data['user_id'],
+			'holder_id'		=> (int) $holder['user_id'],
+			'lock_time'		=> (int) $holder['lock_time'],
+		));
+	}
+
+	/**
+	 * The name of an editor from an edit_lock row, coloured and linked as phpBB shows names.
+	 *
+	 * @param array $row
+	 * @return string
+	 */
+	protected function holder_name(array $row)
+	{
+		return get_username_string('full', (int) $row['user_id'], (string) $row['username'], (string) $row['user_colour']);
+	}
+
+	/**
+	 * The ping from an open edit form: extend this user's time. Answers in JSON.
+	 *
+	 * @param string $article
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public function ping_lock($article)
+	{
+		if (!$this->auth->acl_get('u_wiki_edit') || !check_link_hash($this->request->variable('hash', ''), 'wiki_edit_lock') || $this->edit_lock->mode() === edit_lock::MODE_OFF)
+		{
+			return new \Symfony\Component\HttpFoundation\JsonResponse(array('ok' => false), 403);
+		}
+
+		$expires = $this->edit_lock->renew($article, (int) $this->user->data['user_id']);
+		if ($expires === null)
+		{
+			return new \Symfony\Component\HttpFoundation\JsonResponse(array('ok' => false, 'locked' => true));
+		}
+
+		return new \Symfony\Component\HttpFoundation\JsonResponse(array('ok' => true, 'until' => $this->user->format_date($expires)));
+	}
+
+	/**
+	 * A moderator breaks the lock on an article, after confirming.
+	 *
+	 * @param string $article
+	 * @return void
+	 */
+	public function break_lock($article)
+	{
+		if (!$this->auth->acl_get('u_wiki_set_active'))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
+		if (confirm_box(true))
+		{
+			$article = self::confirmed_article($this->request, $article);
+			$this->edit_lock->break_lock($article);
+			$edit_url = $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'edit'));
+			trigger_error($this->user->lang('WIKI_EDIT_LOCK_BROKEN') . '<br /><br /><a href="' . $edit_url . '">' . $this->user->lang('WIKI_EDIT_LOCK_EDIT_NOW') . '</a>');
+		}
+		else
+		{
+			confirm_box(false, $this->user->lang('WIKI_EDIT_LOCK_BREAK_CONFIRM'), build_hidden_fields(array('article' => $article)));
+		}
+		redirect($this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'edit')));
+	}
+
 	/**
 	 * For a new article: offer the "Template:Start ..." pages to start from, and fill the
 	 * text box with the one that was chosen.

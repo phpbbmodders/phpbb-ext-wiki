@@ -141,6 +141,12 @@ class main
 			case 'edit':
 				return $this->edit->edit_article($article);
 
+			case 'edit_lock':
+				return $this->edit->ping_lock($article);
+
+			case 'break_lock':
+				return $this->edit->break_lock($article);
+
 			case 'versions':
 				return $this->compare->view_versions($article);
 
