@@ -73,13 +73,13 @@ class links
 		// Links are stored in the parsed text as <WIKILINK name="...">, and {{template}} calls
 		// as <WIKITEMPLATE call="..." name="..."> (attributes in alphabetical order).
 		$any = $this->db->get_any_char();
-		$escaped = htmlspecialchars($name, ENT_COMPAT, 'UTF-8');
+		$escaped = utf8_htmlspecialchars($name);
 		$conditions = array(
 			'article_text ' . $this->db->sql_like_expression($any . '<WIKILINK name="' . $escaped . '"' . $any),
 		);
 		if (strpos($name, \phpbbmodders\wiki\wiki\templates::PREFIX) === 0)
 		{
-			$template = htmlspecialchars(substr($name, strlen(\phpbbmodders\wiki\wiki\templates::PREFIX)), ENT_COMPAT, 'UTF-8');
+			$template = utf8_htmlspecialchars(substr($name, strlen(\phpbbmodders\wiki\wiki\templates::PREFIX)));
 			foreach (array($template, $escaped) as $written)
 			{
 				$conditions[] = 'article_text ' . $this->db->sql_like_expression($any . '<WIKITEMPLATE ' . $any . ' name="' . $written . '">' . $any);

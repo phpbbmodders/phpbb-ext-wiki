@@ -156,7 +156,7 @@ class move
 			}
 			else if ($this->taken($new_name, $article))
 			{
-				$errors[] = $this->user->lang('WIKI_MOVE_NAME_TAKEN', htmlspecialchars($new_name, ENT_COMPAT, 'UTF-8'));
+				$errors[] = $this->user->lang('WIKI_MOVE_NAME_TAKEN', utf8_htmlspecialchars($new_name));
 			}
 			if ($new_title === '' || utf8_strlen(htmlspecialchars_decode($new_title, ENT_COMPAT)) > 255)
 			{
@@ -183,8 +183,8 @@ class move
 		));
 		$this->template->assign_vars(array(
 			'ERROR'				=> implode('<br />', $errors),
-			'ARTICLE_NAME'		=> htmlspecialchars($article, ENT_COMPAT, 'UTF-8'),
-			'NEW_NAME'			=> htmlspecialchars($new_name, ENT_COMPAT, 'UTF-8'),
+			'ARTICLE_NAME'		=> utf8_htmlspecialchars($article),
+			'NEW_NAME'			=> utf8_htmlspecialchars($new_name),
 			'NEW_TITLE'			=> $new_title,
 			'S_LEAVE_REDIRECT'	=> $leave_redirect,
 			'TEMPLATE_USED_BY'	=> $used_by ? $this->user->lang('WIKI_MOVE_TEMPLATE_WARNING', $used_by) : '',
@@ -208,7 +208,7 @@ class move
 		$sql = 'SELECT article_url
 			FROM ' . $this->article_table . "
 			WHERE article_approved = 1
-				AND article_redirect = '" . $this->db->sql_escape(htmlspecialchars($article, ENT_COMPAT, 'UTF-8')) . "'
+				AND article_redirect = '" . $this->db->sql_escape(utf8_htmlspecialchars($article)) . "'
 				AND article_url " . $this->db->sql_like_expression(templates::PREFIX . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -304,7 +304,7 @@ class move
 				'article_sources'		=> '',
 				'article_sticky'		=> 0,
 				'article_views'			=> 0,
-				'article_redirect'		=> htmlspecialchars($new, ENT_COMPAT, 'UTF-8'),
+				'article_redirect'		=> utf8_htmlspecialchars($new),
 				'article_description'	=> '',
 				'article_toc'			=> '',
 			)));

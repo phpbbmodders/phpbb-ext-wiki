@@ -472,7 +472,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$redirect_target = \phpbbmodders\wiki\wiki\markup::redirect_target(htmlspecialchars_decode($this->data['article_text'], ENT_COMPAT));
 			if ($redirect_target !== '' && $this->auth->acl_get('u_wiki_set_redirect') && empty($this->data['article_redirect']))
 			{
-				$this->data['article_redirect'] = htmlspecialchars($redirect_target, ENT_COMPAT, 'UTF-8');
+				$this->data['article_redirect'] = utf8_htmlspecialchars($redirect_target);
 			}
 
 			\phpbbmodders\wiki\wiki\markup::set_active(true);
@@ -718,7 +718,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 			$text = $this->copy_text($copy_from);
 			if ($text === null)
 			{
-				$error = $this->user->lang('WIKI_START_COPY_NOT_FOUND', htmlspecialchars($copy_from, ENT_COMPAT, 'UTF-8'));
+				$error = $this->user->lang('WIKI_START_COPY_NOT_FOUND', utf8_htmlspecialchars($copy_from));
 			}
 		}
 		else if ($chosen !== '')
@@ -757,7 +757,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		if ($text !== null)
 		{
 			// The text box takes text escaped as decode_message() leaves it
-			$this->message_parser->message = htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
+			$this->message_parser->message = utf8_htmlspecialchars($text);
 		}
 
 		foreach ($options as $option)
@@ -771,7 +771,7 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 
 		$this->template->assign_vars(array(
 			'S_START_PICKER'	=> true,
-			'START_COPY_FROM'	=> htmlspecialchars($copy_from, ENT_COMPAT, 'UTF-8'),
+			'START_COPY_FROM'	=> utf8_htmlspecialchars($copy_from),
 			'START_ERROR'		=> $error,
 			'U_START_ACTION'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article)),
 		));
@@ -789,9 +789,9 @@ class edit extends \phpbbmodders\wiki\wiki\functions
 		foreach ($parameters as $name => $default)
 		{
 			$this->template->assign_block_vars('start_values', array(
-				'NAME'		=> htmlspecialchars((string) $name, ENT_COMPAT, 'UTF-8'),
-				'LABEL'		=> ctype_digit((string) $name) ? $this->user->lang('WIKI_START_VALUE_NUMBERED', (int) $name) : htmlspecialchars((string) $name, ENT_COMPAT, 'UTF-8'),
-				'DEFAULT'	=> htmlspecialchars($default, ENT_COMPAT, 'UTF-8'),
+				'NAME'		=> utf8_htmlspecialchars((string) $name),
+				'LABEL'		=> ctype_digit((string) $name) ? $this->user->lang('WIKI_START_VALUE_NUMBERED', (int) $name) : utf8_htmlspecialchars((string) $name),
+				'DEFAULT'	=> utf8_htmlspecialchars($default),
 			));
 		}
 		$this->template->assign_var('S_START_VALUES', true);

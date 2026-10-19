@@ -131,7 +131,7 @@ class template_list
 				'USED_ON'		=> count($this->links->what_links_here($row['article_url'])),
 				'EDIT_TIME'		=> $this->user->format_date($row['article_last_edit']),
 				'U_TEMPLATE'	=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
-				'USAGE'			=> htmlspecialchars(\phpbbmodders\wiki\wiki\templates::usage($name, \phpbbmodders\wiki\wiki\templates::parameters($source)), ENT_COMPAT, 'UTF-8'),
+				'USAGE'			=> utf8_htmlspecialchars(\phpbbmodders\wiki\wiki\templates::usage($name, \phpbbmodders\wiki\wiki\templates::parameters($source))),
 				'PREVIEW'		=> $preview,
 				'S_START'		=> strpos($name, \phpbbmodders\wiki\wiki\templates::START_PREFIX) === 0,
 			));

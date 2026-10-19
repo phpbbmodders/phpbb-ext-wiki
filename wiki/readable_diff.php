@@ -288,7 +288,7 @@ class readable_diff
 
 		$parts = array();
 		$escape = function ($words) {
-			return htmlspecialchars(implode(' ', $words), ENT_COMPAT, 'UTF-8');
+			return utf8_htmlspecialchars(implode(' ', $words));
 		};
 		foreach ($edits as $edit)
 		{
@@ -352,7 +352,7 @@ class readable_diff
 		$tag = '<' . strtolower($element->nodeName);
 		foreach ($element->attributes as $attribute)
 		{
-			$tag .= ' ' . $attribute->nodeName . '="' . htmlspecialchars($attribute->nodeValue, ENT_COMPAT, 'UTF-8') . '"';
+			$tag .= ' ' . $attribute->nodeName . '="' . utf8_htmlspecialchars($attribute->nodeValue) . '"';
 		}
 
 		return $tag . '>';

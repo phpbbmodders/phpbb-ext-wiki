@@ -407,7 +407,7 @@ class wikilink_listener implements EventSubscriberInterface
 			}
 
 			return '<a class="wikilink wikilink-new" href="' . $url . '" data-wiki-article="' . $match[1] . '" title="'
-				. htmlspecialchars($this->language->lang('WIKI_LINK_NEW_ARTICLE'), ENT_COMPAT, 'UTF-8') . '">';
+				. utf8_htmlspecialchars($this->language->lang('WIKI_LINK_NEW_ARTICLE')) . '">';
 		}, $html);
 	}
 
@@ -441,7 +441,7 @@ class wikilink_listener implements EventSubscriberInterface
 
 			if (!isset($found[$name]))
 			{
-				return '<span class="wikifile wikifile-missing" title="' . htmlspecialchars($this->language->lang('WIKI_FILE_MISSING', $name), ENT_COMPAT, 'UTF-8') . '">' . $alt . '</span>';
+				return '<span class="wikifile wikifile-missing" title="' . utf8_htmlspecialchars($this->language->lang('WIKI_FILE_MISSING', $name)) . '">' . $alt . '</span>';
 			}
 
 			$url = $this->files->get_url($article, $found[$name]['file_id']);

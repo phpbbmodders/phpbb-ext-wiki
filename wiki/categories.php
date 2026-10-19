@@ -155,7 +155,7 @@ class categories
 	 */
 	protected function members_where($category)
 	{
-		$needle = '<WIKICATEGORY name="' . htmlspecialchars(self::normalise($category), ENT_COMPAT, 'UTF-8') . '"';
+		$needle = '<WIKICATEGORY name="' . utf8_htmlspecialchars(self::normalise($category)) . '"';
 
 		return $this->templates->live_where('a', '') . '
 			AND a.article_text ' . $this->db->sql_like_expression($this->db->get_any_char() . $needle . $this->db->get_any_char());

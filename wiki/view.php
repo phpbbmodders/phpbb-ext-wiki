@@ -281,7 +281,7 @@ class view extends \phpbbmodders\wiki\wiki\functions
 			{
 				$this->template->assign_vars(array(
 					'S_TEMPLATE_PAGE'		=> true,
-					'TEMPLATE_SOURCE'		=> htmlspecialchars($template_source, ENT_COMPAT, 'UTF-8'),
+					'TEMPLATE_SOURCE'		=> utf8_htmlspecialchars($template_source),
 					'TEMPLATE_USED_ON'		=> $this->user->lang('WIKI_TEMPLATE_USED_ON', count($linking_articles)),
 				));
 			}
