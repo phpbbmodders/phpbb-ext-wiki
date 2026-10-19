@@ -183,7 +183,7 @@ class acp_templates
 			trigger_error($this->language->lang('WIKI_STARTER_CHECK_FAILED') . adm_back_link($u_action), E_USER_WARNING);
 		}
 		$message = $changed
-			? $this->language->lang('WIKI_STARTER_CHECK_CHANGES', count($changed), htmlspecialchars(implode(', ', $changed), ENT_COMPAT, 'UTF-8'))
+			? $this->language->lang('WIKI_STARTER_CHECK_CHANGES', count($changed), utf8_htmlspecialchars(implode(', ', $changed)))
 			: $this->language->lang('WIKI_STARTER_CHECK_NONE');
 		trigger_error($message . adm_back_link($u_action));
 	}
@@ -205,7 +205,7 @@ class acp_templates
 			trigger_error($this->language->lang('WIKI_STARTER_NOTHING_CHOSEN') . adm_back_link($u_action), E_USER_WARNING);
 		}
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_WIKI_STARTER_INSTALLED', false, array(implode(', ', $installed)));
-		trigger_error($this->language->lang('WIKI_STARTER_INSTALLED', count($installed), htmlspecialchars(implode(', ', $installed), ENT_COMPAT, 'UTF-8')) . adm_back_link($u_action));
+		trigger_error($this->language->lang('WIKI_STARTER_INSTALLED', count($installed), utf8_htmlspecialchars(implode(', ', $installed))) . adm_back_link($u_action));
 	}
 
 	/**

@@ -126,7 +126,7 @@ class protect
 		));
 		$this->template->assign_vars(array(
 			'ERROR'			=> $error,
-			'ARTICLE_NAME'	=> htmlspecialchars($article, ENT_COMPAT, 'UTF-8'),
+			'ARTICLE_NAME'	=> utf8_htmlspecialchars($article),
 			'U_ACTION'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $article, 'action' => 'protect')),
 		));
 

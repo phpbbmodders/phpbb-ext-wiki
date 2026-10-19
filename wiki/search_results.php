@@ -167,9 +167,9 @@ class search_results
 			}
 
 			$row = $found[(int) $id];
-			$title = htmlspecialchars($row['article_title'], ENT_COMPAT, 'UTF-8');
-			$description = htmlspecialchars($row['article_description'], ENT_COMPAT, 'UTF-8');
-			$snippet = ($fields === 'titleonly') ? '' : get_context(htmlspecialchars($row['article_body'], ENT_COMPAT, 'UTF-8'), $words ? array_map('stripslashes', $words) : array(), self::SNIPPET_LENGTH);
+			$title = utf8_htmlspecialchars($row['article_title']);
+			$description = utf8_htmlspecialchars($row['article_description']);
+			$snippet = ($fields === 'titleonly') ? '' : get_context(utf8_htmlspecialchars($row['article_body']), $words ? array_map('stripslashes', $words) : array(), self::SNIPPET_LENGTH);
 			if ($pattern !== '')
 			{
 				$mark = '<span class="posthilit">$1</span>';
@@ -183,7 +183,7 @@ class search_results
 				'DESCRIPTION'	=> $description,
 				'SNIPPET'		=> $snippet,
 				'DATE'			=> $this->user->format_date($row['article_date']),
-				'AUTHOR'		=> htmlspecialchars($row['author'], ENT_COMPAT, 'UTF-8'),
+				'AUTHOR'		=> utf8_htmlspecialchars($row['author']),
 				'U_ARTICLE'		=> $this->helper->route('phpbbmodders_wiki_article', array('article' => $row['article_url'])),
 				'PROTECTED'		=> $this->protection->list_label($row['article_url']),
 			);

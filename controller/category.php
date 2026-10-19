@@ -238,7 +238,7 @@ class category
 				'COUNT'			=> $count,
 				'DESCRIPTION'	=> isset($descriptions[categories::normalise($name)]) ? $descriptions[categories::normalise($name)] : '',
 				'U_CATEGORY'	=> $u_category,
-				'WRITE_IN'		=> $this->user->lang('WIKI_CATEGORY_WRITE_IN', htmlspecialchars('[[' . categories::PREFIX . $name . ']]', ENT_COMPAT, 'UTF-8')),
+				'WRITE_IN'		=> $this->user->lang('WIKI_CATEGORY_WRITE_IN', utf8_htmlspecialchars('[[' . categories::PREFIX . $name . ']]')),
 				'MORE'			=> ($count > self::PREVIEW_MEMBERS) ? $this->user->lang('WIKI_CATEGORY_MORE', $count - self::PREVIEW_MEMBERS, $u_category) : '',
 			));
 
