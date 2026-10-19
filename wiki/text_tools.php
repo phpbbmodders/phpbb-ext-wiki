@@ -291,6 +291,27 @@ class text_tools
 	}
 
 	/**
+	 * Whether a {{#time:}} date counts from the time now ("", "yesterday", "+1 week",
+	 * "next monday"), so its result changes as time passes. Read against two different
+	 * times now: a date that comes out the same both times is fixed.
+	 *
+	 * @param string $date As time() reads it
+	 * @return bool
+	 */
+	public static function depends_on_now($date)
+	{
+		if (trim($date) === '')
+		{
+			return true;
+		}
+
+		$one = strtotime($date, 1000000000);
+		$two = strtotime($date, 1500000000);
+
+		return $one !== false && $one !== $two;
+	}
+
+	/**
 	 * {{#time:}}: a date in a format.
 	 *
 	 * @param string $format As time_format() reads it

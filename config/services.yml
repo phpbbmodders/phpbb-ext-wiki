@@ -332,6 +332,7 @@ services:
             - '@language'
             - '%tables.wiki.article%'
             - '@user'
+            - '@cache.driver'
     # The custom BBCodes an admin has made wiki-only
     phpbbmodders.wiki.wiki_only_bbcodes:
         class: phpbbmodders\wiki\wiki\wiki_only_bbcodes

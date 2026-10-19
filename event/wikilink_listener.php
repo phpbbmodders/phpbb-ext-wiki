@@ -87,6 +87,8 @@ class wikilink_listener implements EventSubscriberInterface
 			'core.text_formatter_s9e_parse_before'		=> 'toggle_wiki_markup',
 			'core.text_formatter_s9e_render_after'		=> 'link_wikilinks',
 			'core.display_custom_bbcodes_modify_sql'	=> 'hide_wiki_only_buttons',
+			'core.acp_bbcodes_modify_create_after'		=> 'forget_renders',
+			'core.acp_bbcodes_delete_after'				=> 'forget_renders',
 		);
 	}
 
@@ -323,6 +325,17 @@ class wikilink_listener implements EventSubscriberInterface
 	}
 
 	/**
+	 * A BBCode was added, changed or deleted: template text is parsed with the board's
+	 * BBCodes, so the articles kept with their templates filled in may be out of date.
+	 *
+	 * @return void
+	 */
+	public function forget_renders()
+	{
+		$this->templates->forget_renders();
+	}
+
+	/**
 	 * Point rendered wiki links at their articles, and mark the ones whose
 	 * article doesn't exist yet.
 	 *
@@ -335,7 +348,7 @@ class wikilink_listener implements EventSubscriberInterface
 
 		if (strpos($html, 'class="wikitemplate"') !== false)
 		{
-			$html = $this->templates->expand_all($html);
+			$html = $this->templates->expand_article($html);
 			$event['html'] = $html;
 		}
 

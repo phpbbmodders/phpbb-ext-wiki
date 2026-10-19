@@ -136,6 +136,13 @@ class category_members
 		}
 		$done[$article] = true;
 
+		// Every change to a live article comes through here or remove(): what the kept
+		// articles with templates show may depend on it
+		if (count($done) === 1)
+		{
+			$this->templates->forget_renders();
+		}
+
 		$this->store($article, $this->compute($article));
 
 		if (strpos($article, templates::PREFIX) === 0)
@@ -157,6 +164,7 @@ class category_members
 	 */
 	public function remove($article, array $users = array())
 	{
+		$this->templates->forget_renders();
 		$this->store($article, array());
 		$done = array($article => true);
 		foreach ($users as $user)

@@ -100,15 +100,29 @@ class templates
 	/** @var array The live version of each article read for the REVISION words, this request */
 	protected $revisions = array();
 
+	/** @var \phpbb\cache\driver\driver_interface|null Where articles with their templates filled in are kept */
+	protected $cache;
+
+	/** @var bool Whether what is being worked out uses the clock or the reader, so cannot be kept */
+	protected $volatile = false;
+
+	/** The config value every change to a live article moves on, so no kept article outlives it. */
+	const RENDER_GENERATION = 'wiki_render_generation';
+
+	/** Seconds an article with its templates filled in is kept at most. */
+	const RENDER_TTL = 86400;
+
 	/**
-	 * @param \phpbb\config\config				$config			Config object
-	 * @param \phpbb\db\driver\driver_interface	$db				Database object
-	 * @param \phpbb\language\language			$language		Language object
-	 * @param string								$article_table	Wiki article table
-	 * @param \phpbb\user|null					$user			The reader, for #timel
+	 * @param \phpbb\config\config						$config			Config object
+	 * @param \phpbb\db\driver\driver_interface			$db				Database object
+	 * @param \phpbb\language\language					$language		Language object
+	 * @param string										$article_table	Wiki article table
+	 * @param \phpbb\user|null							$user			The reader, for #timel
+	 * @param \phpbb\cache\driver\driver_interface|null	$cache			The board's cache, for rendered articles
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table, \phpbb\user|null $user = null)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $article_table, \phpbb\user|null $user = null, \phpbb\cache\driver\driver_interface|null $cache = null)
 	{
+		$this->cache = $cache;
 		$this->user = $user;
 		$this->config = $config;
 		$this->db = $db;
@@ -125,6 +139,62 @@ class templates
 	public function is_expanding()
 	{
 		return $this->depth > 0;
+	}
+
+	/**
+	 * Fill in an article's templates, from the cache when it was done before and nothing it
+	 * could depend on has changed since. What it depends on is in the key: the rendered text
+	 * itself (so the article, its version and how it was parsed), the article being shown
+	 * (PAGENAME), the board's name (SITENAME), every change to a live article (RENDER_GENERATION: a template, an
+	 * {{#ifexist:}} target, the REVISION words), the nesting setting, the reader's language
+	 * (error messages) and whether the reader sees word censoring. A result that used the clock
+	 * or the reader's time zone is not kept.
+	 *
+	 * @param string $html Rendered article text that holds template placeholders
+	 * @return string The text with the templates in place
+	 */
+	public function expand_article($html)
+	{
+		if ($this->cache === null || $this->depth > 0 || empty($this->config['wiki_render_cache']))
+		{
+			return $this->expand_all($html);
+		}
+
+		$key = '_wiki_render_' . md5(implode("\n", array(
+			$html,
+			(string) $this->current_article(),
+			(string) $this->config['sitename'],
+			(int) $this->config[self::RENDER_GENERATION],
+			$this->nesting(),
+			($this->user !== null && isset($this->user->lang_name)) ? $this->user->lang_name : '',
+			($this->user !== null && !empty($this->user->data['user_id']) && $this->user->optionget('viewcensors')) ? 1 : 0,
+		)));
+
+		$kept = $this->cache->get($key);
+		if (is_string($kept))
+		{
+			return $kept;
+		}
+
+		$this->volatile = false;
+		$expanded = $this->expand_all($html);
+		if (!$this->volatile)
+		{
+			$this->cache->put($key, $expanded, self::RENDER_TTL);
+		}
+
+		return $expanded;
+	}
+
+	/**
+	 * Let go of every article kept with its templates filled in. Cheap: it moves a number
+	 * on, and the old entries are never asked for again and run out.
+	 *
+	 * @return void
+	 */
+	public function forget_renders()
+	{
+		$this->config->increment(self::RENDER_GENERATION, 1);
 	}
 
 	/**
@@ -439,6 +509,7 @@ class templates
 				return isset($args[2]) ? $arg(2) : $arg(0);
 
 			case 'time':
+				$this->volatile = $this->volatile || text_tools::depends_on_now($arg(1));
 				$time = text_tools::time($arg(0), $arg(1), $this->now());
 
 				return ($time === null) ? $this->error($this->language->lang('WIKI_TIME_INVALID')) : $time;
@@ -471,6 +542,9 @@ class templates
 				return $this->tag_function($arg(0), isset($args[1]) ? $arg(1) : null, array_slice($args, 2));
 
 			case 'timel':
+				// The reader's time zone and language: never the same for everyone
+				$this->volatile = true;
+
 				return $this->local_time($arg(0), $arg(1));
 		}
 
@@ -750,10 +824,16 @@ class templates
 				$zone = new \DateTimeZone('UTC');
 			}
 
-			return text_tools::date_word('CURRENT' . substr($word, 5), $this->now(), $zone);
+			$date = text_tools::date_word('CURRENT' . substr($word, 5), $this->now(), $zone);
 		}
+		else
+		{
+			$date = text_tools::date_word($word, $this->now());
+		}
+		// The time now changes, so an article using it is not kept (see expand_article())
+		$this->volatile = $this->volatile || $date !== null;
 
-		return text_tools::date_word($word, $this->now());
+		return $date;
 	}
 
 	/**
