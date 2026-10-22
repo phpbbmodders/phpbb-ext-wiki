@@ -26,26 +26,26 @@ class declared_support_test extends \PHPUnit\Framework\TestCase
 		return file_get_contents(self::ROOT . '/' . $path);
 	}
 
-	public function test_composer_requires_php_8_2_or_newer()
+	public function test_composer_requires_php_8_3_36_or_newer()
 	{
 		$composer = json_decode($this->read('composer.json'), true, 512, JSON_THROW_ON_ERROR);
 
-		$this->assertSame('>=8.2', $composer['require']['php']);
+		$this->assertSame('>=8.3.36', $composer['require']['php']);
 	}
 
 	public function test_the_extension_refuses_to_enable_below_the_same_version()
 	{
-		$this->assertMatchesRegularExpression('/return PHP_VERSION_ID >= 80200;/', $this->read('ext.php'));
-		$this->assertStringContainsString('PHP 8.2.0', $this->read('language/en/install_wiki.php'));
+		$this->assertMatchesRegularExpression('/return PHP_VERSION_ID >= 80336;/', $this->read('ext.php'));
+		$this->assertStringContainsString('PHP 8.3.36', $this->read('language/en/install_wiki.php'));
 	}
 
 	public function test_the_readme_states_the_same_requirement()
 	{
-		$this->assertStringContainsString('- PHP 8.2 or later', $this->read('README.md'));
+		$this->assertStringContainsString('- PHP 8.3.36 or later', $this->read('README.md'));
 	}
 
 	/** @dataProvider workflows_with_a_php_matrix */
-	public function test_every_ci_matrix_starts_at_8_2_and_includes_8_5(string $file)
+	public function test_every_ci_matrix_starts_at_8_3_and_includes_8_5(string $file)
 	{
 		$workflow = $this->read($file);
 
@@ -54,7 +54,7 @@ class declared_support_test extends \PHPUnit\Framework\TestCase
 		{
 			$versions = json_decode(str_replace("'", '"', $matrix), true);
 			usort($versions, 'version_compare');
-			$this->assertSame('8.2', $versions[0], $file . ' ' . $matrix);
+			$this->assertSame('8.3', $versions[0], $file . ' ' . $matrix);
 			$this->assertContains('8.5', $versions, $file . ' ' . $matrix);
 		}
 	}
@@ -72,7 +72,7 @@ class declared_support_test extends \PHPUnit\Framework\TestCase
 		$workflow = $this->read('.github/workflows/tests.yml');
 
 		$this->assertSame(2, preg_match_all("/PRIMARY_PHP_VERSION: '([0-9.]+)'/", $workflow, $primary));
-		$this->assertSame(['8.2', '8.2'], $primary[1]);
+		$this->assertSame(['8.3', '8.3'], $primary[1]);
 		$this->assertSame(2, substr_count($workflow, 'PHP_VERSION_MATRIX'));
 	}
 }
