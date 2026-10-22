@@ -195,7 +195,7 @@ Articles and posts written before this feature existed get their links the next 
 ## Requirements
 
 - phpBB 3.3.19 or later (also tested on phpBB 4.0)
-- PHP 8.2 or later
+- PHP 8.3.36 or later
 
 Tested versions and compatibility notes: [docs/compatibility.md](docs/compatibility.md).
 
