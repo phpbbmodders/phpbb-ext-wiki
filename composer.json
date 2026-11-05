@@ -31,7 +31,8 @@
 		}
 	],
 	"require": {
-		"php": ">=8.3.36"
+		"php": ">=8.3.36",
+		"composer/installers": "^1.0 || ^2.0"
 	},
 	"require-dev": {
 		"phpbb/epv": "dev-master"
@@ -39,7 +40,7 @@
 	"extra": {
 		"display-name": "phpBB Modders Wiki",
 		"soft-require": {
-			"phpbb/phpbb": ">=3.3.19,<4.1@dev"
+			"phpbb/phpbb": ">=3.3.19,<4.1.0@dev"
 		}
 	}
 }
