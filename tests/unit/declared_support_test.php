@@ -26,37 +26,42 @@ class declared_support_test extends \PHPUnit\Framework\TestCase
 		return file_get_contents(self::ROOT . '/' . $path);
 	}
 
-	public function test_composer_requires_php_8_3_36_or_newer()
+	public function test_composer_requires_php_8_1_or_newer()
 	{
 		$composer = json_decode($this->read('composer.json'), true, 512, JSON_THROW_ON_ERROR);
 
-		$this->assertSame('>=8.3.36', $composer['require']['php']);
+		$this->assertSame('>=8.1.0', $composer['require']['php']);
 	}
 
 	public function test_the_extension_refuses_to_enable_below_the_same_version()
 	{
-		$this->assertMatchesRegularExpression('/return PHP_VERSION_ID >= 80336;/', $this->read('ext.php'));
-		$this->assertStringContainsString('PHP 8.3.36', $this->read('language/en/install_wiki.php'));
+		$this->assertMatchesRegularExpression('/return PHP_VERSION_ID >= 80100;/', $this->read('ext.php'));
+		$this->assertStringContainsString('PHP 8.1', $this->read('language/en/install_wiki.php'));
 	}
 
 	public function test_the_readme_states_the_same_requirement()
 	{
-		$this->assertStringContainsString('- PHP 8.3.36 or later', $this->read('README.md'));
+		$this->assertStringContainsString('- PHP 8.1 or later', $this->read('README.md'));
 	}
 
 	/** @dataProvider workflows_with_a_php_matrix */
-	public function test_every_ci_matrix_starts_at_8_3_and_includes_8_5(string $file)
+	public function test_ci_matrices_start_at_the_lowest_php_each_phpbb_branch_supports(string $file)
 	{
 		$workflow = $this->read($file);
 
 		$this->assertGreaterThanOrEqual(1, preg_match_all("/(?:PHP_VERSION_MATRIX: '|php: )(\\[[^\\]]+\\])/", $workflow, $matches), $file);
+		$lowest = [];
 		foreach ($matches[1] as $matrix)
 		{
 			$versions = json_decode(str_replace("'", '"', $matrix), true);
 			usort($versions, 'version_compare');
-			$this->assertSame('8.3', $versions[0], $file . ' ' . $matrix);
+			$lowest[] = $versions[0];
 			$this->assertContains('8.5', $versions, $file . ' ' . $matrix);
+			// phpBB 4.0 (master) itself needs PHP 8.2, so no matrix may start below the extension's 8.1.
+			$this->assertTrue(version_compare($versions[0], '8.1', '>='), $file . ' ' . $matrix);
 		}
+		// The first matrix covers phpBB 3.3, which runs on the extension's minimum, PHP 8.1.
+		$this->assertSame('8.1', $lowest[0], $file);
 	}
 
 	public function workflows_with_a_php_matrix(): array
