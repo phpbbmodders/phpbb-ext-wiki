@@ -6,8 +6,8 @@ notifications), on:
 - phpBB 3.3.x (tested on 3.3.18-dev)
 - phpBB 4.0.0-a3-dev
 
-PHP 8.3.36 or later is required due to security fixes; the extension refuses to enable below it.
-CI runs PHP 8.3, 8.4 and 8.5 on phpBB 3.3.x and on phpBB master.
+PHP 8.1 or later is required; the extension refuses to enable below it. phpBB 4.0 itself needs PHP 8.2 or later.
+CI runs PHP 8.1, 8.3, 8.4 and 8.5 on phpBB 3.3.x, and PHP 8.3, 8.4 and 8.5 on phpBB master.
 
 phpBB 3.2.x compatibility is **not independently verified by this fork** —
 it's carried forward from Crizz0/phpBB.de's original claim for their branch.
